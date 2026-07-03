@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  background-color: #FFFFFF;
+  color: #1E293B;
+}
+
+.container-fluid {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  background: radial-gradient(circle at 50% -20%, #fffbeb 0%, #ffffff 100%);
+}
+
+/* Subtle glowing orb in background - Blue color from logo */
+.container-fluid::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Logo */
+.logo-image {
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+  background: white;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Title */
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: #F59E0B; /* Vibrant amber matching the logo exactly */
+}
+
+/* Subtitle */
+.subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: 400;
+  color: #64748B;
+  margin-bottom: 24px;
+}
+
+/* Themes / Features list */
+.themes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+  align-items: center;
+}
+
+.theme-item {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-left: 4px solid #F59E0B; /* Bright amber accent */
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.08);
+}
+
+.theme-icon {
+  font-size: 24px;
+}
+
+.theme-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+/* Footer note */
+.note {
+  font-size: 14px;
+  color: #94A3B8;
+  line-height: 1.6;
+  margin-top: 24px;
+}
