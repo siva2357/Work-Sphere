@@ -1,1 +1,81 @@
-<p>public-navbar works!</p>
+<nav class="public-navbar-wrapper">
+    <div class="public-navbar container-fluid">
+
+        <!-- =========================
+             LOGO
+        ========================== -->
+        <a routerLink="/" class="navbar-logo" aria-label="WorkSphere Home">
+            <img src="/logo%202.png" alt="WorkSphere Logo" class="logo">
+        </a>
+
+
+        <!-- =========================
+             MOBILE MENU TOGGLE
+        ========================== -->
+        <button type="button" class="mobile-menu-toggle" [class.open]="mobileMenuOpen" (click)="toggleMobileMenu()"
+            [attr.aria-expanded]="mobileMenuOpen" aria-label="Toggle navigation menu">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+
+        <!-- =========================
+             NAVIGATION
+        ========================== -->
+        <div class="navbar-navigation" [class.mobile-open]="mobileMenuOpen">
+
+            <ul class="navbar-links">
+
+                <li>
+                    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                        class="nav-link" (click)="closeMobileMenu()">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/features" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                        class="nav-link" (click)="closeMobileMenu()">
+                        Features
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                        class="nav-link" (click)="closeMobileMenu()">
+                        About Us
+                    </a>
+                </li>
+
+                <li>
+                    <a routerLink="/contact" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                        class="nav-link" (click)="closeMobileMenu()">
+                        Contact Us
+                    </a>
+                </li>
+
+            </ul>
+
+
+            <!-- =========================
+                 AUTH BUTTONS
+            ========================== -->
+            <div class="navbar-actions">
+
+                <app-button label="Login" variant="outline-success" size="sm" route="/login"
+                    (clicked)="closeMobileMenu()">
+                </app-button>
+
+                <app-button label="Sign Up" variant="success" size="sm" route="/signup"
+                    (clicked)="closeMobileMenu()">
+                </app-button>
+
+            </div>
+
+        </div>
+
+    </div>
+</nav>
