@@ -1,0 +1,103 @@
+<div class="dropdown">
+    <button class="btn btn-light position-relative p-0 border-0 notif-trigger-btn rounded-circle d-flex align-items-center justify-content-center"
+        type="button" data-bs-toggle="dropdown" aria-expanded="false" id="notifDropdown" aria-label="Notifications"
+        style="width: 42px; height: 42px;">
+        <i class="bi bi-bell text-secondary fs-5"></i>
+        @if (unreadCount > 0) {
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 10px; padding: 3px 6px; transform: translate(-30%, 20%) !important;">
+            {{ unreadCount }}
+        </span>
+        }
+    </button>
+
+    <div class="dropdown-menu dropdown-menu-end p-0 border-0 shadow-lg mt-2 notification-dropdown"
+        aria-labelledby="notifDropdown" style="width: 340px; border-radius: 14px; overflow: hidden;">
+        
+        <div class="d-flex justify-content-between align-items-center px-3 py-3 border-bottom bg-white">
+            <div class="d-flex align-items-center gap-2">
+                <h6 class="mb-0 fw-bold text-dark" style="font-size: 14px;">Notifications</h6>
+                @if (unreadCount > 0) {
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style="font-size: 10px;">
+                    {{ unreadCount }} new
+                </span>
+                }
+            </div>
+            @if (unreadCount > 0) {
+            <a href="#" (click)="markAllAsRead($event)" class="text-decoration-none fw-medium text-success small" style="font-size: 12px;">
+                Mark all read
+            </a>
+            }
+        </div>
+
+        <div class="notif-list" style="max-height: 360px; overflow-y: auto;">
+            @for (notif of visibleNotifications; track notif.id) {
+            <div class="p-3 border-bottom position-relative transition-all"
+                [class.bg-white]="notif.read"
+                [class.bg-light]="!notif.read"
+                style="cursor: pointer;">
+                <div class="d-flex gap-3 align-items-start">
+                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center flex-shrink-0"
+                        [ngClass]="{
+                            'bg-success-subtle text-success': notif.type === 'leave',
+                            'bg-primary-subtle text-primary': notif.type === 'payroll',
+                            'bg-warning-subtle text-warning': notif.type === 'announcement',
+                            'bg-secondary-subtle text-secondary': notif.type === 'general'
+                        }" style="width: 36px; height: 36px;">
+                        <i class="bi" [ngClass]="{
+                            'bi-calendar-check': notif.type === 'leave',
+                            'bi-cash-stack': notif.type === 'payroll',
+                            'bi-megaphone': notif.type === 'announcement',
+                            'bi-bell': notif.type === 'general'
+                        }"></i>
+                    </div>
+
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="d-flex justify-content-between align-items-baseline mb-1">
+                            <span class="fw-semibold text-dark text-truncate" [class.fw-bold]="!notif.read" style="font-size: 13px;">
+                                {{ notif.title }}
+                            </span>
+                            <span class="text-muted ms-2 flex-shrink-0" style="font-size: 11px;">
+                                {{ (notif.createdAt || notif.time) | date:'shortTime' }}
+                            </span>
+                        </div>
+                        <p class="mb-1 text-secondary text-truncate-2" style="font-size: 12px; line-height: 1.4;">
+                            {{ notif.message }}
+                        </p>
+                        @if (!notif.read) {
+                        <a href="#" (click)="markAsRead($event, notif.id)" class="text-decoration-none text-success small fw-medium" style="font-size: 11px;">
+                            Mark as read
+                        </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            } @empty {
+            <div class="p-4 text-center text-muted">
+                <i class="bi bi-bell-slash fs-3 mb-2 d-block text-secondary opacity-50"></i>
+                <p class="mb-0 small">No notifications at the moment</p>
+            </div>
+            }
+        </div>
+
+        @if (notifications.length > 0) {
+        <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-light border-top">
+            <a href="#" (click)="clearAll($event)" class="text-decoration-none text-danger small" style="font-size: 12px;">
+                Clear all
+            </a>
+            <div class="d-flex gap-2">
+                @if (visibleLimit > 3) {
+                <a href="#" (click)="viewLess($event)" class="text-decoration-none text-muted small" style="font-size: 12px;">
+                    Show less
+                </a>
+                }
+                @if (visibleLimit < notifications.length) {
+                <a href="#" (click)="viewMore($event)" class="text-decoration-none text-success fw-medium small" style="font-size: 12px;">
+                    View all ({{ notifications.length }})
+                </a>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>

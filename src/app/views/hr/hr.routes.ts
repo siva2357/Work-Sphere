@@ -7,6 +7,7 @@ import { LeaveManagement } from './leave-management/leave-management';
 import { PayrollManagement } from './payroll-management/payroll-management';
 import { Announcements } from './announcements/announcements';
 import { RecruitmentManagement } from './recruitment-management/recruitment-management';
+import { RequestManagement } from './request-management/request-management';
 
 export const HR_ROUTES: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -14,6 +15,7 @@ export const HR_ROUTES: Routes = [
   { path: 'employee-directory', component: EmployeeDirectory },
   { path: 'attendance-management', component: AttedanceManagement },
   { path: 'leave-management', component: LeaveManagement },
+  { path: 'requests-management', component: RequestManagement },
   { path: 'payroll-management', component: PayrollManagement },
   { path: 'announcements', component: Announcements },
   { path: 'recruitment-management', component: RecruitmentManagement }
