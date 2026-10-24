@@ -1,0 +1,307 @@
+<div class="apply-request-container container-fluid py-4 px-3 px-md-4">
+
+  <!-- ====================================================================
+       1. PAGE HEADER & BACK NAVIGATION
+  ===================================================================== -->
+  <header class="d-flex align-items-center gap-3 mb-4">
+    <a routerLink="/employee/my-requests"
+      class="btn btn-light rounded-circle shadow-sm p-2 d-flex align-items-center justify-content-center back-nav-btn"
+      title="Back to My Requests">
+      <i class="bi bi-arrow-left fs-5 text-dark"></i>
+    </a>
+    <div>
+      <h1 class="h4 fw-bold text-dark mb-0">Raise a Request</h1>
+      <p class="text-muted extra-small mb-0 mt-0.5">
+        Submit internal service requests for hardware, IT access, department transfers, appraisals, or promotions.
+      </p>
+    </div>
+  </header>
+
+
+  <!-- ====================================================================
+       2. MAIN CONTENT: 2-COLUMN LAYOUT
+       LEFT: REQUEST SUBMISSION FORM | RIGHT: GUIDELINES & APPLICANT INFO
+  ===================================================================== -->
+  <div class="row g-4">
+
+    <!-- LEFT COLUMN: REQUEST SUBMISSION FORM (8 cols) -->
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden request-form-card">
+
+        <!-- Form Card Header -->
+        <div class="card-header bg-white border-bottom p-3 p-md-4 d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="header-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-pencil-square"></i>
+            </div>
+            <div>
+              <h2 class="h6 fw-bold text-dark mb-0">Request Details</h2>
+              <span class="extra-small text-muted">Complete all required fields below</span>
+            </div>
+          </div>
+          <span class="extra-small text-muted fw-semibold">
+            <span class="text-danger">*</span> Required fields
+          </span>
+        </div>
+
+        <!-- Form Card Body -->
+        <div class="card-body p-3 p-md-4">
+          <form (ngSubmit)="submitRequest()" class="d-flex flex-column gap-3">
+
+            <!-- 1. Category & Priority (2 columns) -->
+            <div class="row g-3">
+
+              <!-- Request Category -->
+              <div class="col-12 col-md-7">
+                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                  Request Category <span class="text-danger">*</span>
+                </label>
+                <select class="form-select rounded-3 py-2" [(ngModel)]="category" name="category" required>
+                  <option value="" disabled selected>-- Select Request Category --</option>
+                  <option *ngFor="let cat of categories" [value]="cat">
+                    {{ cat }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Priority -->
+              <div class="col-12 col-md-5">
+                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                  Priority Level <span class="text-danger">*</span>
+                </label>
+                <div class="d-flex align-items-center gap-1.5 priority-pills-group">
+                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
+                    [class.active-low]="priority === 'Low'"
+                    (click)="priority = 'Low'">
+                    Low
+                  </button>
+                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
+                    [class.active-medium]="priority === 'Medium'"
+                    (click)="priority = 'Medium'">
+                    Medium
+                  </button>
+                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
+                    [class.active-high]="priority === 'High'"
+                    (click)="priority = 'High'">
+                    High
+                  </button>
+                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
+                    [class.active-urgent]="priority === 'Urgent'"
+                    (click)="priority = 'Urgent'">
+                    Urgent
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 2. Subject Title -->
+            <div>
+              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                Subject / Summary <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control rounded-3 py-2"
+                placeholder="e.g., MacBook Pro M3 Upgrade for Mobile Builds, Production Cloud Access, etc."
+                [(ngModel)]="subject" name="subject" required>
+            </div>
+
+            <!-- 3. Required By Date & Office Location (2 columns) -->
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                  Required By Date (Optional)
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3">
+                    <i class="bi bi-calendar-event"></i>
+                  </span>
+                  <input type="date" class="form-control border-start-0 rounded-end-3 py-2"
+                    [(ngModel)]="requiredDate" name="requiredDate">
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                  Office / Delivery Location
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3">
+                    <i class="bi bi-geo-alt"></i>
+                  </span>
+                  <input type="text" class="form-control border-start-0 rounded-end-3 py-2"
+                    [(ngModel)]="location" name="location">
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Detailed Description & Justification -->
+            <div>
+              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                Description & Business Justification <span class="text-danger">*</span>
+              </label>
+              <textarea class="form-control rounded-3 p-3 request-textarea" rows="5"
+                placeholder="Please describe why this request is needed, project dependencies, ticket references, or relevant timelines..."
+                [(ngModel)]="description" name="description" required></textarea>
+            </div>
+
+            <!-- 5. Attachment Upload (Optional) -->
+            <div>
+              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
+                Supporting Document / Quotation (Optional)
+              </label>
+              <div class="attachment-drop-box p-3 rounded-3 border border-dashed text-center">
+                <input type="file" id="requestFile" class="d-none" (change)="onFileSelected($event)">
+                <label for="requestFile" class="cursor-pointer mb-0 w-100">
+                  <i class="bi bi-cloud-arrow-up fs-3 text-emerald d-block mb-1"></i>
+                  <span class="small fw-semibold text-dark d-block">
+                    {{ selectedFileName ? selectedFileName : 'Click to attach PDF, image, or document' }}
+                  </span>
+                  <span class="extra-small text-muted">
+                    {{ selectedFileName ? 'Click to change file' : 'Maximum file size: 10MB (PDF, PNG, JPG, DOCX)' }}
+                  </span>
+                </label>
+                <div *ngIf="selectedFileName" class="mt-2">
+                  <button type="button" class="btn btn-sm btn-outline-danger py-0.5 px-2 rounded-pill extra-small"
+                    (click)="removeFile()">
+                    <i class="bi bi-trash me-1"></i>Remove Attachment
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 extra-small rounded-3 mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-circle-fill fs-6 flex-shrink-0"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+
+            <!-- Success Banner -->
+            <div *ngIf="isSuccess" class="alert alert-success py-2 px-3 extra-small rounded-3 mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill text-success fs-6 flex-shrink-0"></i>
+              <span>Your request has been submitted successfully! Redirecting to My Requests...</span>
+            </div>
+
+            <!-- Submit Button & Action Bar -->
+            <div class="d-flex align-items-center justify-content-end gap-2 pt-2 border-top mt-2">
+              <a routerLink="/employee/my-requests"
+                class="btn btn-outline-secondary px-3 py-2 rounded-3 text-nowrap fw-semibold extra-small">
+                Cancel
+              </a>
+              <button type="submit"
+                class="btn btn-emerald px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center text-white fw-semibold"
+                [disabled]="isSubmitting || isSuccess">
+
+                <ng-container *ngIf="!isSubmitting && !isSuccess">
+                  <i class="bi bi-send fs-6 me-2"></i>
+                  <span>Submit Request</span>
+                </ng-container>
+
+                <ng-container *ngIf="isSubmitting">
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span>Submitting...</span>
+                </ng-container>
+
+                <ng-container *ngIf="isSuccess">
+                  <i class="bi bi-check2-circle fs-5 me-2"></i>
+                  <span>Submitted!</span>
+                </ng-container>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- RIGHT COLUMN: APPLICANT SUMMARY & GUIDELINES (4 cols) -->
+    <div class="col-12 col-lg-4">
+      <div class="d-flex flex-column gap-4">
+
+        <!-- Applicant Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 applicant-card">
+          <div class="d-flex align-items-center gap-3">
+            <div class="applicant-avatar bg-emerald text-white fw-bold">
+              SP
+            </div>
+            <div>
+              <h3 class="h6 fw-bold text-dark mb-0.5">Siva Prasad</h3>
+              <span class="extra-small text-muted d-block mb-1">Senior Full Stack Engineer</span>
+              <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 font-monospace extra-small fw-semibold">
+                EMP ID: WS-1024
+              </span>
+            </div>
+          </div>
+
+          <div class="applicant-divider my-3"></div>
+
+          <div class="d-flex flex-column gap-2.5 extra-small">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted fw-medium">Department:</span>
+              <span class="fw-semibold text-dark text-end">Engineering Pod Alpha</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted fw-medium">Reporting Manager:</span>
+              <span class="fw-semibold text-dark text-end">Arun Kumar (VP Engg)</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted fw-medium">Branch / Location:</span>
+              <span class="fw-semibold text-dark text-end">Hyderabad Campus</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLA Guidelines Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 sla-card">
+          <div class="d-flex align-items-center gap-2.5 mb-3">
+            <div class="header-icon-box bg-emerald-subtle text-emerald flex-shrink-0">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+              <h3 class="h6 fw-bold text-dark mb-0">Fulfillment SLAs</h3>
+              <span class="extra-small text-muted">Standard processing timelines</span>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-2.5 extra-small">
+            <div class="sla-item p-3 rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold text-dark">Hardware / Asset</span>
+                <span class="sla-badge">2 - 3 Days</span>
+              </div>
+              <p class="text-muted mb-0 extra-small">Includes laptops, monitors, and accessories dispatch.</p>
+            </div>
+
+            <div class="sla-item p-3 rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold text-dark">IT & Cloud Access</span>
+                <span class="sla-badge">24 - 48 Hours</span>
+              </div>
+              <p class="text-muted mb-0 extra-small">AWS IAM, GitHub org, VPN and DB credentials.</p>
+            </div>
+
+            <div class="sla-item p-3 rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold text-dark">Promotion & Appraisals</span>
+                <span class="sla-badge">Review Cycle</span>
+              </div>
+              <p class="text-muted mb-0 extra-small">Evaluated with VP Engineering & HR Committee.</p>
+            </div>
+
+            <div class="sla-item p-3 rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-semibold text-dark">Department Transfer</span>
+                <span class="sla-badge">5 - 7 Days</span>
+              </div>
+              <p class="text-muted mb-0 extra-small">Requires current and destination manager approval.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

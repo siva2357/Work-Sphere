@@ -1,1 +1,443 @@
-<p>my-attendance works!</p>
+<div class="my-attendance-container container-fluid py-4 px-3 px-md-4">
+
+    <!-- ====================================================================
+       1. PAGE HEADER WITH "MARK ATTENDANCE" BUTTON
+  ===================================================================== -->
+    <header
+        class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <h1 class="h5 fw-bold text-dark mb-0">My Attendance</h1>
+                <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 fw-semibold extra-small">
+                    {{ currentMonth }}
+                </span>
+            </div>
+            <p class="text-muted extra-small mb-0 mt-1">
+                Track your monthly attendance, daily punch-in/out logs, shift compliance, and work hours.
+            </p>
+        </div>
+
+        <!-- Right Controls: Month Selector Dropdown + Mark Attendance Action Button (Single row at right end) -->
+        <div class="d-flex align-items-center gap-2 flex-nowrap ms-auto ms-md-0">
+            <!-- Month Dropdown -->
+            <select class="form-select form-select-sm month-select-dropdown rounded-3"
+                [(ngModel)]="currentMonth" (change)="onMonthChange()">
+                <option *ngFor="let m of availableMonths" [value]="m">{{ m }}</option>
+            </select>
+
+            <!-- Mark Attendance Action Button (Right End) -->
+            <a routerLink="/employee/mark-attendance"
+                class="btn btn-emerald btn-sm d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-3 shadow-sm text-decoration-none text-nowrap">
+                <i class="bi bi-fingerprint fs-6"></i>
+                <span class="fw-semibold">Mark Attendance</span>
+            </a>
+        </div>
+    </header>
+
+
+    <!-- ====================================================================
+       2. TOP 4 STAT CARDS (Clean Green Theme, 16px Values)
+  ===================================================================== -->
+    <section class="stat-cards-row row g-3 mb-4">
+
+        <!-- Card 1: Present Days -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+                            Present Days
+                        </span>
+                        <div class="stat-value text-dark fw-bold">{{ presentDays }} <span class="text-muted fw-normal">/
+                                {{totalWorkingDays}}</span></div>
+                    </div>
+                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
+                        <i class="bi bi-calendar2-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Absent Days -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+                            Absent Days
+                        </span>
+                        <div class="stat-value text-dark fw-bold">{{ absentDays }} <span class="text-muted fw-normal">/
+                                {{totalWorkingDays}}</span></div>
+                    </div>
+                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
+                        <i class="bi bi-calendar2-x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Leave Days -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+                            Leave Days
+                        </span>
+                        <div class="stat-value text-dark fw-bold">{{ leaveDays }} <span class="text-muted fw-normal">/
+                                {{totalWorkingDays}}</span></div>
+                    </div>
+                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
+                        <i class="bi bi-calendar2-minus"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Overall Hours Present -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+                            Overall Hours Present
+                        </span>
+                        <div class="stat-value text-dark fw-bold">{{ overallHoursPresent }}</div>
+                    </div>
+                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- ====================================================================
+       3. MAIN SECTION: COL-9 (FULL TABLE) + COL-3 (CALENDAR)
+  ===================================================================== -->
+    <div class="row g-3 g-md-4">
+
+        <!-- ==================================================================
+         COL-9: FULL MONTH ATTENDANCE TABLE
+    =================================================================== -->
+        <div class="col-12 col-lg-9">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 attendance-table-card">
+
+                <!-- Table Card Header & Filters -->
+                <div class="card-header bg-white border-bottom p-3 p-md-4">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+
+                        <!-- Title & Subtitle -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="header-icon-box bg-emerald-subtle text-emerald">
+                                    <i class="bi bi-table"></i>
+                                </div>
+                                <div>
+                                    <h2 class="h6 fw-bold text-dark mb-0">Daily Punch Log & Timesheet</h2>
+                                    <span class="extra-small text-muted">Complete records for {{ currentMonth }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Side-by-side Filters: Status Dropdown + Reset Button -->
+                        <div class="d-flex align-items-center gap-2">
+
+                            <!-- Active Calendar Filter Tag -->
+                            <span *ngIf="selectedDateFilter"
+                                class="badge bg-emerald text-white rounded-pill d-inline-flex align-items-center gap-1 px-2.5 py-1.5 extra-small">
+                                <span>{{ selectedDateFilter }} Oct</span>
+                                <i class="bi bi-x-circle cursor-pointer ms-1" (click)="clearFilters()"
+                                    title="Clear filter"></i>
+                            </span>
+
+                            <!-- Status Dropdown Filter -->
+                            <select class="form-select form-select-sm status-filter-select rounded-3"
+                                [(ngModel)]="statusFilter">
+                                <option value="ALL">All Statuses</option>
+                                <option value="PRESENT">Present</option>
+                                <option value="ABSENT">Absent</option>
+                                <option value="LEAVE">Leave</option>
+                                <option value="WEEKEND">Weekend</option>
+                                <option value="HOLIDAY">Holiday</option>
+                            </select>
+
+                            <!-- Reset Button -->
+                            <button class="btn btn-sm btn-outline-secondary rounded-3 d-inline-flex align-items-center gap-1 px-2.5 py-1.5"
+                                (click)="clearFilters()" title="Reset all filters">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span class="extra-small fw-semibold">Reset</span>
+                            </button>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Table Body -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 attendance-table">
+                            <thead class="table-light extra-small text-uppercase letter-spacing-1 text-muted">
+                                <tr>
+                                    <th class="ps-3 ps-md-4 text-center" style="width: 45px;">S.No.</th>
+                                    <th style="min-width: 120px;">Date</th>
+                                    <th style="min-width: 95px;">Login Time</th>
+                                    <th style="min-width: 85px;">
+                                        <div>Login Loc</div>
+                                        <div class="extra-small text-muted fw-normal font-monospace">(Lat, Long)</div>
+                                    </th>
+                                    <th style="min-width: 95px;">Logout Time</th>
+                                    <th style="min-width: 85px;">
+                                        <div>Logout Loc</div>
+                                        <div class="extra-small text-muted fw-normal font-monospace">(Lat, Long)</div>
+                                    </th>
+                                    <th style="min-width: 95px;">Hours Present</th>
+                                    <th class="pe-3 pe-md-4 text-end" style="min-width: 95px;">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <!-- No Records Found State -->
+                                <tr *ngIf="filteredRecords.length === 0">
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <i class="bi bi-calendar-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                        <p class="mb-1 fw-semibold">No attendance records found</p>
+                                        <button class="btn btn-sm btn-outline-emerald mt-2 rounded-pill px-3"
+                                            (click)="clearFilters()">
+                                            Reset Filters
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Records List (Day 1 to 31) -->
+                                <tr *ngFor="let record of filteredRecords"
+                                    [class.table-active-today]="record.dayNumber === 24">
+
+                                    <!-- 1. S.No -->
+                                    <td class="ps-3 ps-md-4 text-center text-muted fw-semibold small">
+                                        {{ record.sNo }}
+                                    </td>
+
+                                    <!-- 2. Date (Date & Day name only, no duplicate serial box) -->
+                                    <td class="small">
+                                        <div class="d-flex align-items-center gap-1.5">
+                                            <span class="fw-semibold text-dark">{{ record.date }}</span>
+                                            <span *ngIf="record.dayNumber === 24"
+                                                class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2 py-0.5">Today</span>
+                                        </div>
+                                        <span class="extra-small text-muted d-block">{{ record.dayName }}</span>
+                                    </td>
+
+                                    <!-- 3. Login Time -->
+                                    <td class="small">
+                                        <span *ngIf="record.loginTime !== '--:--'" class="text-dark fw-semibold">
+                                            <i class="bi bi-box-arrow-in-right text-emerald me-1"></i>{{
+                                            record.loginTime }}
+                                        </span>
+                                        <span *ngIf="record.loginTime === '--:--'" class="text-muted">--:--</span>
+                                    </td>
+
+                                    <!-- 4. Location (Lat, Long) in 2 Lines -->
+                                    <td class="small">
+                                        <div *ngIf="record.loginLocation !== '--'"
+                                            class="d-flex align-items-start gap-1 font-monospace extra-small lh-sm">
+                                            <i class="bi bi-geo-alt text-emerald mt-0.5"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark fw-medium">{{ record.loginLocation.split(',')[0] }}</span>
+                                                <span class="text-muted">{{ record.loginLocation.split(',')[1]?.trim() }}</span>
+                                            </div>
+                                        </div>
+                                        <span *ngIf="record.loginLocation === '--'"
+                                            class="text-muted font-monospace">--</span>
+                                    </td>
+
+                                    <!-- 5. Logout Time (Red Logout Icon) -->
+                                    <td class="small">
+                                        <span *ngIf="record.logoutTime !== '--:--'" class="text-dark fw-semibold">
+                                            <i class="bi bi-box-arrow-right text-danger me-1"></i>{{
+                                            record.logoutTime }}
+                                        </span>
+                                        <span *ngIf="record.logoutTime === '--:--'" class="text-muted">
+                                            --:--
+                                        </span>
+                                    </td>
+
+                                    <!-- 6. Location (Lat, Long) in 2 Lines (Red Icon) -->
+                                    <td class="small">
+                                        <div *ngIf="record.logoutLocation !== '--'"
+                                            class="d-flex align-items-start gap-1 font-monospace extra-small lh-sm">
+                                            <i class="bi bi-geo-alt text-danger mt-0.5"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark fw-medium">{{ record.logoutLocation.split(',')[0] }}</span>
+                                                <span class="text-muted">{{ record.logoutLocation.split(',')[1]?.trim() }}</span>
+                                            </div>
+                                        </div>
+                                        <span *ngIf="record.logoutLocation === '--'"
+                                            class="text-muted font-monospace">--</span>
+                                    </td>
+
+                                    <!-- 7. Hours Present (Format: 4h 38m) -->
+                                    <td class="small">
+                                        <span class="fw-bold" [class.text-emerald]="record.remarks === 'Present'"
+                                            [class.text-muted]="record.remarks !== 'Present'">
+                                            {{ record.hoursPresent }}
+                                        </span>
+                                    </td>
+
+                                    <!-- 8. Remarks (Present, Absent, Leave, Weekend, Holiday) -->
+                                    <td class="pe-3 pe-md-4 text-end">
+                                        <span class="badge rounded-pill px-2 py-1 extra-small" [ngClass]="{
+                        'bg-success-subtle text-success border border-success-subtle': record.remarks === 'Present',
+                        'bg-warning-subtle text-warning border border-warning-subtle': record.remarks === 'Leave',
+                        'bg-danger-subtle text-danger border border-danger-subtle': record.remarks === 'Absent',
+                        'bg-light text-secondary border': record.remarks === 'Weekend',
+                        'bg-info-subtle text-info border border-info-subtle': record.remarks === 'Holiday',
+                        'bg-light text-muted': record.remarks === '--'
+                      }">
+                                            {{ record.remarks }}
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Table Footer Summary -->
+                <div
+                    class="card-footer bg-light-subtle border-top py-2 px-3 px-md-4 d-flex align-items-center justify-content-between">
+                    <span class="extra-small text-muted">
+                        Showing {{ filteredRecords.length }} of {{ attendanceRecords.length }} entries
+                    </span>
+                    <span class="extra-small text-muted">
+                        General Shift: 09:00 AM &ndash; 06:00 PM (1h Lunch)
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ==================================================================
+         COL-3: CALENDAR & SHIFT SUMMARY WIDGET
+    =================================================================== -->
+        <div class="col-12 col-lg-3">
+
+            <!-- A. MONTHLY CALENDAR CARD -->
+            <section class="card border-0 shadow-sm rounded-4 mb-4 calendar-widget-card">
+                <div class="card-header bg-white border-bottom p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark small">
+                            <i class="bi bi-calendar3 text-emerald me-1"></i> October 2026
+                        </span>
+                        <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small">
+                            31 Days
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-3">
+
+                    <!-- Day Names Header -->
+                    <div class="calendar-grid-header text-center mb-2">
+                        <div class="cal-header-cell extra-small text-muted fw-bold" *ngFor="let dayName of weekDays">
+                            {{ dayName }}
+                        </div>
+                    </div>
+
+                    <!-- Calendar Days Grid -->
+                    <div class="calendar-grid">
+                        <div *ngFor="let calDay of calendarDays" class="cal-day-cell text-center"
+                            [class.cal-empty]="!calDay" [class.cal-today]="calDay?.isToday"
+                            [class.cal-selected]="calDay?.isSelected" [class.cal-present]="calDay?.status === 'present'"
+                            [class.cal-leave]="calDay?.status === 'leave'"
+                            [class.cal-weekend]="calDay?.status === 'weekend'"
+                            [class.cal-holiday]="calDay?.status === 'holiday'"
+                            [class.cal-future]="calDay?.status === 'future'" (click)="selectDay(calDay)"
+                            [title]="calDay ? calDay.dateStr + ' - ' + calDay.status : ''">
+
+                            <span *ngIf="calDay" class="cal-date-number">{{ calDay.day }}</span>
+                            <span *ngIf="calDay && calDay.status === 'present'" class="status-dot dot-present"></span>
+                            <span *ngIf="calDay && calDay.status === 'absent'" class="status-dot dot-absent"></span>
+                            <span *ngIf="calDay && calDay.status === 'leave'" class="status-dot dot-leave"></span>
+                            <span *ngIf="calDay && calDay.status === 'holiday'" class="status-dot dot-holiday"></span>
+
+                        </div>
+                    </div>
+
+                    <!-- Calendar Legend -->
+                    <div class="calendar-legend pt-3 mt-3 border-top d-flex flex-wrap gap-2 justify-content-between">
+                        <div class="d-flex align-items-center gap-1 extra-small text-muted">
+                            <span class="legend-dot bg-emerald"></span> Present
+                        </div>
+                        <div class="d-flex align-items-center gap-1 extra-small text-muted">
+                            <span class="legend-dot bg-danger"></span> Absent
+                        </div>
+                        <div class="d-flex align-items-center gap-1 extra-small text-muted">
+                            <span class="legend-dot bg-warning"></span> Leave
+                        </div>
+                        <div class="d-flex align-items-center gap-1 extra-small text-muted">
+                            <span class="legend-dot bg-info"></span> Holiday
+                        </div>
+                        <div class="d-flex align-items-center gap-1 extra-small text-muted">
+                            <span class="legend-dot bg-secondary-subtle"></span> Weekend
+                        </div>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <span class="extra-small text-secondary fst-italic">
+                            * Click any date to filter the log table
+                        </span>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- B. SHIFT TIMING & REGULARIZATION CARD -->
+            <section class="card border-0 shadow-sm rounded-4 shift-info-card">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="shift-icon-box bg-emerald-subtle text-emerald">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="h6 fw-bold text-dark mb-0 small">Shift Guidelines</h3>
+                            <span class="extra-small text-muted">IT Dept General Shift</span>
+                        </div>
+                    </div>
+
+                    <ul class="list-unstyled mb-3 d-flex flex-column gap-2 extra-small text-secondary">
+                        <li class="d-flex justify-content-between border-bottom pb-1">
+                            <span>Shift Timing:</span>
+                            <span class="fw-semibold text-dark">09:00 AM &ndash; 06:00 PM</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-1">
+                            <span>Grace Period:</span>
+                            <span class="fw-semibold text-dark">15 mins (up to 09:15)</span>
+                        </li>
+                        <li class="d-flex justify-content-between border-bottom pb-1">
+                            <span>Minimum Hours:</span>
+                            <span class="fw-semibold text-dark">8.5 hrs / day</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Lunch Break:</span>
+                            <span class="fw-semibold text-dark">01:00 PM &ndash; 02:00 PM</span>
+                        </li>
+                    </ul>
+
+                    <a routerLink="/employee/my-requests"
+                        class="btn btn-outline-emerald btn-sm w-100 rounded-3 text-decoration-none fw-semibold">
+                        <i class="bi bi-pencil-square me-1"></i> Request Regularization
+                    </a>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+
+</div>

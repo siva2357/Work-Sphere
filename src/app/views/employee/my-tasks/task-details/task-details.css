@@ -1,0 +1,192 @@
+/* ====================================================================
+   TASK DETAILS STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.border-emerald-subtle {
+  border-color: var(--emerald-border) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ====================================================================
+   1. BUTTONS & CONTROLS
+===================================================================== */
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover {
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ====================================================================
+   2. CARDS & WIDGETS
+===================================================================== */
+.hero-task-card,
+.section-card,
+.manager-card,
+.timeline-card,
+.effort-card {
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+}
+
+.manager-profile-avatar {
+  width: 68px;
+  height: 68px;
+}
+
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+}
+
+.comment-item {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.comment-item.manager-comment {
+  background-color: #f0fdf4;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.comment-message {
+  color: #1e293b !important;
+  font-size: 0.875rem !important;
+  line-height: 1.55;
+}
+
+.subtask-item {
+  padding: 12px 6px !important;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s ease;
+}
+
+.subtask-item:hover {
+  background-color: #f8fafc;
+}
+
+.subtask-checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  margin-right: 12px !important;
+}
+
+.subtask-checkbox:checked {
+  background-color: var(--emerald-primary);
+  border-color: var(--emerald-primary);
+}
+
+.subtask-checkbox:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.2);
+}
+
+.due-date-pill {
+  padding: 8px 16px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  min-width: 135px;
+}
+
+.deliverable-control {
+  height: 38px !important;
+  font-size: 0.8125rem !important;
+}
+
+input[type="file"].deliverable-control {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  line-height: 26px;
+}
+
+.hover-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: var(--emerald-border);
+}
+
+.upload-dropzone {
+  border: 2px dashed #cbd5e1 !important;
+  background-color: #f8fafc;
+  padding: 16px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--emerald-primary) !important;
+  background-color: #f0fdf4;
+}
+

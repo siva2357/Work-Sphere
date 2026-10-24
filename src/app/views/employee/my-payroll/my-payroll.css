@@ -1,0 +1,283 @@
+/* ====================================================================
+   MY PAYROLL STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ====================================================================
+   1. BUTTONS & CONTROLS
+===================================================================== */
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover:not(:disabled) {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover:not(:disabled) {
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+}
+
+.btn-xs {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.fy-select-dropdown {
+  width: auto;
+  min-width: 135px;
+  max-width: 155px;
+  border-color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.filter-dropdown {
+  width: auto !important;
+  min-width: 140px;
+  max-width: 170px;
+  border-color: #cbd5e1;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.search-box-wrapper {
+  min-width: 150px;
+  max-width: 220px;
+  flex-shrink: 0;
+}
+
+.search-box-wrapper input {
+  font-size: 0.8125rem;
+  border-color: #cbd5e1;
+}
+
+/* ====================================================================
+   2. TOP STAT CARDS (Clean Green Theme, 16px Value)
+===================================================================== */
+.payroll-stat-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+}
+
+.payroll-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+  border-color: var(--emerald-border) !important;
+}
+
+.stat-value {
+  font-size: 16px !important;
+  line-height: 1.25;
+}
+
+.stat-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ====================================================================
+   3. CURRENT MONTH SPOTLIGHT CARD & PDF CARDS
+===================================================================== */
+.current-month-spotlight-card {
+  border: 1px solid var(--emerald-border) !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.06) !important;
+}
+
+.doc-pdf-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  border-color: #e2e8f0 !important;
+}
+
+.doc-pdf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  border-color: var(--emerald-border) !important;
+}
+
+.pdf-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ====================================================================
+   4. MONTH-WISE DOCUMENT PDF CARDS
+===================================================================== */
+.monthly-docs-section {
+  border: 1px solid var(--card-border) !important;
+}
+
+.salary-slip-card,
+.month-record-card {
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0 !important;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+}
+
+.salary-slip-card:hover,
+.month-record-card:hover {
+  border-color: var(--emerald-border) !important;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.1) !important;
+  transform: translateY(-2px);
+}
+
+.month-calendar-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background-color: var(--emerald-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.doc-attachment-box {
+  transition: all 0.15s ease;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0 !important;
+  min-height: 125px;
+}
+
+.doc-attachment-box:hover {
+  background-color: #ffffff;
+  border-color: var(--emerald-primary) !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+  transform: translateY(-1px);
+}
+
+.doc-badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.btn-download-icon {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-download-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ====================================================================
+   5. INTERACTIVE PAYSLIP MODAL
+===================================================================== */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1055;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-dialog-custom {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

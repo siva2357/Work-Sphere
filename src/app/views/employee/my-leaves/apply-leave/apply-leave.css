@@ -1,0 +1,246 @@
+/* ====================================================================
+   APPLY LEAVE STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ====================================================================
+   1. BUTTONS & NAVIGATION
+===================================================================== */
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover:not(:disabled) {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-emerald:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.back-nav-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--card-border);
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.back-nav-btn:hover {
+  background-color: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  color: var(--emerald-dark);
+  transform: translateX(-2px);
+}
+
+.cal-nav-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  transition: all 0.15s ease;
+}
+
+.cal-nav-btn:hover {
+  background-color: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  color: var(--emerald-dark);
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ====================================================================
+   2. CARDS
+===================================================================== */
+.duration-calendar-card,
+.leave-details-form-card {
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+}
+
+/* ====================================================================
+   3. CALENDAR PICKER GRID (Work-Sphere Clean Styling)
+===================================================================== */
+.calendar-table-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.weekday-cell {
+  padding: 6px 0;
+  font-size: 0.78rem;
+}
+
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px 0;
+}
+
+.day-cell-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+/* Range background highlights */
+.day-cell-wrapper.range-member {
+  background-color: #ecfdf5;
+}
+
+.day-cell-wrapper.range-start {
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+}
+
+.day-cell-wrapper.range-end {
+  border-top-right-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+.day-number-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #1e293b;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.day-number-btn:hover:not(.selected-point) {
+  background-color: #f1f5f9;
+  color: var(--emerald-dark);
+}
+
+.day-number-btn.faded-month {
+  color: #94a3b8;
+  opacity: 0.5;
+}
+
+.day-number-btn.today-cell:not(.selected-point) {
+  border: 2px solid var(--emerald-primary);
+  font-weight: 700;
+  color: var(--emerald-primary);
+}
+
+.day-number-btn.weekend-cell:not(.selected-point) {
+  color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.day-number-btn.holiday-cell:not(.selected-point) {
+  color: #0284c7;
+  background-color: #f0f9ff;
+  font-weight: 600;
+}
+
+.day-number-btn.holiday-cell::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #0284c7;
+}
+
+.day-number-btn.selected-point {
+  background-color: var(--emerald-primary) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ====================================================================
+   4. FORM INPUTS & DETAILS
+===================================================================== */
+.category-select,
+.reason-textarea {
+  border-color: #cbd5e1;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.category-select:focus,
+.reason-textarea:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+}
+
+.quota-info-box {
+  min-height: 60px;
+}
+
+.btn-submit-request {
+  font-size: 0.95rem;
+}

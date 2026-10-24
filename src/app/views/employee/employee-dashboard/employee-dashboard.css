@@ -1,0 +1,327 @@
+/* ====================================================================
+   EMPLOYEE DASHBOARD STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Theme Color Utilities */
+:host {
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-light: #f0fdf4;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --slate-dark: #0f172a;
+  --slate-muted: #64748b;
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+/* ====================================================================
+   1. WELCOME BANNER
+===================================================================== */
+.welcome-banner {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  border: 1px solid var(--emerald-border) !important;
+}
+
+.avatar-ring {
+  padding: 3px;
+  background: linear-gradient(135deg, var(--emerald-primary), var(--emerald-dark));
+  border-radius: 50%;
+}
+
+.avatar-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  display: block;
+}
+
+.login-time-pill {
+  background-color: #ffffff;
+  border: 1px solid var(--emerald-border);
+}
+
+.status-indicator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 50rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.status-indicator-pill.clocked-in {
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  border-color: var(--emerald-border);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+}
+
+.clocked-in .pulse-dot {
+  background-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-emerald 1.8s infinite;
+}
+
+@keyframes pulse-emerald {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.btn-punch {
+  background: var(--emerald-primary);
+  color: #ffffff;
+  border: 1px solid var(--emerald-primary);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 8px 18px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-punch:hover {
+  background: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-punch-out {
+  background: #ffffff;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.btn-punch-out:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #f87171;
+}
+
+/* ====================================================================
+   2. STAT CARDS
+===================================================================== */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.08) !important;
+  border-color: var(--emerald-border) !important;
+}
+
+.stat-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover .stat-icon-wrapper {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* ====================================================================
+   3. PROGRESS BARS & WIDGETS
+===================================================================== */
+.widget-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.custom-progress {
+  background-color: #f1f5f9;
+  overflow: hidden;
+}
+
+.progress-bar-emerald {
+  background: linear-gradient(90deg, var(--emerald-primary) 0%, #34d399 100%);
+  border-radius: 50rem;
+  transition: width 0.6s ease;
+}
+
+.task-item-row {
+  cursor: pointer;
+  border-radius: 6px;
+  padding-left: 4px;
+  padding-right: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.task-item-row:hover {
+  background-color: #f8fafc;
+}
+
+/* ====================================================================
+   4. WEEKLY WORKING HOURS BAR BREAKDOWN
+===================================================================== */
+.weekly-day-box {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.weekly-day-box.day-active {
+  border-color: var(--emerald-primary);
+  background-color: var(--emerald-light);
+}
+
+.hours-bar-wrapper {
+  width: 20px;
+  height: 75px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-end;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.hours-bar-fill {
+  width: 100%;
+  border-radius: 8px;
+  transition: height 0.5s ease;
+}
+
+.bar-completed {
+  background: linear-gradient(180deg, var(--emerald-primary) 0%, var(--emerald-dark) 100%);
+}
+
+.bar-in-progress {
+  background: linear-gradient(180deg, #34d399 0%, var(--emerald-primary) 100%);
+}
+
+/* ====================================================================
+   5. QUICK ACTIONS CARD (Interactive Green Hover)
+===================================================================== */
+.quick-action-btn {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.action-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  transition: all 0.2s ease;
+}
+
+.action-chevron {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.quick-action-btn:hover {
+  background-color: var(--emerald-light);
+  border-color: var(--emerald-border);
+  transform: translateX(3px);
+}
+
+.quick-action-btn:hover .action-icon-circle {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+.quick-action-btn:hover .action-title {
+  color: var(--emerald-dark) !important;
+}
+
+.quick-action-btn:hover .action-chevron {
+  color: var(--emerald-primary);
+  transform: translateX(2px);
+}
+
+/* ====================================================================
+   6. ANNOUNCEMENTS & HOLIDAYS
+===================================================================== */
+.announcement-item {
+  transition: all 0.2s ease;
+}
+
+.announcement-item:hover {
+  background-color: #ffffff !important;
+  border-color: var(--emerald-border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.hover-bg-subtle {
+  transition: background-color 0.15s ease;
+}
+
+.hover-bg-subtle:hover {
+  background-color: #f8fafc;
+}
+
+/* Table Enhancements */
+.table th {
+  font-weight: 600;
+  border-top: none;
+}
+
+.table td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}

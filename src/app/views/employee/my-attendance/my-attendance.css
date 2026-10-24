@@ -1,0 +1,306 @@
+/* ====================================================================
+   MY ATTENDANCE STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host {
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ====================================================================
+   1. BUTTONS & HEADER
+===================================================================== */
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover {
+  background: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+}
+
+/* ====================================================================
+   2. STAT CARDS (Clean Green Theme, 16px Value)
+===================================================================== */
+.attendance-stat-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+}
+
+.attendance-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+  border-color: var(--emerald-border) !important;
+}
+
+.stat-value {
+  font-size: 16px !important;
+  line-height: 1.25;
+}
+
+.stat-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ====================================================================
+   3. TABLE STYLING
+===================================================================== */
+.attendance-table th {
+  font-weight: 600;
+  border-top: none;
+  background-color: #f8fafc;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.attendance-table td {
+  padding-top: 13px;
+  padding-bottom: 13px;
+  border-color: #f1f5f9;
+}
+
+.table-active-today {
+  background-color: #f0fdf4 !important;
+}
+
+.date-badge-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.date-badge-box.date-today {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+.month-select-dropdown {
+  width: auto;
+  min-width: 135px;
+  max-width: 155px;
+  border-color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.status-filter-select {
+  min-width: 135px;
+  border-color: #e2e8f0;
+}
+
+/* ====================================================================
+   4. CALENDAR WIDGET (COL-3)
+===================================================================== */
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-header-cell {
+  padding: 4px 0;
+  font-size: 0.7rem;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.cal-day-cell:hover:not(.cal-empty):not(.cal-future) {
+  background-color: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  transform: scale(1.06);
+  z-index: 2;
+}
+
+.cal-day-cell.cal-empty {
+  background: transparent;
+  cursor: default;
+}
+
+.cal-day-cell.cal-future {
+  background: transparent;
+  color: #cbd5e1;
+  cursor: default;
+}
+
+.cal-day-cell.cal-weekend {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}
+
+.cal-day-cell.cal-absent {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.cal-day-cell.cal-today {
+  border-color: var(--emerald-primary) !important;
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  font-weight: 800;
+}
+
+.cal-day-cell.cal-selected {
+  background-color: var(--emerald-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 1px;
+}
+
+.dot-present {
+  background-color: var(--emerald-primary);
+}
+
+.cal-selected .dot-present,
+.cal-selected .dot-leave,
+.cal-selected .dot-absent,
+.cal-selected .dot-holiday {
+  background-color: #ffffff;
+}
+
+.dot-absent {
+  background-color: #ef4444;
+}
+
+.dot-leave {
+  background-color: #f59e0b;
+}
+
+.dot-holiday {
+  background-color: #06b6d4;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ====================================================================
+   5. SHIFT GUIDELINES CARD
+===================================================================== */
+.shift-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .search-input-group {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .status-filter-select {
+    width: 100%;
+  }
+}

@@ -1,1 +1,135 @@
-<p>my-payroll works!</p>
+<div class="my-payroll-container container-fluid py-4 px-3 px-md-4">
+
+  <!-- ====================================================================
+       1. PAGE HEADER WITH FINANCIAL YEAR SELECTOR
+  ===================================================================== -->
+  <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="h5 fw-bold text-dark mb-0">My Payroll</h1>
+        <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 fw-semibold extra-small">
+          {{ selectedFY }}
+        </span>
+      </div>
+      <p class="text-muted extra-small mb-0 mt-1">
+        Please view and download your payslips.
+      </p>
+    </div>
+
+    <!-- Right Controls: Financial Year Filter Dropdown (Single row at right end) -->
+    <div class="d-flex align-items-center gap-2 flex-nowrap ms-auto ms-md-0">
+      <span class="extra-small text-muted fw-semibold text-nowrap">Financial Year:</span>
+      <select class="form-select form-select-sm fy-select-dropdown rounded-3"
+        [(ngModel)]="selectedFY" (change)="onFYChange()">
+        <option *ngFor="let fy of availableFYs" [value]="fy">{{ fy }}</option>
+      </select>
+    </div>
+  </header>
+
+
+  <!-- ====================================================================
+       2. DOWNLOAD SUCCESS NOTIFICATION TOAST/ALERT
+  ===================================================================== -->
+  <div *ngIf="downloadSuccessMessage"
+    class="alert alert-success mb-4 py-2.5 px-3.5 extra-small rounded-3 d-flex align-items-center justify-content-between shadow-sm">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-check-circle-fill text-success fs-6"></i>
+      <span><strong>{{ downloadSuccessMessage }}</strong> &mdash; Generated and ready for print or offline storage.</span>
+    </div>
+    <button type="button" class="btn-close btn-close-sm" (click)="downloadSuccessMessage = ''"></button>
+  </div>
+
+
+  <!-- ====================================================================
+       3. MONTH-WISE SALARY SLIP PDF CARDS (3 MONTHS PER ROW)
+  ===================================================================== -->
+  <section class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 monthly-docs-section">
+
+    <!-- Section Header & Single Row Search Filter -->
+    <div class="card-header bg-white border-bottom p-3 p-md-4">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+
+        <!-- Title & Subtitle -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="header-icon-box bg-emerald-subtle text-emerald flex-shrink-0">
+            <i class="bi bi-folder2-open"></i>
+          </div>
+          <div>
+            <h2 class="h6 fw-bold text-dark mb-0">Monthly Salary Slips</h2>
+            <span class="extra-small text-muted">Complete downloadable PDF salary slips for {{ selectedFY }}</span>
+          </div>
+        </div>
+
+        <!-- Filter Controls: Search by Month & Reset (Strict Single Row) -->
+        <div class="d-flex align-items-center gap-2 flex-nowrap ms-auto ms-md-0">
+          <div class="input-group input-group-sm search-box-wrapper">
+            <span class="input-group-text bg-white border-end-0 text-muted">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Search month..."
+              [(ngModel)]="searchTerm">
+          </div>
+
+          <button class="btn btn-sm btn-outline-secondary rounded-3 d-inline-flex align-items-center gap-1 px-2.5 py-1.5 text-nowrap"
+            *ngIf="searchTerm" (click)="searchTerm = ''" title="Clear search">
+            <i class="bi bi-x-circle"></i>
+            <span class="extra-small fw-semibold">Clear</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Monthly Cards Grid: EXACTLY 3 MONTHS PER ROW -->
+    <div class="card-body p-3 p-md-4">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+
+        <!-- Empty State -->
+        <div *ngIf="filteredRecords.length === 0" class="col-12 text-center py-5 text-muted">
+          <i class="bi bi-folder-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+          <p class="mb-1 fw-semibold">No salary slips found for {{ selectedFY }}</p>
+          <button class="btn btn-sm btn-outline-emerald mt-2 rounded-pill px-3"
+            (click)="searchTerm = ''; selectedFY = 'FY 2026-27'; onFYChange()">
+            Reset Filters
+          </button>
+        </div>
+
+        <!-- Individual Month Card (Single Clean Card, No Middle Line, PDF Icon with Clean Spacing) -->
+        <div *ngFor="let rec of filteredRecords" class="col">
+          <div class="card border rounded-4 p-3.5 p-md-4 h-100 salary-slip-card shadow-sm d-flex justify-content-center">
+
+            <div class="d-flex align-items-center justify-content-between gap-3">
+              <!-- Left: PDF Icon + Clean Space + Month Title & Disbursed Date -->
+              <div class="d-flex align-items-center gap-3 overflow-hidden">
+                <div class="doc-badge-icon bg-danger-subtle text-danger rounded-3 flex-shrink-0">
+                  <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <div class="d-flex align-items-center gap-2 mb-0.5">
+                    <h3 class="h6 fw-bold text-dark mb-0 text-truncate">{{ rec.month }}</h3>
+                    <span *ngIf="rec.month === 'October 2026'"
+                      class="badge bg-emerald-subtle text-emerald rounded-pill extra-small flex-shrink-0">Latest</span>
+                  </div>
+                  <span class="extra-small text-muted d-block text-truncate">
+                    Disbursed on {{ rec.payDate }} &middot; {{ rec.salarySlipPdf.fileSize }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Right: Download as Icon Button Only -->
+              <button type="button"
+                class="btn btn-emerald btn-download-icon rounded-circle d-flex align-items-center justify-content-center shadow-sm flex-shrink-0"
+                (click)="downloadSlip(rec, 'salary')" [disabled]="isDownloading" title="Download Salary Slip PDF">
+                <i class="bi bi-download"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+</div>

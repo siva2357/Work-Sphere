@@ -1,0 +1,248 @@
+/* ====================================================================
+   APPLY REQUEST STYLES (Work-Sphere Green & White Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+  --card-border: #e2e8f0;
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ====================================================================
+   1. BUTTONS & HEADER
+===================================================================== */
+.back-nav-btn {
+  width: 40px;
+  height: 40px;
+  background-color: #ffffff;
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease;
+}
+
+.back-nav-btn:hover {
+  background-color: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  transform: translateX(-2px);
+}
+
+.back-nav-btn i {
+  color: #334155;
+  transition: color 0.2s ease;
+}
+
+.back-nav-btn:hover i {
+  color: var(--emerald-primary);
+}
+
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover:not(:disabled) {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+.btn-emerald:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover {
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+}
+
+.header-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* ====================================================================
+   2. FORM CONTROLS & PRIORITY PILLS
+===================================================================== */
+.request-form-card,
+.applicant-card,
+.sla-card {
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.priority-pills-group {
+  display: flex;
+  background-color: #f8fafc;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.priority-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.priority-pill:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.priority-pill.active-low {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.priority-pill.active-medium {
+  background-color: #fef3c7;
+  border-color: #fcd34d;
+  color: #b45309;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.priority-pill.active-high {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.priority-pill.active-urgent {
+  background-color: #dc2626;
+  border-color: #b91c1c;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+.request-textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.attachment-drop-box {
+  background-color: #f8fafc;
+  border-color: #cbd5e1 !important;
+  border-style: dashed !important;
+  border-width: 2px !important;
+  transition: all 0.2s ease;
+}
+
+.attachment-drop-box:hover {
+  border-color: var(--emerald-primary) !important;
+  background-color: var(--emerald-subtle);
+}
+
+/* ====================================================================
+   3. SIDEBAR CARDS (Applicant Summary & SLAs)
+===================================================================== */
+.applicant-card,
+.sla-card {
+  padding: 1.5rem !important;
+  background-color: #ffffff;
+  border: 1px solid var(--card-border) !important;
+}
+
+.applicant-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  flex-shrink: 0;
+}
+
+.applicant-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  width: 100%;
+}
+
+.sla-item {
+  background-color: #f8fafc;
+  border-color: #e2e8f0 !important;
+  transition: all 0.2s ease;
+}
+
+.sla-item:hover {
+  background-color: #ffffff !important;
+  border-color: var(--emerald-primary) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+}
+
+.sla-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #059669;
+  background-color: #ecfdf5;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  white-space: nowrap;
+}
