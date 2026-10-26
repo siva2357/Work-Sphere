@@ -21,7 +21,7 @@ export interface AssignedProject {
 @Component({
   selector: 'app-my-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './my-projects.html',
   styleUrl: './my-projects.css',
 })
@@ -97,7 +97,7 @@ export class MyProjects implements OnInit {
     }
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // Filtered Projects Getter
   get filteredProjects(): AssignedProject[] {

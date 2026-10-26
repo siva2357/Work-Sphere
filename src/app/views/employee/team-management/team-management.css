@@ -1,1 +1,212 @@
-/* team-management styles */
+/* ====================================================================
+   TEAM MANAGEMENT STYLES (Work-Sphere SaaS Design System)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --card-border: #e2e8f0;
+}
+
+.font-outfit { font-family: 'Outfit', sans-serif !important; }
+.text-emerald { color: var(--emerald-primary) !important; }
+.bg-emerald { background-color: var(--emerald-primary) !important; }
+.bg-emerald-subtle { background-color: var(--emerald-subtle) !important; }
+.extra-small { font-size: 0.75rem; }
+.letter-spacing-1 { letter-spacing: 0.05em; }
+
+/* Status pulse dot */
+.status-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--emerald-primary);
+  display: inline-block;
+}
+
+/* Buttons */
+.btn-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1px solid #059669;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-emerald:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.3) !important;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.15s ease;
+}
+
+.btn-outline-emerald:hover {
+  background: var(--emerald-subtle);
+  color: var(--emerald-dark);
+}
+
+.header-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+/* Stat Cards */
+.team-stat-card {
+  border: 1px solid var(--card-border) !important;
+  background-color: #ffffff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.team-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.stat-value {
+  font-size: 1.25rem !important;
+  line-height: 1.2;
+}
+
+.stat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+/* Status Pill Tabs */
+.status-tabs-nav .tab-pill {
+  font-size: 0.775rem;
+  font-weight: 500;
+  color: #64748b;
+  border: none;
+  background: transparent;
+  padding: 4px 12px;
+  transition: all 0.15s ease;
+}
+
+.status-tabs-nav .tab-pill:hover {
+  color: #0f172a;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.status-tabs-nav .tab-pill.active {
+  background-color: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Filter Controls (Height 38px) */
+.search-group,
+.filter-select {
+  height: 38px;
+}
+
+.search-group .form-control {
+  font-size: 0.8125rem;
+  border-color: #cbd5e1;
+  height: 38px;
+}
+
+.search-group .input-group-text {
+  border-color: #cbd5e1;
+}
+
+.search-group .form-control:focus,
+.filter-select:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+}
+
+.filter-select {
+  font-size: 0.8125rem;
+  border-color: #cbd5e1;
+  font-weight: 500;
+  height: 38px;
+}
+
+/* Team Table */
+.team-card {
+  border: 1px solid var(--card-border) !important;
+  background: #ffffff;
+}
+
+.team-table thead th,
+.team-table th {
+  font-size: 13px !important;
+  font-weight: 600;
+  border-top: none;
+  background-color: #f8fafc;
+  padding: 12px 14px;
+  color: #475569;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.team-table td {
+  font-size: 14px;
+  padding: 12px 14px;
+  border-color: #f1f5f9;
+  vertical-align: middle;
+}
+
+.team-table .badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.member-row:hover {
+  background-color: #fcfdfd;
+}
+
+.member-name-btn {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  transition: color 0.15s ease;
+}
+
+.member-name-btn:hover {
+  color: var(--emerald-primary) !important;
+}
+
+.assignee-avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.empty-icon-box {
+  width: 64px;
+  height: 64px;
+}

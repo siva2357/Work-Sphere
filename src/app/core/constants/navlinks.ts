@@ -11,12 +11,14 @@ export const NAV_LINKS: NavLink[] = [
 
   // Employee Navigation Links
   { label: 'Dashboard', path: '/employee/dashboard', icon: 'bi bi-grid-1x2', roles: ['employee'] },
-  { label: 'Task Management', path: '/employee/task-management', icon: 'bi bi-check2-square', roles: ['employee'] },
-  { label: 'Project Management', path: '/employee/project-management', icon: 'bi bi-kanban-fill', roles: ['employee'] },
   { label: 'Team Management', path: '/employee/team-management', icon: 'bi bi-people', roles: ['employee'] },
   { label: 'Attendance Management', path: '/employee/attendance-management', icon: 'bi bi-clock-history', roles: ['employee'] },
   { label: 'Leave Management', path: '/employee/leave-management', icon: 'bi bi-calendar2-check', roles: ['employee'] },
+  { label: 'Task Management', path: '/employee/task-management', icon: 'bi bi-check2-square', roles: ['employee'] },
+  { label: 'Project Management', path: '/employee/project-management', icon: 'bi bi-kanban-fill', roles: ['employee'] },
   { label: 'Requests Management', path: '/employee/requests-management', icon: 'bi bi-inbox', roles: ['employee'] },
+
+
   { label: 'My Attendance', path: '/employee/my-attendance', icon: 'bi bi-clock-history', roles: ['employee'] },
   { label: 'My Tasks', path: '/employee/my-tasks', icon: 'bi bi-check2-square', roles: ['employee'] },
   { label: 'My Projects', path: '/employee/my-projects', icon: 'bi bi-kanban', roles: ['employee'] },

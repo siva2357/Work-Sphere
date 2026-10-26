@@ -1,0 +1,523 @@
+<div class="team-profile-page container-fluid py-4 px-3 px-md-4" *ngIf="member">
+
+  <!-- ====================================================================
+       1. PAGE HEADER & BREADCRUMB
+  ===================================================================== -->
+  <header class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <a routerLink="/employee/team-management"
+        class="btn btn-light rounded-circle shadow-sm p-2 d-flex align-items-center justify-content-center back-nav-btn"
+        title="Return to Team Management">
+        <i class="bi bi-arrow-left fs-5 text-dark"></i>
+      </a>
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h1 class="h4 fw-bold text-dark mb-0 font-outfit">Employee Dossier & Performance</h1>
+          <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 fw-semibold extra-small">
+            Individual Profile
+          </span>
+          <span class="badge bg-light text-secondary border font-monospace extra-small">
+            {{ member.id }}
+          </span>
+        </div>
+        <p class="text-muted extra-small mb-0 mt-1">
+          Detailed corporate dossier, verified attendance matrix, delivery velocity metrics, and full leave ledger.
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Member Switcher Dropdown -->
+    <div class="d-flex align-items-center gap-2 flex-nowrap ms-auto ms-md-0">
+      <span class="extra-small text-muted d-none d-sm-inline">Switch Member:</span>
+      <select class="form-select form-select-sm rounded-3 shadow-sm py-1.5 font-outfit"
+        [ngModel]="member.id"
+        (ngModelChange)="switchMember($event)">
+        <option *ngFor="let m of allMembers" [value]="m.id">
+          {{ m.name }} ({{ m.id }}) - {{ m.role }}
+        </option>
+      </select>
+    </div>
+  </header>
+
+
+  <!-- ====================================================================
+       2. HERO PROFILE COVER & IDENTITY CARD
+  ===================================================================== -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 profile-hero-card">
+    <!-- Gradient Cover Backdrop -->
+    <div class="profile-hero-backdrop py-4 px-3 px-md-4 text-white d-flex align-items-center justify-content-between">
+      <span class="badge bg-white text-dark rounded-pill px-3 py-1 font-monospace extra-small shadow-sm">
+        <i class="bi bi-building me-1"></i>{{ member.department }}
+      </span>
+      <span class="badge rounded-pill px-3 py-1 extra-small" [ngClass]="getStatusBadgeClass(member.status)">
+        {{ member.status }} Status
+      </span>
+    </div>
+
+    <!-- Avatar & Bio Card Body -->
+    <div class="card-body p-3.5 p-md-4 pt-0">
+      <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 hero-content-row">
+        <!-- Avatar & Basic Identity -->
+        <div class="d-flex align-items-center gap-3.5">
+          <div class="profile-avatar-large shadow" [style.background-color]="member.avatarColor">
+            {{ getInitials(member.name) }}
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h2 class="h5 fw-bold text-dark mb-0 font-outfit">{{ member.name }}</h2>
+              <span class="badge bg-light text-dark font-monospace extra-small border">{{ member.id }}</span>
+              <span class="badge bg-emerald-subtle text-emerald extra-small border border-emerald-subtle">{{ member.employmentType }}</span>
+            </div>
+            <p class="text-secondary small fw-medium mb-1 mt-0.5">{{ member.designation }}</p>
+            <div class="d-flex align-items-center gap-3 text-muted extra-small flex-wrap">
+              <span><i class="bi bi-geo-alt text-emerald me-1"></i>{{ member.location }}</span>
+              <span><i class="bi bi-calendar3 text-emerald me-1"></i>Joined {{ member.joinedDate }}</span>
+              <span><i class="bi bi-envelope text-emerald me-1"></i>{{ member.email }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Quick Action Contact Pill -->
+        <div class="d-flex align-items-center gap-2 ms-auto ms-md-0 mt-2 mt-md-0">
+          <a [href]="'mailto:' + member.email" class="btn btn-outline-emerald btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-2">
+            <i class="bi bi-envelope-fill"></i>
+            <span>Send Email</span>
+          </a>
+          <a [href]="'tel:' + member.phone" class="btn btn-light btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-2 border">
+            <i class="bi bi-telephone-fill text-emerald"></i>
+            <span>{{ member.phone }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       3. TOP 4 KEY PERFORMANCE METRICS ROW
+  ===================================================================== -->
+  <section class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+
+    <!-- Metric 1: Attendance Percentage -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 metric-stat-card h-100">
+        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+              Attendance Rating
+            </span>
+            <div class="stat-value text-dark fw-bold font-outfit" [class]="getAttendanceColor(member.attendancePercentage)">
+              {{ member.attendancePercentage }}%
+            </div>
+            <span class="extra-small text-muted mt-1 d-block font-monospace">
+              {{ member.presentDays }} of {{ member.totalWorkingDays }} days present
+            </span>
+          </div>
+          <div class="stat-icon-box bg-emerald-subtle text-emerald">
+            <i class="bi bi-calendar-check-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric 2: Task Completion Rate -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 metric-stat-card h-100">
+        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+              Task Velocity Rate
+            </span>
+            <div class="stat-value text-dark fw-bold font-outfit text-primary">
+              {{ member.taskCompletionRate }}%
+            </div>
+            <span class="extra-small text-muted mt-1 d-block font-monospace">
+              {{ member.completedTasks }} of {{ member.totalTasksAssigned }} tasks shipped
+            </span>
+          </div>
+          <div class="stat-icon-box bg-primary-subtle text-primary">
+            <i class="bi bi-check2-all"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric 3: Total Leaves Taken -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 metric-stat-card h-100">
+        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+              Leaves Taken / Remaining
+            </span>
+            <div class="stat-value text-dark fw-bold font-outfit text-warning-emphasis">
+              {{ member.totalLeavesTaken }}d <span class="text-muted fw-normal small">Taken</span>
+            </div>
+            <span class="extra-small text-muted mt-1 d-block font-monospace">
+              {{ member.remainingAnnualLeaves + member.remainingCasualLeaves }} days quota left
+            </span>
+          </div>
+          <div class="stat-icon-box bg-warning-subtle text-warning">
+            <i class="bi bi-cup-hot-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric 4: Active Projects -->
+    <div class="col">
+      <div class="card border-0 shadow-sm rounded-3 metric-stat-card h-100">
+        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
+              Active Project Tracks
+            </span>
+            <div class="stat-value text-dark fw-bold font-outfit">
+              {{ member.projects.length }} <span class="text-muted fw-normal small">Projects</span>
+            </div>
+            <span class="extra-small text-emerald mt-1 d-block">Core contributor</span>
+          </div>
+          <div class="stat-icon-box bg-info-subtle text-info">
+            <i class="bi bi-kanban-fill"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ====================================================================
+       4. INTERACTIVE PROFILE DOSSIER TABS
+  ===================================================================== -->
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 profile-tabs-card">
+
+    <!-- Tab Bar -->
+    <div class="card-header bg-white border-bottom p-2 p-md-3">
+      <ul class="nav nav-pills profile-nav-pills gap-1.5 flex-nowrap overflow-x-auto">
+        <li class="nav-item">
+          <button type="button" class="nav-link py-2 px-3.5 rounded-3 d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'overview'"
+            (click)="setActiveTab('overview')">
+            <i class="bi bi-person-badge"></i>
+            <span>Overview & Dossier</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link py-2 px-3.5 rounded-3 d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'attendance'"
+            (click)="setActiveTab('attendance')">
+            <i class="bi bi-calendar-check"></i>
+            <span>Attendance Performance ({{ member.attendancePercentage }}%)</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link py-2 px-3.5 rounded-3 d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'tasks'"
+            (click)="setActiveTab('tasks')">
+            <i class="bi bi-list-check"></i>
+            <span>Task Velocity ({{ member.taskCompletionRate }}%)</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link py-2 px-3.5 rounded-3 d-flex align-items-center gap-2"
+            [class.active]="activeTab === 'leaves'"
+            (click)="setActiveTab('leaves')">
+            <i class="bi bi-clock-history"></i>
+            <span>Leave History Ledger</span>
+            <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ member.leaveHistory.length }}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="card-body p-3 p-md-4">
+
+      <!-- ==============================================================
+           TAB 1: OVERVIEW & DOSSIER
+      =============================================================== -->
+      <div *ngIf="activeTab === 'overview'" class="tab-pane-content">
+        <div class="row g-4">
+
+          <!-- Left Column (8 cols): Bio, Skills, Assigned Projects -->
+          <div class="col-12 col-lg-8">
+            <!-- Bio & Summary -->
+            <div class="p-3.5 rounded-3 bg-light-subtle border mb-3.5">
+              <h3 class="h6 fw-bold text-dark mb-1.5 font-outfit">Professional Summary</h3>
+              <p class="text-muted extra-small mb-0 leading-relaxed">{{ member.bio }}</p>
+            </div>
+
+            <!-- Active Project Assignments -->
+            <div class="p-3.5 rounded-3 bg-white border mb-3.5">
+              <h3 class="h6 fw-bold text-dark mb-2.5 font-outfit">Active Strategic Projects</h3>
+              <div class="d-flex flex-column gap-2.5">
+                <div *ngFor="let p of member.projects" class="p-3 rounded-3 bg-light border d-flex flex-column gap-2">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <strong class="text-dark small d-block font-outfit">{{ p.title }}</strong>
+                      <span class="badge bg-white text-secondary border font-monospace extra-small">{{ p.code }}</span>
+                      <span class="text-muted extra-small ms-2">Role: <strong>{{ p.role }}</strong></span>
+                    </div>
+                    <span class="badge bg-emerald-subtle text-emerald font-monospace extra-small">{{ p.progressPercent }}% Complete</span>
+                  </div>
+                  <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-emerald" role="progressbar" [style.width.%]="p.progressPercent"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Core Technical Skills -->
+            <div class="p-3.5 rounded-3 bg-white border">
+              <h3 class="h6 fw-bold text-dark mb-2 font-outfit">Verified Technical Stack & Skills</h3>
+              <div class="d-flex align-items-center gap-1.5 flex-wrap">
+                <span *ngFor="let s of member.skills" class="badge bg-light text-dark border py-1.5 px-2.5 rounded-pill extra-small font-monospace">
+                  <i class="bi bi-patch-check-fill text-emerald me-1"></i>{{ s }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column (4 cols): Corporate Details & Emergency Contact -->
+          <div class="col-12 col-lg-4">
+            <!-- Corporate Dossier -->
+            <div class="p-3.5 rounded-3 bg-light border mb-3.5">
+              <h3 class="h6 fw-bold text-dark mb-2 font-outfit">Corporate Roster Details</h3>
+              <ul class="list-unstyled extra-small mb-0 divide-y divide-slate-200">
+                <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Employee ID:</span>
+                  <strong class="text-dark font-monospace">{{ member.id }}</strong>
+                </li>
+                <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Department:</span>
+                  <strong class="text-dark">{{ member.department }}</strong>
+                </li>
+                <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Joined Date:</span>
+                  <strong class="text-dark">{{ member.joinedDate }}</strong>
+                </li>
+                <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                  <span class="text-muted">Employment:</span>
+                  <strong class="text-dark">{{ member.employmentType }}</strong>
+                </li>
+                <li class="d-flex align-items-center justify-content-between py-2">
+                  <span class="text-muted">Work Location:</span>
+                  <strong class="text-dark">{{ member.location }}</strong>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Emergency Contact Card -->
+            <div class="p-3.5 rounded-3 bg-white border">
+              <h3 class="h6 fw-bold text-dark mb-2 font-outfit">Emergency Contact</h3>
+              <div class="d-flex align-items-center gap-2 mb-1.5">
+                <i class="bi bi-telephone-outbound-fill text-emerald fs-5"></i>
+                <div>
+                  <strong class="text-dark small d-block">{{ member.emergencyContact.name }}</strong>
+                  <span class="text-muted extra-small">{{ member.emergencyContact.relationship }}</span>
+                </div>
+              </div>
+              <span class="text-muted extra-small font-monospace d-block">
+                {{ member.emergencyContact.phone }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- ==============================================================
+           TAB 2: ATTENDANCE PERFORMANCE MATRIX
+      =============================================================== -->
+      <div *ngIf="activeTab === 'attendance'" class="tab-pane-content">
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4 text-center bg-light border h-100 d-flex flex-column align-items-center justify-content-center">
+              <span class="text-muted extra-small text-uppercase fw-bold letter-spacing-1 mb-2">Verified Attendance</span>
+              <div class="display-5 fw-bold font-outfit text-emerald mb-1">
+                {{ member.attendancePercentage }}%
+              </div>
+              <span class="badge bg-emerald-subtle text-emerald border border-emerald-subtle rounded-pill px-3 py-1 extra-small">
+                Exemplary Attendance
+              </span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-8">
+            <div class="p-3.5 rounded-4 bg-white border h-100">
+              <h3 class="h6 fw-bold text-dark mb-3 font-outfit">Current Monthly Shift Metrics</h3>
+              <div class="row row-cols-2 row-cols-sm-4 g-2.5 text-center">
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-light border">
+                    <span class="text-muted extra-small d-block mb-1">Working Days</span>
+                    <strong class="fs-5 text-dark font-monospace">{{ member.totalWorkingDays }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-emerald-subtle border border-emerald-subtle">
+                    <span class="text-emerald extra-small d-block mb-1">Present Days</span>
+                    <strong class="fs-5 text-emerald font-monospace">{{ member.presentDays }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-warning-subtle border border-warning-subtle">
+                    <span class="text-warning-emphasis extra-small d-block mb-1">Late Marks</span>
+                    <strong class="fs-5 text-warning-emphasis font-monospace">{{ member.lateDays }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-light border">
+                    <span class="text-muted extra-small d-block mb-1">Absences</span>
+                    <strong class="fs-5 text-dark font-monospace">{{ member.absentDays }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-muted extra-small d-flex align-items-center gap-1.5">
+                <i class="bi bi-clock-history text-emerald"></i>
+                <span>Standard enterprise shift window: <strong>09:00 AM – 06:00 PM PST</strong>. Punches auto-reconciled.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==============================================================
+           TAB 3: TASK VELOCITY & DELIVERY
+      =============================================================== -->
+      <div *ngIf="activeTab === 'tasks'" class="tab-pane-content">
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4 text-center bg-light border h-100 d-flex flex-column align-items-center justify-content-center">
+              <span class="text-muted extra-small text-uppercase fw-bold letter-spacing-1 mb-2">Sprint Task Velocity</span>
+              <div class="display-5 fw-bold font-outfit text-primary mb-1">
+                {{ member.taskCompletionRate }}%
+              </div>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 extra-small">
+                High Velocity Deliverer
+              </span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-8">
+            <div class="p-3.5 rounded-4 bg-white border h-100">
+              <h3 class="h6 fw-bold text-dark mb-3 font-outfit">Task Breakdown & Milestone Progress</h3>
+              <div class="row row-cols-2 row-cols-sm-4 g-2.5 text-center">
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-light border">
+                    <span class="text-muted extra-small d-block mb-1">Total Assigned</span>
+                    <strong class="fs-5 text-dark font-monospace">{{ member.totalTasksAssigned }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-emerald-subtle border border-emerald-subtle">
+                    <span class="text-emerald extra-small d-block mb-1">Delivered</span>
+                    <strong class="fs-5 text-emerald font-monospace">{{ member.completedTasks }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-info-subtle border border-info-subtle">
+                    <span class="text-info-emphasis extra-small d-block mb-1">In Flight</span>
+                    <strong class="fs-5 text-primary font-monospace">{{ member.pendingTasks }}</strong>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="p-2.5 rounded-3 bg-light border">
+                    <span class="text-muted extra-small d-block mb-1">Overdue</span>
+                    <strong class="fs-5 text-dark font-monospace">{{ member.overdueTasks }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-3 text-muted extra-small d-flex align-items-center gap-1.5">
+                <i class="bi bi-shield-check text-emerald"></i>
+                <span>All code reviews and PR signoffs pass standard CI/CD regression gates with &gt;80% unit test coverage.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ==============================================================
+           TAB 4: LEAVE HISTORY LEDGER
+      =============================================================== -->
+      <div *ngIf="activeTab === 'leaves'" class="tab-pane-content">
+        <!-- Leave Quota Summary Cards -->
+        <div class="row row-cols-1 row-cols-sm-3 g-3 mb-4">
+          <div class="col">
+            <div class="p-3 rounded-3 bg-light border text-center">
+              <span class="text-muted extra-small d-block mb-1">Remaining Casual Leaves</span>
+              <strong class="fs-5 text-dark font-monospace">{{ member.remainingCasualLeaves }} Days</strong>
+            </div>
+          </div>
+          <div class="col">
+            <div class="p-3 rounded-3 bg-light border text-center">
+              <span class="text-muted extra-small d-block mb-1">Remaining Sick Leaves</span>
+              <strong class="fs-5 text-dark font-monospace">{{ member.remainingSickLeaves }} Days</strong>
+            </div>
+          </div>
+          <div class="col">
+            <div class="p-3 rounded-3 bg-light border text-center">
+              <span class="text-muted extra-small d-block mb-1">Remaining Annual Vacation</span>
+              <strong class="fs-5 text-dark font-monospace">{{ member.remainingAnnualLeaves }} Days</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Past Leaves Log Table -->
+        <div class="card border-0 shadow-none rounded-3 border overflow-hidden">
+          <div class="card-header bg-white border-bottom py-2.5 px-3 d-flex align-items-center justify-content-between">
+            <h3 class="h6 fw-bold text-dark mb-0 font-outfit">Leave Application History</h3>
+            <span class="extra-small text-muted">{{ member.leaveHistory.length }} recorded leaves</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 extra-small">
+              <thead class="table-light text-muted text-uppercase letter-spacing-1">
+                <tr>
+                  <th class="ps-3" style="width: 100px;">Leave ID</th>
+                  <th style="min-width: 140px;">Leave Type</th>
+                  <th style="min-width: 180px;">Date Range</th>
+                  <th style="width: 80px;">Days</th>
+                  <th style="min-width: 200px;">Reason</th>
+                  <th style="width: 110px;">Status</th>
+                  <th class="pe-3 text-end" style="width: 110px;">Applied Date</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr *ngFor="let rec of member.leaveHistory">
+                  <td class="ps-3 font-monospace fw-semibold">{{ rec.id }}</td>
+                  <td>
+                    <span class="badge bg-light text-dark border font-monospace">{{ rec.type }}</span>
+                  </td>
+                  <td>{{ rec.startDate }} &rarr; {{ rec.endDate }}</td>
+                  <td class="font-monospace fw-bold">{{ rec.days }}d</td>
+                  <td class="text-muted">{{ rec.reason }}</td>
+                  <td>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                      {{ rec.status }}
+                    </span>
+                  </td>
+                  <td class="pe-3 text-end text-muted font-monospace">{{ rec.appliedOn }}</td>
+                </tr>
+
+                <tr *ngIf="member.leaveHistory.length === 0">
+                  <td colspan="7" class="text-center py-4 text-muted">
+                    No past leave applications recorded on this employee's ledger.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

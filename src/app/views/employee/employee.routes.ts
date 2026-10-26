@@ -19,14 +19,24 @@ import { ApplyRequest } from './my-requests/apply-request/apply-request';
 import { MyTasks } from './my-tasks/my-tasks';
 import { TaskDetails } from './my-tasks/task-details/task-details';
 import { MyProjects } from './my-projects/my-projects';
+import { CreateTask } from './task-management/create-task/create-task';
+import { CreateProject } from './project-management/create-project/create-project';
+import { TeamProfile } from './team-management/team-profile/team-profile';
+import { AddNewEmployee } from './team-management/add-new-employee/add-new-employee';
+import { AttendanceSheet } from './attendance-management/attendance-sheet/attendance-sheet';
 
 export const EMPLOYEE_ROUTES: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: EmployeeDashboard },
   { path: 'task-management', component: TaskManagement },
+  { path: 'create-task', component: CreateTask },
   { path: 'project-management', component: ProjectManagement },
+  { path: 'create-project', component: CreateProject },
   { path: 'team-management', component: TeamManagement },
+  { path: 'team-profile', component: TeamProfile },
+  { path: 'add-new-employee', component: AddNewEmployee },
   { path: 'attendance-management', component: AttendanceManagement },
+  { path: 'attendance-sheet', component: AttendanceSheet },
   { path: 'leave-management', component: LeaveManagement },
   { path: 'requests-management', component: RequestManagement },
   { path: 'my-profile', component: MyProfile },

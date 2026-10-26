@@ -1,0 +1,169 @@
+/* ====================================================================
+   ADD MEMBER TO TEAM (CORPORATE DIRECTORY ALLOCATION) STYLES
+   Work-Sphere SaaS Design System - Emerald Palette
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --emerald-glow: rgba(16, 185, 129, 0.18);
+  --card-border: #e2e8f0;
+}
+
+.font-outfit { font-family: 'Outfit', sans-serif !important; }
+.text-emerald { color: var(--emerald-primary) !important; }
+.bg-emerald { background-color: var(--emerald-primary) !important; }
+.bg-emerald-subtle { background-color: var(--emerald-subtle) !important; }
+.border-emerald-subtle { border-color: var(--emerald-border) !important; }
+.extra-small { font-size: 0.75rem; }
+.letter-spacing-1 { letter-spacing: 0.05em; }
+.cursor-pointer { cursor: pointer; }
+
+/* Pulse animation */
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--emerald-primary);
+  display: inline-block;
+  animation: pulse-ring 1.8s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Nav & Buttons */
+.back-nav-btn {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease;
+}
+.back-nav-btn:hover {
+  background: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  color: var(--emerald-dark) !important;
+  transform: translateX(-2px);
+}
+
+.btn-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1px solid #059669;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+.btn-emerald:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Section Cards & Step Badges */
+.form-section-card {
+  border: 1px solid var(--card-border) !important;
+  background: #fff;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04) !important;
+}
+
+.section-step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--emerald-border);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Directory Table & Avatars */
+.emp-avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.emp-avatar-lg {
+  width: 48px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.directory-table thead th {
+  font-size: 0.72rem;
+  padding: 11px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--card-border);
+}
+.directory-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.directory-row {
+  transition: all 0.15s ease;
+}
+.directory-row:hover {
+  background-color: #f8fafc !important;
+}
+.directory-row.selected-row {
+  background-color: #f0fdf4 !important;
+  box-shadow: inset 3px 0 0 0 var(--emerald-primary);
+}
+
+.directory-row.in-team-row {
+  background-color: #fbfdfc;
+}
+
+.select-checkbox {
+  cursor: pointer;
+  accent-color: var(--emerald-primary);
+}
+
+/* Controls & Inputs */
+.search-input-group .form-control,
+.filter-select {
+  font-size: 0.8125rem;
+  border-color: #cbd5e1;
+}
+.search-input-group .form-control:focus,
+.filter-select:focus,
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0.22rem var(--emerald-glow);
+}
+
+.btn-group .btn-outline-secondary.active {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #fff;
+  font-weight: 600;
+}
+
+.empty-icon-box {
+  width: 60px;
+  height: 60px;
+}

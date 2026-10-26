@@ -1,0 +1,239 @@
+/* ====================================================================
+   CREATE TASK / TICKET COMPONENT STYLES (Work-Sphere SaaS Theme)
+===================================================================== */
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-border: rgba(16, 185, 129, 0.25);
+  --emerald-glow: rgba(16, 185, 129, 0.18);
+  --card-border: #e2e8f0;
+}
+
+.font-outfit { font-family: 'Outfit', sans-serif !important; }
+.text-emerald { color: var(--emerald-primary) !important; }
+.bg-emerald { background-color: var(--emerald-primary) !important; }
+.bg-emerald-subtle { background-color: var(--emerald-subtle) !important; }
+.extra-small { font-size: 0.75rem; }
+.letter-spacing-1 { letter-spacing: 0.05em; }
+
+/* Pulse animation */
+.pulse-dot, .preview-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--emerald-primary);
+  display: inline-block;
+  animation: pulse-ring 1.8s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Header & Nav */
+.back-nav-btn {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease;
+}
+.back-nav-btn:hover {
+  background: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  color: var(--emerald-dark) !important;
+  transform: translateX(-2px);
+}
+
+.btn-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1px solid #059669;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+.btn-emerald:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35) !important;
+}
+
+.btn-outline-emerald {
+  color: var(--emerald-primary);
+  border: 1px solid var(--emerald-primary);
+  background: transparent;
+  transition: all 0.15s ease;
+}
+.btn-outline-emerald:hover {
+  background: var(--emerald-subtle);
+  color: var(--emerald-dark);
+}
+
+/* Section Cards & Step Badges */
+.form-section-card, .preview-card, .action-card {
+  border: 1px solid var(--card-border) !important;
+  background: #fff;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04) !important;
+}
+
+.section-step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--emerald-subtle);
+  color: var(--emerald-dark);
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--emerald-border);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Ticket Type Selector */
+.type-picker-btn {
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.15s ease;
+}
+.type-picker-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+.type-picker-btn.active-type {
+  background: #f0fdf4;
+  border-color: var(--emerald-primary);
+  box-shadow: 0 4px 14px var(--emerald-glow);
+  transform: translateY(-2px);
+}
+
+.type-badge-task { background: #ecfdf5 !important; color: #059669 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
+.type-badge-bug { background: #fef2f2 !important; color: #dc2626 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; }
+.type-badge-feature { background: #eef2ff !important; color: #4f46e5 !important; border: 1px solid rgba(99, 102, 241, 0.3) !important; }
+.type-badge-improvement { background: #fffbeb !important; color: #d97706 !important; border: 1px solid rgba(245, 158, 11, 0.3) !important; }
+.type-badge-support { background: #f0fdfa !important; color: #0d9488 !important; border: 1px solid rgba(20, 184, 166, 0.3) !important; }
+
+/* Inputs */
+.form-control, .form-select {
+  font-size: 0.875rem;
+  border-color: #cbd5e1;
+  transition: all 0.15s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: 0 0 0 0.22rem var(--emerald-glow);
+}
+.title-input { font-weight: 500; font-size: 0.95rem; }
+.task-desc-textarea { min-height: 120px; resize: vertical; line-height: 1.55; }
+.btn-close-xs { width: 0.5em; height: 0.5em; font-size: 0.65rem; }
+
+.quick-tag-btn:hover { background: #e2e8f0; color: #0f172a !important; }
+.quick-tag-btn.active-quick-tag {
+  background: var(--emerald-subtle);
+  border-color: var(--emerald-primary) !important;
+  color: var(--emerald-dark) !important;
+  font-weight: 600;
+}
+
+/* Assignee */
+.quick-assignee-scroll { scrollbar-width: thin; }
+.member-pill-btn { background: #fff; border-color: #e2e8f0; transition: all 0.15s ease; }
+.member-pill-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+.member-pill-btn.active-member {
+  background: var(--emerald-subtle);
+  border-color: var(--emerald-primary);
+  box-shadow: 0 2px 8px var(--emerald-glow);
+}
+
+.assignee-mini-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.assignee-avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+.assignee-spotlight-box { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; }
+
+/* Priority */
+.priority-card-btn { background: #fff; border: 1.5px solid #e2e8f0; transition: all 0.15s ease; }
+.priority-card-btn:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-2px); }
+.priority-card-btn.active-urgent { background: #fef2f2; border-color: #f87171; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); transform: translateY(-2px); }
+.priority-card-btn.active-high { background: #fffbeb; border-color: #fbbf24; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); transform: translateY(-2px); }
+.priority-card-btn.active-medium { background: #eff6ff; border-color: #60a5fa; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); transform: translateY(-2px); }
+.priority-card-btn.active-low { background: #f8fafc; border-color: #94a3b8; box-shadow: 0 4px 12px rgba(148, 163, 184, 0.2); transform: translateY(-2px); }
+
+.priority-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-urgent { background: #dc2626; }
+.dot-high { background: #d97706; }
+.dot-medium { background: #2563eb; }
+.dot-low { background: #64748b; }
+
+/* Subtasks & Checklist */
+.subtask-row { transition: all 0.15s ease; }
+.subtask-row:hover { background: #f8fafc !important; border-color: #cbd5e1 !important; transform: translateX(2px); }
+.subtask-index-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.subtask-delete-btn { opacity: 0.6; transition: opacity 0.15s ease; }
+.subtask-delete-btn:hover { opacity: 1; }
+
+/* Dropzone */
+.dropzone-box { background: #f8fafc; border: 2px dashed #cbd5e1; transition: all 0.15s ease; }
+.dropzone-box:hover { border-color: var(--emerald-primary); background: #f0fdf4; }
+.dropzone-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--emerald-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sidebar & Preview */
+.sticky-preview-wrapper { position: sticky; top: 1.5rem; z-index: 10; }
+.preview-title { font-size: 1.05rem; line-height: 1.4; word-break: break-word; }
+.preview-description-box { max-height: 90px; overflow: hidden; }
+.text-truncate-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.btn-submit-task { font-size: 0.95rem; }
+
+@media (max-width: 991.98px) {
+  .sticky-preview-wrapper { position: static; }
+}
