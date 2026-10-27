@@ -1,0 +1,167 @@
+/* ====================================================================
+   RECRUITMENT & ATS MANAGEMENT STYLES
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host {
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-light: #f0fdf4;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Page Header */
+.page-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  border: 1px solid var(--emerald-border) !important;
+}
+
+.header-icon-box {
+  width: 52px;
+  height: 52px;
+}
+
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border-color: var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-outline-emerald {
+  border-color: var(--emerald-primary);
+  color: var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+/* Stat Cards */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.06) !important;
+}
+
+.stat-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+/* Pills & Search */
+.custom-pills .nav-link {
+  color: #64748b;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.custom-pills .nav-link.active {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.search-input-group .form-control:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: none;
+}
+
+/* Job Cards */
+.job-card {
+  transition: all 0.2s ease;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.09) !important;
+  border-color: var(--emerald-border) !important;
+}
+
+/* Kanban Board */
+.kanban-column {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 260px;
+  border: 1px solid #e2e8f0;
+}
+
+.column-stage-pill {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.candidate-kanban-card {
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.candidate-kanban-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06) !important;
+  border-color: var(--emerald-border) !important;
+}
+
+.widget-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}

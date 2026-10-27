@@ -35,7 +35,7 @@ export class ProfileAvatar implements OnInit {
   }
 
   get profileLink(): string {
-    return this.router.url.startsWith('/employee') ? '/employee/my-profile' : '/hr/dashboard';
+    return this.router.url.startsWith('/employee') ? '/employee/my-profile' : '/hr/my-profile';
   }
 
   logout(): void {

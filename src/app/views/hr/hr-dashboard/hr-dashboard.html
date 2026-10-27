@@ -1,1 +1,382 @@
-<p>hr-dashboard works!</p>
+<div class="hr-dashboard container-fluid py-4 px-3 px-md-4">
+
+  <!-- ====================================================================
+       1. WELCOME & OVERVIEW BANNER
+  ===================================================================== -->
+  <section class="welcome-banner card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+    <div class="card-body p-3 p-md-4">
+      <div class="row align-items-center g-3">
+        <!-- HR Admin Info -->
+        <div class="col-12 col-md-7 col-lg-8">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-ring flex-shrink-0">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+                alt="{{ adminName }}" class="avatar-img rounded-circle object-fit-cover shadow-sm">
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <h1 class="h4 mb-0 fw-bold text-dark">HR Management Center</h1>
+                <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-semibold">
+                  Admin Portal
+                </span>
+              </div>
+              <p class="text-muted small mb-0">
+                Welcome back, <strong class="text-dark">{{ adminName }}</strong> ({{ adminRole }}) &nbsp;·&nbsp;
+                <i class="bi bi-calendar3 me-1 text-emerald"></i>
+                {{ currentDateTime | date:'EEEE, MMMM d, y' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Status Pill -->
+        <div class="col-12 col-md-5 col-lg-4 text-md-end">
+          <div class="d-inline-flex align-items-center gap-2 p-2 px-3 rounded-pill system-pill shadow-sm bg-white">
+            <span class="pulse-dot"></span>
+            <span class="small fw-semibold text-dark">
+              Work-Sphere Core: <span class="text-emerald">Active</span>
+            </span>
+            <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2 py-1">
+              99.9% Uptime
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       2. TOP 4 KEY STAT CARDS
+  ===================================================================== -->
+  <section class="stat-cards-row row g-3 g-md-4 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let card of statCards">
+      <div class="card h-100 border-0 shadow-sm rounded-4 stat-card" [routerLink]="card.route">
+        <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">
+              {{ card.title }}
+            </span>
+            <div class="stat-icon-wrapper">
+              <i class="bi {{ card.icon }}"></i>
+            </div>
+          </div>
+
+          <div>
+            <div class="h3 fw-bold text-dark mb-1">{{ card.value }}</div>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+              <span class="text-muted extra-small">{{ card.subtitle }}</span>
+              <span class="badge rounded-pill extra-small"
+                [ngClass]="{
+                  'bg-success-subtle text-success': card.badgeType === 'success',
+                  'bg-emerald-subtle text-emerald': card.badgeType === 'emerald',
+                  'bg-warning-subtle text-warning': card.badgeType === 'warning',
+                  'bg-info-subtle text-info': card.badgeType === 'info'
+                }">
+                {{ card.badgeText }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       3. MAIN SECTION: (LEFT: 8 COLS, RIGHT: 4 COLS)
+  ===================================================================== -->
+  <div class="row g-3 g-md-4">
+
+    <!-- ==================================================================
+         LEFT COLUMN (Department Distribution, Attendance & Recruitment, Recent Activity)
+    =================================================================== -->
+    <div class="col-12 col-lg-8">
+
+      <!-- A. ATTENDANCE & RECRUITMENT SPLIT ROW -->
+      <div class="row g-3 g-md-4 mb-4">
+
+        <!-- Today's Attendance Overview -->
+        <div class="col-12 col-md-6">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="widget-icon-box bg-emerald-subtle text-emerald">
+                  <i class="bi bi-pie-chart-fill"></i>
+                </div>
+                <div>
+                  <h2 class="h6 mb-0 fw-bold text-dark">Today's Attendance</h2>
+                  <span class="extra-small text-muted">Real-time workplace presence</span>
+                </div>
+              </div>
+              <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-semibold">
+                94.2% Rate
+              </span>
+            </div>
+
+            <div class="card-body p-3 p-md-4">
+              <!-- Multi-segmented Progress Bar -->
+              <div class="progress rounded-pill custom-multi-progress mb-3" style="height: 12px;">
+                <div class="progress-bar bg-emerald" [style.width.%]="attendanceBreakdown.presentPct" title="Present"></div>
+                <div class="progress-bar bg-info" [style.width.%]="attendanceBreakdown.remotePct" title="Remote"></div>
+                <div class="progress-bar bg-warning" [style.width.%]="attendanceBreakdown.onLeavePct" title="On Leave"></div>
+                <div class="progress-bar bg-danger" [style.width.%]="attendanceBreakdown.latePct" title="Late"></div>
+              </div>
+
+              <!-- Legend / Stats Grid -->
+              <div class="row g-2 pt-2">
+                <div class="col-6">
+                  <div class="p-2 rounded-3 bg-light-subtle border d-flex align-items-center gap-2">
+                    <span class="indicator-dot bg-emerald"></span>
+                    <div>
+                      <span class="extra-small text-muted d-block">Present In-Office</span>
+                      <strong class="small text-dark">{{ attendanceBreakdown.present }}</strong>
+                      <span class="extra-small text-muted"> ({{ attendanceBreakdown.presentPct }}%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 rounded-3 bg-light-subtle border d-flex align-items-center gap-2">
+                    <span class="indicator-dot bg-info"></span>
+                    <div>
+                      <span class="extra-small text-muted d-block">Working Remote</span>
+                      <strong class="small text-dark">{{ attendanceBreakdown.remote }}</strong>
+                      <span class="extra-small text-muted"> ({{ attendanceBreakdown.remotePct }}%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 rounded-3 bg-light-subtle border d-flex align-items-center gap-2">
+                    <span class="indicator-dot bg-warning"></span>
+                    <div>
+                      <span class="extra-small text-muted d-block">Approved Leave</span>
+                      <strong class="small text-dark">{{ attendanceBreakdown.onLeave }}</strong>
+                      <span class="extra-small text-muted"> ({{ attendanceBreakdown.onLeavePct }}%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 rounded-3 bg-light-subtle border d-flex align-items-center gap-2">
+                    <span class="indicator-dot bg-danger"></span>
+                    <div>
+                      <span class="extra-small text-muted d-block">Late / Partial</span>
+                      <strong class="small text-dark">{{ attendanceBreakdown.late }}</strong>
+                      <span class="extra-small text-muted"> ({{ attendanceBreakdown.latePct }}%)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recruitment Pipeline Snapshot -->
+        <div class="col-12 col-md-6">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div class="widget-icon-box bg-emerald-subtle text-emerald">
+                  <i class="bi bi-funnel-fill"></i>
+                </div>
+                <div>
+                  <h2 class="h6 mb-0 fw-bold text-dark">Hiring Funnel</h2>
+                  <span class="extra-small text-muted">Active candidate pipeline</span>
+                </div>
+              </div>
+              <a routerLink="/hr/recruitment-management" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0 extra-small">
+                Open Pipeline <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
+              <div class="d-flex flex-column gap-2.5">
+                <div *ngFor="let stage of recruitmentStages" class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-chevron-right extra-small text-muted"></i>
+                    <span class="small fw-semibold text-dark">{{ stage.stage }}</span>
+                  </div>
+                  <span class="badge rounded-pill bg-light text-dark border extra-small px-2.5 py-1 fw-bold">
+                    {{ stage.count }} candidates
+                  </span>
+                </div>
+              </div>
+
+              <div class="pt-3 border-top border-light-subtle d-flex align-items-center justify-content-between extra-small text-muted">
+                <span>8 Active Positions</span>
+                <span class="text-emerald fw-semibold">Avg. 18 days to hire</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- B. DEPARTMENT HEADCOUNT DISTRIBUTION -->
+      <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="widget-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-diagram-3-fill"></i>
+            </div>
+            <div>
+              <h2 class="h6 mb-0 fw-bold text-dark">Department Distribution</h2>
+              <span class="extra-small text-muted">Total 248 full-time personnel across departments</span>
+            </div>
+          </div>
+          <a routerLink="/hr/employee-directory" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0 extra-small">
+            View Directory <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+          <div class="row g-3">
+            <div class="col-12 col-md-6" *ngFor="let dept of departmentBreakdown">
+              <div class="p-2.5 rounded-3 border bg-light-subtle">
+                <div class="d-flex justify-content-between align-items-baseline mb-1.5">
+                  <span class="small fw-semibold text-dark">{{ dept.name }}</span>
+                  <span class="extra-small text-muted fw-bold">{{ dept.count }} staff ({{ dept.percentage }}%)</span>
+                </div>
+                <div class="progress rounded-pill" style="height: 8px;">
+                  <div class="progress-bar" [ngClass]="dept.colorClass" [style.width.%]="dept.percentage"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- C. RECENT HR AUDIT & ACTIVITY FEED -->
+      <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="widget-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-activity"></i>
+            </div>
+            <div>
+              <h2 class="h6 mb-0 fw-bold text-dark">Recent HR Activity & Logs</h2>
+              <span class="extra-small text-muted">Latest actions across people operations</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+          <div class="timeline-wrapper d-flex flex-column gap-3">
+            <div *ngFor="let item of recentActivities" class="d-flex align-items-start gap-3 p-2.5 rounded-3 hover-bg-subtle border border-transparent">
+              <div class="activity-icon-box rounded-3 p-2 d-flex align-items-center justify-content-center"
+                [ngClass]="item.badgeClass">
+                <i class="bi {{ item.icon }} fs-6"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between mb-0.5">
+                  <h3 class="h6 mb-0 small fw-bold text-dark">{{ item.title }}</h3>
+                  <span class="extra-small text-muted">{{ item.time }}</span>
+                </div>
+                <p class="text-muted extra-small mb-0">{{ item.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+
+    <!-- ==================================================================
+         RIGHT COLUMN (Quick HR Actions, Celebrations, Payroll Alert)
+    =================================================================== -->
+    <div class="col-12 col-lg-4">
+
+      <!-- 1. QUICK ACTIONS CARD -->
+      <section class="card border-0 shadow-sm rounded-4 mb-4 quick-actions-card">
+        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="widget-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <div>
+              <h2 class="h6 mb-0 fw-bold text-dark">HR Quick Actions</h2>
+              <span class="extra-small text-muted">Frequent administrator shortcuts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex flex-column gap-2">
+            <a *ngFor="let action of quickActions" [routerLink]="action.route"
+              class="quick-action-btn text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="action-icon-circle">
+                  <i class="bi {{ action.icon }}"></i>
+                </div>
+                <div>
+                  <span class="d-block fw-semibold text-dark small action-title">{{ action.title }}</span>
+                  <span class="d-block text-muted extra-small">{{ action.desc }}</span>
+                </div>
+              </div>
+              <i class="bi bi-chevron-right action-chevron"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. PAYROLL STATUS CALLOUT CARD -->
+      <section class="card border-0 shadow-sm rounded-4 mb-4 payroll-callout-card overflow-hidden">
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-emerald text-white rounded-pill extra-small px-2.5 py-1">Pay Cycle</span>
+            <span class="extra-small text-muted">Disburses Oct 31</span>
+          </div>
+          <h3 class="h6 fw-bold text-dark mb-1">October 2026 Payroll</h3>
+          <p class="extra-small text-muted mb-3">
+            248 salaries compiled. Total estimated: <strong>$318,450</strong>. Ready for final review.
+          </p>
+          <div class="progress rounded-pill mb-3" style="height: 6px;">
+            <div class="progress-bar bg-emerald" style="width: 92%;"></div>
+          </div>
+          <a routerLink="/hr/payroll-management" class="btn btn-emerald w-100 btn-sm rounded-3 fw-semibold">
+            <i class="bi bi-cash-stack me-1.5"></i> Review & Process Payroll
+          </a>
+        </div>
+      </section>
+
+      <!-- 3. CELEBRATIONS & WORK ANNIVERSARIES -->
+      <section class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="widget-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-stars"></i>
+            </div>
+            <div>
+              <h2 class="h6 mb-0 fw-bold text-dark">Milestones & Birthdays</h2>
+              <span class="extra-small text-muted">Team members celebrating this week</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex flex-column gap-3">
+            <div *ngFor="let item of celebrations" class="d-flex align-items-center justify-content-between p-2 rounded-3 border bg-light-subtle">
+              <div class="d-flex align-items-center gap-2.5">
+                <img [src]="item.avatar" alt="{{ item.name }}" class="rounded-circle object-fit-cover shadow-xs" width="38" height="38">
+                <div>
+                  <span class="d-block fw-semibold text-dark small">{{ item.name }}</span>
+                  <span class="extra-small text-muted">{{ item.role }} · {{ item.department }}</span>
+                </div>
+              </div>
+              <div class="text-end">
+                <span class="badge rounded-pill extra-small px-2 py-1"
+                  [ngClass]="item.type === 'birthday' ? 'bg-warning-subtle text-warning' : 'bg-emerald-subtle text-emerald'">
+                  {{ item.event }}
+                </span>
+                <span class="d-block extra-small text-muted mt-0.5">{{ item.date }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+</div>

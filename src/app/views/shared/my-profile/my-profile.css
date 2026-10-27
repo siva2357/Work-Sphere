@@ -1,0 +1,142 @@
+/* ====================================================================
+   SHARED MY-PROFILE STYLES (Work-Sphere Emerald Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host {
+  --emerald-primary: #10b981;
+  --emerald-dark: #059669;
+  --emerald-subtle: #ecfdf5;
+  --emerald-light: #f0fdf4;
+  --emerald-border: rgba(16, 185, 129, 0.2);
+}
+
+.text-emerald {
+  color: var(--emerald-primary) !important;
+}
+
+.bg-emerald {
+  background-color: var(--emerald-primary) !important;
+}
+
+.bg-emerald-subtle {
+  background-color: var(--emerald-subtle) !important;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.05em;
+}
+
+/* Hero Cover Card */
+.profile-hero-card {
+  border: 1px solid var(--emerald-border) !important;
+}
+
+.hero-cover-banner {
+  height: 120px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #6ee7b7 100%);
+  position: relative;
+}
+
+.avatar-ring-large {
+  margin-top: -55px;
+  padding: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.avatar-img-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: block;
+}
+
+.status-indicator-dot {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-emerald {
+  background-color: var(--emerald-primary);
+  border-color: var(--emerald-primary);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover {
+  background-color: var(--emerald-dark);
+  border-color: var(--emerald-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-outline-emerald {
+  border-color: var(--emerald-primary);
+  color: var(--emerald-primary);
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-emerald:hover {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+}
+
+/* Stat Cards */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #f1f5f9 !important;
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.06) !important;
+}
+
+.stat-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--emerald-subtle);
+  color: var(--emerald-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+/* Tabs */
+.custom-pills .nav-link {
+  color: #64748b;
+  border: none;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.custom-pills .nav-link.active {
+  background-color: var(--emerald-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+}
+
+.payroll-quick-card {
+  background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+  border: 1px solid var(--emerald-border) !important;
+}
+
+.form-control:focus {
+  border-color: var(--emerald-primary);
+  box-shadow: none;
+}

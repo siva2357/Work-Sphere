@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { EmployeeDashboard } from './employee-dashboard/employee-dashboard';
-import { MyProfile } from './my-profile/my-profile';
+
 import { MyAttendance } from './my-attendance/my-attendance';
 import { MyLeaves } from './my-leaves/my-leaves';
 import { MyDocuments } from './my-documents/my-documents';
@@ -24,6 +24,7 @@ import { CreateProject } from './project-management/create-project/create-projec
 import { TeamProfile } from './team-management/team-profile/team-profile';
 import { AddNewEmployee } from './team-management/add-new-employee/add-new-employee';
 import { AttendanceSheet } from './attendance-management/attendance-sheet/attendance-sheet';
+import { MyProfile } from '../shared/my-profile/my-profile';
 
 export const EMPLOYEE_ROUTES: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
