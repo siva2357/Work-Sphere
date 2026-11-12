@@ -2,18 +2,11 @@ import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AttendanceService } from '../../../../core/services/attendance.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { BiometricPunchLog } from '../../../../core/models/attendance.interface';
 
-export interface BiometricPunchLog {
-  id: string;
-  type: 'PUNCH_IN' | 'PUNCH_OUT';
-  time: string;
-  date: string;
-  confidence: number;
-  location: string;
-  coordinates: string;
-  verificationMethod: 'Face Recognition' | 'Biometric AI';
-  status: 'Verified' | 'Pending';
-}
+export type { BiometricPunchLog } from '../../../../core/models/attendance.interface';
 
 @Component({
   selector: 'app-mark-attendance',
@@ -25,7 +18,11 @@ export interface BiometricPunchLog {
 export class MarkAttendance implements OnInit, OnDestroy {
   @ViewChild('videoPlayer') videoPlayer?: ElementRef<HTMLVideoElement>;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private attendanceService: AttendanceService,
+    private authService: AuthService
+  ) {}
 
   // Clock & Timer
   currentDateTime = new Date();
@@ -44,64 +41,80 @@ export class MarkAttendance implements OnInit, OnDestroy {
   private scanInterval: any;
 
   // Attendance Status
-  isClockedIn: boolean = true;
+  isClockedIn: boolean = false;
   lastPunchType: 'PUNCH_IN' | 'PUNCH_OUT' = 'PUNCH_IN';
-  clockInTime: string = '09:15 AM';
-  elapsedDuration: string = '4h 38m';
+  clockInTime: string = '--';
+  elapsedDuration: string = '--';
 
-  // Employee Profile
-  employeeName = 'Siva Prasad';
-  employeeId = 'EMP-1042';
-  department = 'IT Department';
+  // Employee Profile (loaded from authenticated user)
+  employeeName = '';
+  employeeId = '';
+  department = '';
   avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
 
   // Location & Geofence
   workMode: 'office' | 'wfh' = 'office';
-  officeLocationName = 'Hyderabad Tech Hub &middot; Floor 4';
+  officeLocationName = 'Corporate Tech Hub &middot; Floor 4';
   coordinates = '17.4482, 78.3742';
   isWithinGeofence = true;
   geofenceAccuracy = 'Accurate to 3m';
 
-  // Recent Biometric Punch Logs
-  todayPunches: BiometricPunchLog[] = [
-    {
-      id: 'PCH-901',
-      type: 'PUNCH_IN',
-      time: '09:15 AM',
-      date: '24 Oct 2026',
-      confidence: 99.4,
-      location: 'Hyderabad Tech Hub (Floor 4)',
-      coordinates: '17.4482, 78.3742',
-      verificationMethod: 'Face Recognition',
-      status: 'Verified',
-    },
-    {
-      id: 'PCH-902',
-      type: 'PUNCH_OUT',
-      time: '01:05 PM',
-      date: '24 Oct 2026',
-      confidence: 98.8,
-      location: 'Hyderabad Tech Hub (Cafeteria)',
-      coordinates: '17.4482, 78.3742',
-      verificationMethod: 'Face Recognition',
-      status: 'Verified',
-    },
-    {
-      id: 'PCH-903',
-      type: 'PUNCH_IN',
-      time: '01:55 PM',
-      date: '24 Oct 2026',
-      confidence: 99.1,
-      location: 'Hyderabad Tech Hub (Floor 4)',
-      coordinates: '17.4482, 78.3742',
-      verificationMethod: 'Face Recognition',
-      status: 'Verified',
-    },
-  ];
+  // Real-time Biometric Punch Logs from Backend Database
+  todayPunches: BiometricPunchLog[] = [];
 
   ngOnInit(): void {
+    const user = this.authService.currentUser;
+    if (user) {
+      this.employeeName = user.fullName;
+      this.employeeId = user.employeeCode;
+      this.department = user.departmentName || 'Engineering';
+    }
     this.startClock();
     this.initCamera();
+    this.loadTodayAttendance();
+  }
+
+  private loadTodayAttendance(): void {
+    this.attendanceService.fetchMyAttendance$().subscribe({
+      next: (logs) => {
+        const list = logs || [];
+        if (list.length > 0) {
+          const latest = list[0];
+          this.isClockedIn = !!latest.punchIn && (!latest.punchOut || latest.punchOut === '--');
+          this.clockInTime = latest.punchIn || '--';
+          this.elapsedDuration = latest.workHours || '--';
+          const punches: BiometricPunchLog[] = [];
+          if (latest.punchIn && latest.punchIn !== '--') {
+            punches.push({
+              id: `PCH-IN-${latest.id?.substring(0, 4) || '101'}`,
+              type: 'PUNCH_IN',
+              time: latest.punchIn,
+              date: latest.date,
+              confidence: 99.4,
+              location: latest.workLocation || 'Corporate Tech Hub',
+              coordinates: this.coordinates,
+              verificationMethod: 'Face Recognition',
+              status: 'Verified'
+            });
+          }
+          if (latest.punchOut && latest.punchOut !== '--') {
+            punches.unshift({
+              id: `PCH-OUT-${latest.id?.substring(0, 4) || '102'}`,
+              type: 'PUNCH_OUT',
+              time: latest.punchOut,
+              date: latest.date,
+              confidence: 99.1,
+              location: latest.workLocation || 'Corporate Tech Hub',
+              coordinates: this.coordinates,
+              verificationMethod: 'Face Recognition',
+              status: 'Verified'
+            });
+          }
+          this.todayPunches = punches;
+        }
+      },
+      error: () => {}
+    });
   }
 
   ngOnDestroy(): void {
@@ -213,7 +226,13 @@ export class MarkAttendance implements OnInit, OnDestroy {
 
   private recordVerifiedPunch(punchType: 'PUNCH_IN' | 'PUNCH_OUT'): void {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const dateStr = '24 Oct 2026';
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const locationStr = this.workMode === 'office' ? 'Corporate Tech Hub (Floor 4)' : 'Remote (WFH)';
+
+    this.attendanceService.markAttendance$(punchType === 'PUNCH_IN' ? 'PunchIn' : 'PunchOut', locationStr).subscribe({
+      next: () => {},
+      error: () => {}
+    });
 
     const newPunch: BiometricPunchLog = {
       id: `PCH-${Math.floor(100 + Math.random() * 900)}`,
@@ -221,7 +240,7 @@ export class MarkAttendance implements OnInit, OnDestroy {
       time: timeStr,
       date: dateStr,
       confidence: this.confidenceScore,
-      location: this.workMode === 'office' ? 'Hyderabad Tech Hub (Floor 4)' : 'Remote (WFH)',
+      location: locationStr,
       coordinates: this.coordinates,
       verificationMethod: 'Face Recognition',
       status: 'Verified',

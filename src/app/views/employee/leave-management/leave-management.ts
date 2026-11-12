@@ -33,7 +33,10 @@ export class LeaveManagement implements OnInit {
   constructor(private leaveService: LeaveService) {}
 
   ngOnInit(): void {
-    this.loadProposals();
+    this.leaveService.proposals$.subscribe((list) => {
+      this.proposals = list || [];
+    });
+    this.leaveService.refreshProposals();
   }
 
   loadProposals(): void {

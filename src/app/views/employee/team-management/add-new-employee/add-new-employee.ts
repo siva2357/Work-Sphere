@@ -3,21 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TeamService } from '../../../../core/services/team.service';
+import { CompanyDirectoryService } from '../../../../core/services/company-directory.service';
+import { DropdownService } from '../../../../core/services/dropdown.service';
+import { ProjectService } from '../../../../core/services/project.service';
+import { DirectoryEmployeeOption } from '../../../../core/models/task-project-team.interface';
 
-export interface DirectoryEmployeeOption {
-  id: string;
-  name: string;
-  currentDepartment: string;
-  defaultRole: string;
-  designation: string;
-  email: string;
-  phone: string;
-  location: string;
-  avatarColor: string;
-  experience: string;
-  availability: 'Available' | 'Partial Bandwidth' | 'Allocated';
-  skills: string[];
-}
+export type { DirectoryEmployeeOption } from '../../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-add-new-employee',
@@ -27,177 +18,8 @@ export interface DirectoryEmployeeOption {
   styleUrl: './add-new-employee.css',
 })
 export class AddNewEmployee implements OnInit {
-  // Comprehensive Corporate Employee Directory Pool
-  readonly directoryPool: DirectoryEmployeeOption[] = [
-    {
-      id: 'EMP-0172',
-      name: 'Maya Lin',
-      currentDepartment: 'Core Web Platform',
-      defaultRole: 'Senior Angular Engineer',
-      designation: 'Senior Software Engineer II',
-      email: 'maya.lin@worksphere.io',
-      phone: '+1 (555) 349-8120',
-      location: 'San Francisco, CA (HQ)',
-      avatarColor: '#10b981',
-      experience: '5+ Years',
-      availability: 'Available',
-      skills: ['Angular 17', 'TypeScript', 'RxJS', 'NgRx', 'SCSS'],
-    },
-    {
-      id: 'EMP-0173',
-      name: 'Carlos Rivera',
-      currentDepartment: 'Product Design',
-      defaultRole: 'Senior Product Designer',
-      designation: 'Staff UX/UI Designer',
-      email: 'carlos.rivera@worksphere.io',
-      phone: '+1 (555) 492-9011',
-      location: 'New York, NY',
-      avatarColor: '#8b5cf6',
-      experience: '6 Years',
-      availability: 'Available',
-      skills: ['Figma', 'Design Tokens', 'User Research', 'Prototyping'],
-    },
-    {
-      id: 'EMP-0174',
-      name: 'Elena Rostova',
-      currentDepartment: 'IT & Technology Platform',
-      defaultRole: 'DevOps & SRE Specialist',
-      designation: 'Lead Reliability Engineer',
-      email: 'elena.rostova@worksphere.io',
-      phone: '+1 (555) 812-7744',
-      location: 'Seattle, WA',
-      avatarColor: '#0ea5e9',
-      experience: '7 Years',
-      availability: 'Available',
-      skills: ['Kubernetes', 'Docker', 'AWS EKS', 'Terraform', 'CI/CD'],
-    },
-    {
-      id: 'EMP-0175',
-      name: 'Samuel Kim',
-      currentDepartment: 'Platform Services',
-      defaultRole: 'Full Stack Java Engineer',
-      designation: 'Senior Backend Engineer',
-      email: 'samuel.kim@worksphere.io',
-      phone: '+1 (555) 901-3829',
-      location: 'Austin, TX',
-      avatarColor: '#f59e0b',
-      experience: '4+ Years',
-      availability: 'Available',
-      skills: ['Java 21', 'Spring Boot', 'PostgreSQL', 'Microservices', 'GraphQL'],
-    },
-    {
-      id: 'EMP-0176',
-      name: 'Aisha Bello',
-      currentDepartment: 'Quality Assurance',
-      defaultRole: 'Lead Automation QA Engineer',
-      designation: 'Principal Quality Architect',
-      email: 'aisha.bello@worksphere.io',
-      phone: '+1 (555) 441-2918',
-      location: 'San Francisco, CA (HQ)',
-      avatarColor: '#ec4899',
-      experience: '6+ Years',
-      availability: 'Available',
-      skills: ['Playwright', 'Cypress', 'Jest', 'CI/CD Regression', 'Jira'],
-    },
-    {
-      id: 'EMP-0177',
-      name: 'Kevin Zhao',
-      currentDepartment: 'Mobile Engineering',
-      defaultRole: 'Cross-Platform Mobile Developer',
-      designation: 'Senior Flutter Specialist',
-      email: 'kevin.zhao@worksphere.io',
-      phone: '+1 (555) 723-9912',
-      location: 'Chicago, IL',
-      avatarColor: '#6366f1',
-      experience: '4 Years',
-      availability: 'Available',
-      skills: ['Flutter', 'Dart', 'iOS Native', 'Offline SQLite', 'State Mgmt'],
-    },
-    {
-      id: 'EMP-0178',
-      name: 'Arjun Mehta',
-      currentDepartment: 'IT & Technology Platform',
-      defaultRole: 'AI & Machine Learning Engineer',
-      designation: 'Staff AI Specialist',
-      email: 'arjun.mehta@worksphere.io',
-      phone: '+1 (555) 839-2041',
-      location: 'Boston, MA',
-      avatarColor: '#14b8a6',
-      experience: '5 Years',
-      availability: 'Available',
-      skills: ['Python 3.12', 'PyTorch', 'FastAPI', 'LLM Fine-tuning', 'Vector DBs'],
-    },
-    {
-      id: 'EMP-0179',
-      name: 'Sarah O\'Connor',
-      currentDepartment: 'Cybersecurity & IAM',
-      defaultRole: 'Cloud Security Analyst',
-      designation: 'Senior IAM Specialist',
-      email: 'sarah.oconnor@worksphere.io',
-      phone: '+1 (555) 619-3382',
-      location: 'Denver, CO',
-      avatarColor: '#f43f5e',
-      experience: '5+ Years',
-      availability: 'Available',
-      skills: ['OAuth2/SAML', 'Zero-Trust', 'AWS KMS', 'Vault', 'SOC2'],
-    },
-    {
-      id: 'EMP-0180',
-      name: 'Daniel Vasquez',
-      currentDepartment: 'Data Platform',
-      defaultRole: 'Database Reliability Engineer',
-      designation: 'Principal DB Admin',
-      email: 'daniel.vasquez@worksphere.io',
-      phone: '+1 (555) 302-8819',
-      location: 'Atlanta, GA',
-      avatarColor: '#10b981',
-      experience: '8 Years',
-      availability: 'Partial Bandwidth',
-      skills: ['PostgreSQL', 'Redis', 'Kafka', 'CDC Pipelines', 'High Availability'],
-    },
-    {
-      id: 'EMP-0181',
-      name: 'Zoe Chen',
-      currentDepartment: 'Core Web Platform',
-      defaultRole: 'Frontend UI/UX Developer',
-      designation: 'Software Engineer II',
-      email: 'zoe.chen@worksphere.io',
-      phone: '+1 (555) 771-4920',
-      location: 'Los Angeles, CA',
-      avatarColor: '#8b5cf6',
-      experience: '3 Years',
-      availability: 'Available',
-      skills: ['Angular', 'TypeScript', 'CSS3 Animations', 'Bootstrap 5', 'Figma'],
-    },
-    {
-      id: 'EMP-0182',
-      name: 'Michael Thorne',
-      currentDepartment: 'IT & Technology Platform',
-      defaultRole: 'Microservices Go Engineer',
-      designation: 'Senior Backend Developer',
-      email: 'michael.thorne@worksphere.io',
-      phone: '+1 (555) 489-1172',
-      location: 'San Francisco, CA (HQ)',
-      avatarColor: '#0ea5e9',
-      experience: '5 Years',
-      availability: 'Available',
-      skills: ['Golang', 'gRPC', 'Docker', 'Kubernetes', 'Distributed Tracing'],
-    },
-    {
-      id: 'EMP-0183',
-      name: 'Fatima Al-Mansoor',
-      currentDepartment: 'Quality Assurance',
-      defaultRole: 'Performance & Load Test Specialist',
-      designation: 'Senior QA Analyst',
-      email: 'fatima.almansoor@worksphere.io',
-      phone: '+1 (555) 923-4418',
-      location: 'Austin, TX',
-      avatarColor: '#f59e0b',
-      experience: '4+ Years',
-      availability: 'Available',
-      skills: ['k6', 'JMeter', 'Chaos Engineering', 'Grafana', 'REST API Testing'],
-    },
-  ];
+  // Real-time Corporate Employee Directory Pool from Backend Database
+  directoryPool: DirectoryEmployeeOption[] = [];
 
   // Directory Search & Filters
   directorySearchQuery: string = '';
@@ -219,8 +41,21 @@ export class AddNewEmployee implements OnInit {
   allocationPercentage: number = 100;
 
   // Selected Employee(s)
-  selectedEmployee: DirectoryEmployeeOption = this.directoryPool[0];
-  selectedEmployeeIds: Set<string> = new Set<string>([this.directoryPool[0].id]);
+  selectedEmployee: DirectoryEmployeeOption = {
+    id: '',
+    name: 'Select Employee',
+    currentDepartment: '',
+    defaultRole: '',
+    designation: '',
+    email: '',
+    phone: '',
+    location: '',
+    avatarColor: '#4f46e5',
+    experience: '3+ Years',
+    availability: 'Available',
+    skills: []
+  };
+  selectedEmployeeIds: Set<string> = new Set<string>();
 
   // Pod to Default Team ID Mapping
   readonly podTeamIds: Record<string, string> = {
@@ -307,23 +142,9 @@ export class AddNewEmployee implements OnInit {
     ],
   };
 
-  readonly reportingLeadsList: string[] = [
-    'Priya Patel (EMP-0135) - Lead Architect',
-    'David Chen (EMP-0112) - Infrastructure Lead',
-    'Alex Rivera (EMP-0128) - Lead UI/UX',
-    'Rohan Sharma (EMP-0142) - Platform Services Lead',
-    'Neha Sharma (EMP-0150) - QA Automation Lead',
-    'Sarah Jenkins (EMP-0104) - IT Engineering Director',
-  ];
+  reportingLeadsList: string[] = [];
 
-  readonly projectsList: string[] = [
-    'WorkSphere Enterprise Core v2.4',
-    'Cloud Infrastructure & Kubernetes',
-    'Employee Self-Service Mobile Application',
-    'Payroll Automation Engine',
-    'AI Candidate Screening Suite',
-    'Zero-Trust Security Gateway',
-  ];
+  projectsList: string[] = [];
 
   departments: string[] = [];
 
@@ -337,11 +158,58 @@ export class AddNewEmployee implements OnInit {
 
   constructor(
     private teamService: TeamService,
+    private directoryService: CompanyDirectoryService,
+    private dropdownService: DropdownService,
+    private projectService: ProjectService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.departments = this.teamService.availableDepartments;
+    this.dropdownService.dropdowns$.subscribe((dropdowns) => {
+      if (dropdowns.departments?.length) {
+        this.departments = dropdowns.departments.map((d) => d.name);
+        if (!this.targetDepartment && this.departments.length > 0) {
+          this.targetDepartment = this.departments[0];
+        }
+      }
+    });
+    this.projectService.projects$.subscribe((projects) => {
+      this.projectsList = (projects || []).map((p) => p.title);
+      if (this.projectsList.length > 0 && !this.assignedProjects) {
+        this.assignedProjects = this.projectsList[0];
+      }
+    });
+    this.directoryService.employees$.subscribe((list) => {
+      const colors = ['#10b981', '#8b5cf6', '#0ea5e9', '#f59e0b', '#ec4899', '#6366f1'];
+      this.directoryPool = (list || []).map((emp, idx) => ({
+        id: emp.employeeCode || emp.id,
+        name: emp.name || 'Employee',
+        currentDepartment: emp.department || 'Engineering',
+        defaultRole: emp.role || 'Engineer',
+        designation: emp.role || 'Engineer',
+        email: emp.email,
+        phone: emp.phone || '+91 98765 00000',
+        location: emp.location || 'Corporate HQ',
+        avatarColor: colors[idx % colors.length],
+        experience: '4+ Years',
+        availability: 'Available',
+        skills: ['TypeScript', 'Angular', 'Enterprise Architecture']
+      }));
+      this.reportingLeadsList = this.directoryPool.map(
+        (e) => `${e.name} (${e.id}) - ${e.designation}`
+      );
+      if (this.reportingLeadsList.length > 0) {
+        this.teamLeadAssigned = this.reportingLeadsList[0];
+      }
+      if (this.directoryPool.length > 0 && !this.selectedEmployee.id) {
+        this.selectedEmployee = this.directoryPool[0];
+        this.selectedEmployeeIds = new Set<string>([this.directoryPool[0].id]);
+      }
+    });
+    this.directoryService.refreshDirectory();
+    this.teamService.members$.subscribe((existing) => {
+      this.currentTeamMemberIds = new Set((existing || []).map((m) => m.id));
+    });
     this.refreshCurrentTeamMembers();
     this.updateTeamId();
   }

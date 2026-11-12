@@ -135,10 +135,7 @@
         <div class="col-12 col-sm-6 col-md-3 col-lg-3">
           <select class="form-select custom-select" [(ngModel)]="selectedDepartment">
             <option value="All">All Departments</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Product & Design">Product & Design</option>
-            <option value="Sales">Sales</option>
-            <option value="Human Resources">Human Resources</option>
+            <option *ngFor="let dept of departmentsList" [value]="dept.name">{{ dept.name }} ({{ dept.code }})</option>
           </select>
         </div>
 
@@ -316,18 +313,22 @@
               <div class="col-12 col-md-6">
                 <label class="form-label extra-small fw-bold text-dark">Department</label>
                 <select class="form-select" [(ngModel)]="newEmployee.department" name="empDept">
-                  <option value="Engineering">Engineering</option>
-                  <option value="Product & Design">Product & Design</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Human Resources">Human Resources</option>
-                  <option value="Finance & Legal">Finance & Legal</option>
+                  <option *ngFor="let dept of departmentsList" [value]="dept.code">{{ dept.name }} ({{ dept.code }})</option>
                 </select>
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label extra-small fw-bold text-dark">Designation / Role Title</label>
-                <input type="text" class="form-control" placeholder="e.g. Senior Software Engineer" [(ngModel)]="newEmployee.role" name="empRole">
+                <label class="form-label extra-small fw-bold text-dark">Designation / Level</label>
+                <select class="form-select" [(ngModel)]="newEmployee.role" (ngModelChange)="onDesignationChange($event)" name="empRole">
+                  <option *ngFor="let desig of designationsList" [value]="desig.code">{{ desig.title }} ({{ desig.levelCode }})</option>
+                </select>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label extra-small fw-bold text-dark">System Role</label>
+                <select class="form-select" [(ngModel)]="newEmployee.systemRole" name="empSystemRole">
+                  <option *ngFor="let r of rolesList" [value]="r.code">{{ r.name }} ({{ r.code }})</option>
+                </select>
               </div>
 
               <div class="col-12 col-md-6">

@@ -21,10 +21,6 @@ export class UserNavbar {
   constructor(private router: Router) { }
 
   navigateToDashboard(): void {
-    if (this.router.url.startsWith('/employee')) {
-      this.router.navigate(['/employee/dashboard']);
-    } else {
-      this.router.navigate(['/hr/dashboard']);
-    }
+    this.router.navigate(['/dashboard']);
   }
 }

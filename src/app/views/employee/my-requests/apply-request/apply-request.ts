@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { RequestService } from '../../../../core/services/request.service';
 
 @Component({
   selector: 'app-apply-request',
@@ -41,7 +42,10 @@ export class ApplyRequest {
   isSuccess: boolean = false;
   errorMessage: string = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private requestService: RequestService
+  ) {}
 
   onFileSelected(event: any): void {
     const file = event.target.files?.[0];
@@ -74,15 +78,23 @@ export class ApplyRequest {
 
     this.isSubmitting = true;
 
-    // Simulate submission
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.isSuccess = true;
-
-      // Redirect back to My Requests page after 1.5 seconds
-      setTimeout(() => {
-        this.router.navigate(['/employee/my-requests']);
-      }, 1500);
-    }, 1200);
+    this.requestService.createRequest$({
+      category: this.category,
+      subject: this.subject.trim(),
+      description: this.description.trim(),
+      priority: this.priority
+    }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.isSuccess = true;
+        setTimeout(() => {
+          this.router.navigate(['/employee/my-requests']);
+        }, 1200);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage = err?.error?.message || 'Unable to submit request. Please try again.';
+      }
+    });
   }
 }

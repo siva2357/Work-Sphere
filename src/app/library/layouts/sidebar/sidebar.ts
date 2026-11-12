@@ -4,16 +4,18 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NavLink } from '../../../core/models/sidebar.interface';
 import { NAV_LINKS } from '../../../core/constants/navlinks';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css'
+  styleUrl: './sidebar.css',
 })
 export class Sidebar implements OnInit {
   private router = inject(Router);
+  private authService = inject(AuthService);
   isOpen = false;
 
   // Tooltip state
@@ -24,7 +26,7 @@ export class Sidebar implements OnInit {
     if (this.isOpen) return;
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
-    this.tooltipTop = rect.top + (rect.height / 2);
+    this.tooltipTop = rect.top + rect.height / 2;
     this.tooltipText = label;
   }
 
@@ -41,18 +43,47 @@ export class Sidebar implements OnInit {
     }
     this.filterNavLinks();
 
+    this.authService.currentUser$.subscribe(() => {
+      this.filterNavLinks();
+    });
+
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
         this.filterNavLinks();
       });
   }
 
   private filterNavLinks() {
-    const roleFromStorage = localStorage.getItem('role')?.toLowerCase();
-    const isEmployeeRoute = this.router.url.startsWith('/employee');
-    const activeRole = roleFromStorage || (isEmployeeRoute ? 'employee' : 'hr');
-    this.navLinks = NAV_LINKS.filter(link => link.roles.includes(activeRole));
+    const currentUser = this.authService.getCurrentUser();
+    const roleFromStorage = (
+      localStorage.getItem('user_role') ||
+      localStorage.getItem('role') ||
+      ''
+    ).toLowerCase();
+    const isEmployeeRoute =
+      this.router.url === '/employee' || this.router.url.startsWith('/employee/');
+    const isHrRoute =
+      this.router.url === '/hr' || this.router.url.startsWith('/hr/');
+
+    // Determine active portal ('hr' vs 'employee') from authenticated user / token role first
+    const activeRole =
+      currentUser?.portalType ||
+      (roleFromStorage === 'hr' || roleFromStorage === 'employee' ? roleFromStorage : '') ||
+      (isEmployeeRoute ? 'employee' : isHrRoute ? 'hr' : 'hr');
+
+    const isLeadership = this.authService.isManagerOrLeadership();
+
+    this.navLinks = NAV_LINKS.filter((link) => {
+      if (!link.roles.includes(activeRole)) return false;
+
+      // If a user is logged in and this link is managementOnly (e.g. L7-L10 Developer), filter by leadership status
+      if (currentUser && link.managementOnly && !isLeadership) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   toggleSidebar() {

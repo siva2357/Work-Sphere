@@ -3,22 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TaskService, TeamMember } from '../../../../core/services/task.service';
+import { TicketTypeOption, AttachmentItem } from '../../../../core/models/task-project-team.interface';
 
-export interface TicketTypeOption {
-  type: 'Task' | 'Bug' | 'Feature' | 'Improvement' | 'Support';
-  label: string;
-  icon: string;
-  badgeClass: string;
-  description: string;
-}
-
-export interface AttachmentItem {
-  id: string;
-  name: string;
-  size: string;
-  type: string;
-  icon: string;
-}
+export type { TicketTypeOption, AttachmentItem } from '../../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-create-task',

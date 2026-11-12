@@ -30,6 +30,12 @@ export class AttendanceSheet implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.attendanceService.employees$.subscribe(() => {
+      const empId = this.route.snapshot.queryParams['id'] || this.attendanceService.getSelectedEmployeeId();
+      if (empId) {
+        this.loadEmployeeSheet(empId);
+      }
+    });
     this.route.queryParams.subscribe((params) => {
       const empId = params['id'] || this.attendanceService.getSelectedEmployeeId() || 'EMP-0135';
       this.loadEmployeeSheet(empId);

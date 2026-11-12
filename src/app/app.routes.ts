@@ -3,6 +3,8 @@ import { PublicLayout } from './library/layouts/public-layout/public-layout';
 import { AccountPages } from './views/account/account-pages';
 import { Hr } from './views/hr/hr';
 import { Employee } from './views/employee/employee';
+import { RoleGuard } from './core/guards/role.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -16,14 +18,22 @@ export const routes: Routes = [
     loadChildren: () => import('./views/account/account-pages.routes').then(m => m.ACCOUNT_ROUTES)
   },
   {
-    path: 'hr',
+    path: '',
     component: Hr,
+    canMatch: [RoleGuard],
+    canActivate: [AuthGuard],
+    data: { expectedRoles: ['hr'] },
     loadChildren: () => import('./views/hr/hr.routes').then(m => m.HR_ROUTES)
   },
+
   {
-    path: 'employee',
+    path: '',
     component: Employee,
+    canMatch: [RoleGuard],
+    canActivate: [AuthGuard],
+    data: { expectedRoles: ['employee'] },
     loadChildren: () => import('./views/employee/employee.routes').then(m => m.EMPLOYEE_ROUTES)
   },
+
   { path: '**', redirectTo: '' }
 ];

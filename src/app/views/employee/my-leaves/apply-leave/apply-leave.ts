@@ -2,19 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { LeaveService } from '../../../../core/services/leave.service';
+import { CalendarDayView } from '../../../../core/models/leave.interface';
 
-export interface CalendarDayView {
-  dayNumber: number;
-  date: Date;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isWeekend: boolean;
-  isHoliday: boolean;
-  holidayName?: string;
-  isSelectedStart: boolean;
-  isSelectedEnd: boolean;
-  isInSelectedRange: boolean;
-}
+export type { CalendarDayView } from '../../../../core/models/leave.interface';
 
 @Component({
   selector: 'app-apply-leave',
@@ -52,7 +43,7 @@ export class ApplyLeave implements OnInit {
   isSuccess = false;
   errorMessage = '';
 
-  // Quota Map (Days available)
+  // Quota Map (Days available, populated from backend leave balances)
   leaveQuotas: Record<string, number> = {
     'Casual Leave': 8,
     'Sick Leave': 6,
@@ -71,14 +62,30 @@ export class ApplyLeave implements OnInit {
     '2026-08-15': 'Independence Day',
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private leaveService: LeaveService
+  ) {}
 
   ngOnInit(): void {
-    // Default start selection: today (Oct 24, 2026)
-    const today = new Date(2026, 9, 24);
+    const today = new Date();
+    this.currentYear = today.getFullYear();
+    this.currentMonthIndex = today.getMonth();
     this.selectedStartDate = today;
     this.selectedEndDate = today;
     this.recalculateCalendar();
+    this.leaveService.fetchMyLeaves$().subscribe({
+      next: (res) => {
+        if (res?.balances) {
+          res.balances.forEach((b: any) => {
+            if (b.type && b.available !== undefined) {
+              this.leaveQuotas[b.type] = Number(b.available);
+            }
+          });
+        }
+      },
+      error: () => {}
+    });
   }
 
   get currentMonthTitle(): string {
@@ -299,15 +306,26 @@ export class ApplyLeave implements OnInit {
 
     this.isSubmitting = true;
 
-    // Simulate submission
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.isSuccess = true;
+    const startDateIso = this.selectedStartDate ? this.selectedStartDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    const endDateIso = this.selectedEndDate ? this.selectedEndDate.toISOString().split('T')[0] : startDateIso;
 
-      // Navigate back to my-leaves after 1.5 seconds
-      setTimeout(() => {
-        this.router.navigate(['/employee/my-leaves']);
-      }, 1500);
-    }, 1200);
+    this.leaveService.applyLeave$({
+      leaveType: this.selectedCategory,
+      startDate: startDateIso,
+      endDate: endDateIso,
+      reason: this.absenceReason.trim()
+    }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.isSuccess = true;
+        setTimeout(() => {
+          this.router.navigate(['/employee/my-leaves']);
+        }, 1200);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage = err?.error?.message || 'Unable to submit leave request. Please try again.';
+      }
+    });
   }
 }

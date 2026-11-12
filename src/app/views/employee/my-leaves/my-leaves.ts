@@ -1,37 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { LeaveService } from '../../../core/services/leave.service';
+import { AuthService } from '../../../core/services/auth.service';
+import {
+  LeaveBalance,
+  LeaveRecord,
+  UpcomingHoliday,
+} from '../../../core/models/leave.interface';
 
-export interface LeaveRecord {
-  sNo: number;
-  leaveType: 'Casual Leave' | 'Sick Leave' | 'Earned Leave' | 'Comp-Off' | 'Maternity/Paternity';
-  fromDate: string;
-  toDate: string;
-  days: number;
-  month: string;
-  reason: string;
-  appliedDate: string;
-  approvedBy: string;
-  status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
-}
-
-export interface LeaveBalance {
-  type: string;
-  shortCode: string;
-  used: number;
-  total: number;
-  available: number;
-  colorClass: string;
-}
-
-export interface UpcomingHoliday {
-  name: string;
-  date: string;
-  day: string;
-  type: 'National' | 'Restricted' | 'Festival';
-  isPast: boolean;
-}
+export type { LeaveBalance, LeaveRecord, UpcomingHoliday };
 
 @Component({
   selector: 'app-my-leaves',
@@ -40,8 +19,10 @@ export interface UpcomingHoliday {
   templateUrl: './my-leaves.html',
   styleUrl: './my-leaves.css',
 })
-export class MyLeaves {
-  // Month & Filters
+export class MyLeaves implements OnInit {
+  private leaveService = inject(LeaveService);
+  private authService = inject(AuthService);
+
   currentMonth: string = 'October 2026';
   availableMonths: string[] = [
     'October 2026',
@@ -58,110 +39,62 @@ export class MyLeaves {
   statusFilter: string = 'ALL';
   typeFilter: string = 'ALL';
 
-  // 6 Top Stat Cards (Applied, Pending, Approved, Rejected, Earned, Paid)
-  appliedLeaves = 6;
-  pendingLeaves = 1;
-  approvedLeaves = 4;
-  rejectedLeaves = 1;
-  earnedLeaves = 12;
-  paidLeaves = 18;
+  appliedLeaves = 0;
+  pendingLeaves = 0;
+  approvedLeaves = 0;
+  rejectedLeaves = 0;
+  earnedLeaves = 0;
+  paidLeaves = 0;
 
-  // Leave Balances for Side Widget
-  leaveBalances: LeaveBalance[] = [
-    { type: 'Casual Leave', shortCode: 'CL', used: 4, total: 12, available: 8, colorClass: 'bg-emerald' },
-    { type: 'Sick Leave', shortCode: 'SL', used: 2, total: 8, available: 6, colorClass: 'bg-info' },
-    { type: 'Earned Leave', shortCode: 'EL', used: 3, total: 15, available: 12, colorClass: 'bg-primary' },
-    { type: 'Comp-Off', shortCode: 'CO', used: 0, total: 2, available: 2, colorClass: 'bg-warning' },
-  ];
+  leaveBalances: LeaveBalance[] = [];
+  upcomingHolidays: UpcomingHoliday[] = [];
+  leaveRecords: LeaveRecord[] = [];
 
-  // Upcoming Holidays
-  upcomingHolidays: UpcomingHoliday[] = [
-    { name: 'Gandhi Jayanti', date: '02 Oct 2026', day: 'Friday', type: 'National', isPast: true },
-    { name: 'Dussehra (Vijayadashami)', date: '20 Oct 2026', day: 'Tuesday', type: 'Festival', isPast: true },
-    { name: 'Diwali (Deepavali)', date: '08 Nov 2026', day: 'Sunday', type: 'Festival', isPast: false },
-    { name: 'Guru Nanak Jayanti', date: '24 Nov 2026', day: 'Tuesday', type: 'Restricted', isPast: false },
-    { name: 'Christmas Day', date: '25 Dec 2026', day: 'Friday', type: 'National', isPast: false },
-  ];
+  ngOnInit(): void {
+    const empCode = this.authService.getCurrentEmployeeCode();
+    this.leaveService.fetchMyLeaves$(empCode).subscribe((res: any) => {
+      if (Array.isArray(res?.balances)) {
+        this.leaveBalances = res.balances.map((b: any) => ({
+          type: b.leaveType || 'Casual Leave',
+          shortCode: b.shortCode || 'CL',
+          used: Number(b.used ?? 0),
+          total: Number(b.totalAllocated ?? 12),
+          available: Number(b.available ?? 12),
+          colorClass: b.colorClass || 'bg-emerald',
+        }));
 
-  // Full Leaves Records Table (Chronological)
-  leaveRecords: LeaveRecord[] = [
-    {
-      sNo: 1,
-      leaveType: 'Casual Leave',
-      fromDate: '14 Oct 2026',
-      toDate: '15 Oct 2026',
-      days: 2,
-      month: 'October 2026',
-      reason: 'Attending family wedding & hometown visit',
-      appliedDate: '09 Oct 2026',
-      approvedBy: 'Karthik Rao (Team Lead)',
-      status: 'Approved',
-    },
-    {
-      sNo: 2,
-      leaveType: 'Sick Leave',
-      fromDate: '22 Oct 2026',
-      toDate: '22 Oct 2026',
-      days: 1,
-      month: 'October 2026',
-      reason: 'Acute fever, doctor consultation and rest',
-      appliedDate: '21 Oct 2026',
-      approvedBy: 'Pending Manager Sign-off',
-      status: 'Pending',
-    },
-    {
-      sNo: 3,
-      leaveType: 'Comp-Off',
-      fromDate: '05 Oct 2026',
-      toDate: '05 Oct 2026',
-      days: 1,
-      month: 'October 2026',
-      reason: 'Compensatory off for weekend critical release support and testing',
-      appliedDate: '03 Oct 2026',
-      approvedBy: 'Karthik Rao (Team Lead)',
-      status: 'Rejected',
-    },
-    {
-      sNo: 4,
-      leaveType: 'Earned Leave',
-      fromDate: '27 Oct 2026',
-      toDate: '28 Oct 2026',
-      days: 2,
-      month: 'October 2026',
-      reason: 'Personal urgent appointment and family event travel across city',
-      appliedDate: '18 Oct 2026',
-      approvedBy: 'Deepak Sharma (VP Engg)',
-      status: 'Approved',
-    },
-    {
-      sNo: 5,
-      leaveType: 'Sick Leave',
-      fromDate: '15 Sep 2026',
-      toDate: '16 Sep 2026',
-      days: 2,
-      month: 'September 2026',
-      reason: 'Acute seasonal flu and physician advised rest',
-      appliedDate: '15 Sep 2026',
-      approvedBy: 'Karthik Rao (Team Lead)',
-      status: 'Approved',
-    },
-    {
-      sNo: 6,
-      leaveType: 'Earned Leave',
-      fromDate: '18 Aug 2026',
-      toDate: '21 Aug 2026',
-      days: 4,
-      month: 'August 2026',
-      reason: 'Annual personal rejuvenation & vacation trip',
-      appliedDate: '01 Aug 2026',
-      approvedBy: 'Deepak Sharma (VP Engg)',
-      status: 'Approved',
-    },
-  ];
+        const el = this.leaveBalances.find((b) => b.shortCode === 'EL');
+        if (el) {
+          this.earnedLeaves = el.available;
+        }
+        this.paidLeaves = this.leaveBalances.reduce((acc, b) => acc + b.available, 0);
+      }
+
+      if (Array.isArray(res?.upcomingHolidays)) {
+        this.upcomingHolidays = res.upcomingHolidays;
+      }
+
+      if (Array.isArray(res?.leaveHistory)) {
+        this.leaveRecords = res.leaveHistory.map((h: any, idx: number) => ({
+          sNo: idx + 1,
+          leaveType: (h.leaveType as LeaveRecord['leaveType']) || 'Casual Leave',
+          fromDate: h.fromDate || '',
+          toDate: h.toDate || '',
+          days: Number(h.daysCount ?? 1),
+          month: h.month || 'October 2026',
+          reason: h.reason || '',
+          appliedDate: h.appliedDate || '',
+          approvedBy: h.approvedBy || 'Manager',
+          status: (h.status as LeaveRecord['status']) || 'Pending',
+        }));
+        this.updateStatsForMonth();
+      }
+    });
+  }
 
   get filteredLeaveRecords(): LeaveRecord[] {
     return this.leaveRecords.filter((rec) => {
-      if (this.currentMonth && rec.month !== this.currentMonth) {
+      if (this.currentMonth && rec.month && rec.month !== this.currentMonth) {
         return false;
       }
       if (this.statusFilter !== 'ALL' && rec.status.toUpperCase() !== this.statusFilter) {
@@ -185,12 +118,20 @@ export class MyLeaves {
   }
 
   updateStatsForMonth(): void {
-    const monthRecs = this.leaveRecords.filter((r) => r.month === this.currentMonth);
+    const monthRecs = this.leaveRecords.filter(
+      (r) => !this.currentMonth || !r.month || r.month === this.currentMonth
+    );
     if (monthRecs.length > 0) {
       this.appliedLeaves = monthRecs.reduce((acc, r) => acc + r.days, 0);
-      this.pendingLeaves = monthRecs.filter((r) => r.status === 'Pending').reduce((acc, r) => acc + r.days, 0);
-      this.approvedLeaves = monthRecs.filter((r) => r.status === 'Approved').reduce((acc, r) => acc + r.days, 0);
-      this.rejectedLeaves = monthRecs.filter((r) => r.status === 'Rejected').reduce((acc, r) => acc + r.days, 0);
+      this.pendingLeaves = monthRecs
+        .filter((r) => r.status === 'Pending')
+        .reduce((acc, r) => acc + r.days, 0);
+      this.approvedLeaves = monthRecs
+        .filter((r) => r.status === 'Approved')
+        .reduce((acc, r) => acc + r.days, 0);
+      this.rejectedLeaves = monthRecs
+        .filter((r) => r.status === 'Rejected')
+        .reduce((acc, r) => acc + r.days, 0);
     } else {
       this.appliedLeaves = 0;
       this.pendingLeaves = 0;

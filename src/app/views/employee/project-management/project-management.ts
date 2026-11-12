@@ -32,7 +32,10 @@ export class ProjectManagement implements OnInit {
 
   ngOnInit(): void {
     this.departments = this.projectService.availableDepartments;
-    this.loadProjects();
+    this.projectService.projects$.subscribe((list) => {
+      this.projects = list || [];
+    });
+    this.projectService.refreshProjects();
   }
 
   loadProjects(): void {

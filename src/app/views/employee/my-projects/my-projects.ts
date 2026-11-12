@@ -1,22 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
-export interface AssignedProject {
-  id: number;
-  code: string;
-  title: string;
-  department: string;
-  category: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  duration: string;
-  status: 'In Progress' | 'Active' | 'Planning' | 'Completed' | 'On Hold';
-  role: string;
-  externalToolUrl: string;
-}
+import { AssignedProject } from '../../../core/models/task-project-team.interface';
+import { API_ENDPOINTS } from '../../../core/constants/api.constants';
+
+export type { AssignedProject } from '../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-my-projects',
@@ -37,67 +27,38 @@ export class MyProjects implements OnInit {
   toastMessage: string = '';
   private toastTimer: any;
 
-  // Hardcoded IT Department Projects Assigned to Employee
-  projectsList: AssignedProject[] = [
-    {
-      id: 1,
-      code: 'PRJ-IT-101',
-      title: 'WorkSphere Enterprise Core v2.4',
-      department: 'Information Technology',
-      category: 'Core Web Platform',
-      description: 'Revamping enterprise HRM core architecture with Angular 17 standalone components, OAuth2 social SSO authentication, real-time activity sync, and microservices gateway integration.',
-      startDate: '15 Jan 2026',
-      endDate: '30 Nov 2026',
-      duration: '10.5 Months',
-      status: 'In Progress',
-      role: 'Lead Full Stack Engineer',
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login'
-    },
-    {
-      id: 2,
-      code: 'PRJ-IT-102',
-      title: 'Cloud Infrastructure Migration & Kubernetes Orchestration',
-      department: 'Information Technology',
-      category: 'Cloud & DevOps',
-      description: 'Migrating legacy on-premise application clusters to AWS EKS with Terraform infrastructure-as-code, automated blue-green CI/CD pipelines, and Prometheus observability.',
-      startDate: '01 Feb 2026',
-      endDate: '15 Aug 2026',
-      duration: '6.5 Months',
-      status: 'In Progress',
-      role: 'DevOps & Cloud Engineer',
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login'
-    },
-    {
-      id: 3,
-      code: 'PRJ-IT-103',
-      title: 'Employee Self-Service Mobile Application',
-      department: 'Information Technology',
-      category: 'Mobile Engineering',
-      description: 'Cross-platform mobile application built using Flutter for biometric check-in/out, instant leave requests, mobile payslip viewing, and offline data synchronization.',
-      startDate: '10 Mar 2026',
-      endDate: '20 Dec 2026',
-      duration: '9.5 Months',
-      status: 'Planning',
-      role: 'Mobile UI/UX Developer',
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login'
-    },
-    {
-      id: 4,
-      code: 'PRJ-IT-104',
-      title: 'Enterprise Single Sign-On (SSO) & Zero-Trust Gateway',
-      department: 'Information Technology',
-      category: 'Cybersecurity & IAM',
-      description: 'Implementation of Azure AD and Google Workspace OAuth2/SAML identity federation with role-based access control (RBAC) and automated session invalidation.',
-      startDate: '01 Oct 2025',
-      endDate: '15 Apr 2026',
-      duration: '6.5 Months',
-      status: 'Completed',
-      role: 'Security & Auth Specialist',
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login'
-    }
-  ];
+  // Real-time Projects Assigned to Employee from Backend Database
+  projectsList: AssignedProject[] = [];
 
-  ngOnInit(): void { }
+  constructor(private http: HttpClient) { }
+
+  ngOnInit(): void {
+    this.loadProjects();
+  }
+
+  loadProjects(): void {
+    this.http.get<any[]>(API_ENDPOINTS.WORKSPACE.PROJECTS).subscribe({
+      next: (rows) => {
+        this.projectsList = (rows || []).map((r, idx) => ({
+          id: idx + 1,
+          code: r.code || `PRJ-${idx + 101}`,
+          title: r.name || r.title || 'Project',
+          department: r.department || 'Engineering',
+          category: r.category || 'Enterprise Platform',
+          description: r.description || '',
+          startDate: r.startDate ? new Date(r.startDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '15 Jan 2026',
+          endDate: r.endDate ? new Date(r.endDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '30 Nov 2026',
+          duration: r.duration || '6 Months',
+          status: (r.status === 'Active' ? 'In Progress' : (r.status || 'In Progress')) as AssignedProject['status'],
+          role: r.role || r.managerName || 'Project Contributor',
+          externalToolUrl: r.externalToolUrl || this.AGILE_TOOL_URL
+        }));
+      },
+      error: () => {
+        this.projectsList = [];
+      }
+    });
+  }
 
   // Filtered Projects Getter
   get filteredProjects(): AssignedProject[] {

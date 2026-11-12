@@ -3,13 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ProjectService, ProjectMember } from '../../../../core/services/project.service';
+import { MethodologyOption } from '../../../../core/models/task-project-team.interface';
 
-export interface MethodologyOption {
-  type: 'Agile Scrum' | 'Kanban' | 'Waterfall' | 'Milestone';
-  label: string;
-  icon: string;
-  description: string;
-}
+export type { MethodologyOption } from '../../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-create-project',

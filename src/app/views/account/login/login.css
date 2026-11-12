@@ -1,0 +1,44 @@
+.login-page-wrapper {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f8fafc 100%);
+}
+
+.login-brand-panel {
+  background: linear-gradient(155deg, #065f46 0%, #047857 50%, #10b981 100%);
+}
+
+.text-emerald {
+  color: #059669 !important;
+}
+
+.btn-emerald {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.btn-emerald:hover:not(:disabled) {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+}
+
+.quick-accounts-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quick-acc-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.quick-acc-btn:hover,
+.quick-acc-btn.active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+

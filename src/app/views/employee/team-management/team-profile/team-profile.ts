@@ -24,7 +24,11 @@ export class TeamProfile implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.allMembers = this.teamService.getTeamMembers();
+    this.teamService.members$.subscribe((list) => {
+      this.allMembers = list || [];
+      this.loadMember();
+    });
+    this.teamService.refreshMembers();
 
     this.route.queryParams.subscribe((params) => {
       const qId = params['id'];

@@ -35,8 +35,11 @@ export class AttendanceManagement implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadEmployees();
-    this.extractFilterOptions();
+    this.attendanceService.employees$.subscribe((list) => {
+      this.employees = list || [];
+      this.extractFilterOptions();
+    });
+    this.attendanceService.refreshManagedEmployees();
   }
 
   loadEmployees(): void {

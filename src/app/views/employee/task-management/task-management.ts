@@ -30,7 +30,11 @@ export class TaskManagement implements OnInit {
   constructor(private taskService: TaskService) {}
 
   ngOnInit(): void {
-    this.refreshTasks();
+    this.taskService.tasks$.subscribe((tasks) => {
+      this.tasksList = tasks || [];
+      this.availableProjects = this.taskService.availableProjects;
+    });
+    this.taskService.refreshTasks();
     this.availableProjects = this.taskService.availableProjects;
   }
 

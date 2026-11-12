@@ -1,21 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CompanyDirectoryService } from '../../../core/services/company-directory.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { DropdownService } from '../../../core/services/dropdown.service';
+import { EmployeeRecord } from '../../../core/models/company-directory.interface';
+import {
+  HelperDepartmentOption,
+  HelperDesignationOption,
+  HelperOrganizationalLevelOption,
+  HelperRoleOption
+} from '../../../core/models/helper.interface';
 
-export interface EmployeeRecord {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  email: string;
-  phone: string;
-  location: string;
-  status: 'Active' | 'On Leave' | 'Remote';
-  joiningDate: string;
-  avatar: string;
-  type: 'Full-time' | 'Contract' | 'Intern';
-  manager: string;
-}
+export type { EmployeeRecord };
 
 @Component({
   selector: 'app-employee-directory',
@@ -25,193 +22,157 @@ export interface EmployeeRecord {
   styleUrl: './employee-directory.css',
 })
 export class EmployeeDirectory implements OnInit {
+  private companyDirectoryService = inject(CompanyDirectoryService);
+  private authService = inject(AuthService);
+  private dropdownService = inject(DropdownService);
+
   searchTerm = '';
   selectedDepartment = 'All';
   selectedStatus = 'All';
   viewMode: 'grid' | 'table' = 'grid';
+  activeCompanyCode = 'CMP-001';
+  activeCompanyName = '';
 
-  // Modals
   showAddEmployeeModal = false;
   showProfileModal = false;
   selectedEmployee: EmployeeRecord | null = null;
 
-  // New Employee Form
+  departmentsList: HelperDepartmentOption[] = [];
+  levelsList: HelperOrganizationalLevelOption[] = [];
+  designationsList: HelperDesignationOption[] = [];
+  rolesList: HelperRoleOption[] = [];
+
   newEmployee = {
     name: '',
     email: '',
     phone: '',
-    department: 'Engineering',
-    role: '',
+    department: 'ENG',
+    levelCode: 'L8',
+    role: 'DESIG_DEV',
+    systemRole: 'EMP_DEVELOPER',
     type: 'Full-time' as 'Full-time' | 'Contract' | 'Intern',
     location: 'Bangalore, India',
-    manager: 'Sarah Jenkins',
-    joiningDate: '2026-11-01'
+    manager: '',
+    joiningDate: new Date().toISOString().split('T')[0],
   };
 
-  employees: EmployeeRecord[] = [
-    {
-      id: 'WS-101',
-      name: 'Eleanor Vance',
-      role: 'Head of People & Culture',
-      department: 'Human Resources',
-      email: 'eleanor.vance@worksphere.io',
-      phone: '+1 (555) 234-5678',
-      location: 'Bangalore, India',
-      status: 'Active',
-      joiningDate: 'Jan 15, 2022',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Executive Board'
-    },
-    {
-      id: 'WS-102',
-      name: 'Marcus Vance',
-      role: 'VP of Engineering',
-      department: 'Engineering',
-      email: 'marcus.v@worksphere.io',
-      phone: '+1 (555) 345-6789',
-      location: 'Bangalore, India',
-      status: 'Active',
-      joiningDate: 'Mar 10, 2021',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Executive Board'
-    },
-    {
-      id: 'WS-103',
-      name: 'Maya Lin',
-      role: 'Backend Engineering Lead',
-      department: 'Engineering',
-      email: 'maya.lin@worksphere.io',
-      phone: '+1 (555) 456-7890',
-      location: 'Bangalore, India',
-      status: 'Active',
-      joiningDate: 'Aug 04, 2023',
-      avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Marcus Vance'
-    },
-    {
-      id: 'WS-104',
-      name: 'Alex Rivera',
-      role: 'Staff UX/UI Designer',
-      department: 'Product & Design',
-      email: 'alex.rivera@worksphere.io',
-      phone: '+1 (555) 567-8901',
-      location: 'Remote (Goa)',
-      status: 'Remote',
-      joiningDate: 'Nov 12, 2023',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Diya Sen'
-    },
-    {
-      id: 'WS-105',
-      name: 'Priya Sharma',
-      role: 'Senior Product Manager',
-      department: 'Product & Design',
-      email: 'priya.s@worksphere.io',
-      phone: '+1 (555) 678-9012',
-      location: 'Bangalore, India',
-      status: 'Active',
-      joiningDate: 'May 18, 2023',
-      avatar: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Executive Board'
-    },
-    {
-      id: 'WS-106',
-      name: 'David Miller',
-      role: 'Senior Frontend Engineer',
-      department: 'Engineering',
-      email: 'david.miller@worksphere.io',
-      phone: '+1 (555) 789-0123',
-      location: 'Bangalore, India',
-      status: 'Active',
-      joiningDate: 'Oct 01, 2026',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Maya Lin'
-    },
-    {
-      id: 'WS-107',
-      name: 'Sarah Connor',
-      role: 'Associate Product Manager',
-      department: 'Product & Design',
-      email: 'sarah.connor@worksphere.io',
-      phone: '+1 (555) 890-1234',
-      location: 'Bangalore, India',
-      status: 'On Leave',
-      joiningDate: 'Feb 14, 2024',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Priya Sharma'
-    },
-    {
-      id: 'WS-108',
-      name: 'Rohan Verma',
-      role: 'Senior Growth & Sales Manager',
-      department: 'Sales',
-      email: 'rohan.v@worksphere.io',
-      phone: '+1 (555) 901-2345',
-      location: 'Mumbai, India',
-      status: 'Active',
-      joiningDate: 'Jun 20, 2023',
-      avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
-      type: 'Full-time',
-      manager: 'Executive Board'
-    }
-  ];
+  employees: EmployeeRecord[] = [];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const companyCode = this.authService.getCurrentCompanyCode();
+    this.activeCompanyCode = companyCode;
+    this.loadHelperDropdowns();
+    this.loadDirectoryFromBackend(companyCode);
+  }
+
+  loadHelperDropdowns(): void {
+    this.dropdownService.dropdowns$.subscribe((dropdowns) => {
+      this.departmentsList = dropdowns.departments || [];
+      this.levelsList = dropdowns.organizationalLevels || [];
+      this.designationsList = dropdowns.designations || [];
+      this.rolesList = dropdowns.roles || [];
+    });
+  }
+
+  onDesignationChange(desigCode: string): void {
+    const found = this.designationsList.find((d) => d.code === desigCode);
+    if (found) {
+      this.newEmployee.levelCode = found.levelCode;
+      if (found.defaultRoleCode) {
+        this.newEmployee.systemRole = found.defaultRoleCode;
+      }
+    }
+  }
+
+  loadDirectoryFromBackend(companyCode: string = 'CMP-001'): void {
+    const avatars = [
+      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+    ];
+
+    this.companyDirectoryService.getEmployeeDirectory$(companyCode).subscribe((res) => {
+      if (res?.company) {
+        this.activeCompanyCode = res.company.companyCode || companyCode;
+        this.activeCompanyName = res.company.name || '';
+      }
+      if (res?.employees) {
+        this.employees = res.employees.map((e, idx) => ({
+          id: e.employeeCode || e.id,
+          name: e.name,
+          role: `${e.role} (${e.level})`,
+          department: e.department,
+          email: e.email,
+          phone: e.phone || '+91 98450 12345',
+          location: e.location || 'Bangalore, India',
+          status: (e.status as EmployeeRecord['status']) || 'Active',
+          joiningDate: e.joiningDate || '',
+          avatar: avatars[idx % avatars.length],
+          type: (e.type as EmployeeRecord['type']) || 'Full-time',
+          manager: e.manager || 'Department Head',
+        }));
+      }
+    });
+  }
 
   get filteredEmployees(): EmployeeRecord[] {
-    return this.employees.filter(emp => {
-      const matchesSearch = emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                            emp.id.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                            emp.role.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                            emp.email.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesDept = this.selectedDepartment === 'All' || emp.department === this.selectedDepartment;
-      const matchesStatus = this.selectedStatus === 'All' || emp.status === this.selectedStatus;
+    return this.employees.filter((emp) => {
+      const matchesSearch =
+        emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        emp.id.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        emp.role.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        emp.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchesDept =
+        this.selectedDepartment === 'All' ||
+        emp.department.toLowerCase().includes(this.selectedDepartment.toLowerCase());
+      const matchesStatus =
+        this.selectedStatus === 'All' || emp.status === this.selectedStatus;
       return matchesSearch && matchesDept && matchesStatus;
     });
   }
 
-  viewProfile(emp: EmployeeRecord) {
+  viewProfile(emp: EmployeeRecord): void {
     this.selectedEmployee = emp;
     this.showProfileModal = true;
   }
 
-  closeProfileModal() {
+  closeProfileModal(): void {
     this.showProfileModal = false;
     this.selectedEmployee = null;
   }
 
-  openAddEmployee() {
+  openAddEmployee(): void {
     this.showAddEmployeeModal = true;
   }
 
-  closeAddEmployee() {
+  closeAddEmployee(): void {
     this.showAddEmployeeModal = false;
   }
 
-  saveEmployee() {
+  saveEmployee(): void {
     if (!this.newEmployee.name || !this.newEmployee.email) return;
-    const newRecord: EmployeeRecord = {
-      id: `WS-${100 + this.employees.length + 1}`,
-      name: this.newEmployee.name,
-      role: this.newEmployee.role || 'Associate Specialist',
-      department: this.newEmployee.department,
-      email: this.newEmployee.email,
-      phone: this.newEmployee.phone || '+1 (555) 000-0000',
-      location: this.newEmployee.location,
-      status: 'Active',
-      joiningDate: 'Today',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-      type: this.newEmployee.type,
-      manager: this.newEmployee.manager
-    };
-    this.employees.unshift(newRecord);
-    this.closeAddEmployee();
+
+    this.companyDirectoryService
+      .createEmployeeByMainHr$(
+        {
+          fullName: this.newEmployee.name,
+          email: this.newEmployee.email,
+          phone: this.newEmployee.phone,
+          departmentCode: this.newEmployee.department,
+          designationCode: this.newEmployee.role || 'DESIG_DEV',
+          roleCode: this.newEmployee.systemRole || 'EMP_DEVELOPER',
+          employmentType: this.newEmployee.type,
+          workLocation: this.newEmployee.location,
+          managerEmployeeCode: this.newEmployee.manager,
+        },
+        this.activeCompanyCode
+      )
+      .subscribe(() => {
+        this.closeAddEmployee();
+        this.loadDirectoryFromBackend(this.activeCompanyCode);
+      });
   }
 }

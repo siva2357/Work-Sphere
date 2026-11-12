@@ -1,36 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { WorkspaceService } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { MonthlyPayrollRecord } from '../../../core/models/workspace.interface';
 
-export interface MonthlyPayrollRecord {
-  month: string;           // e.g. "October 2026"
-  monthShort: string;      // e.g. "Oct 2026"
-  financialYear: string;   // e.g. "FY 2026-27"
-  payDate: string;         // e.g. "31 Oct 2026"
-  status: 'Paid' | 'Processing' | 'Upcoming';
-  basicSalary: number;
-  hra: number;
-  specialAllowance: number;
-  conveyance: number;
-  medicalAllowance: number;
-  grossEarnings: number;
-  epfDeduction: number;
-  professionalTax: number;
-  tdsDeduction: number;
-  insuranceDeduction: number;
-  totalDeductions: number;
-  netSalary: number;
-  salarySlipPdf: {
-    fileName: string;
-    fileSize: string;
-    downloadUrl: string;
-  };
-  taxSlipPdf: {
-    fileName: string;
-    fileSize: string;
-    downloadUrl: string;
-  };
-}
+export type { MonthlyPayrollRecord };
 
 @Component({
   selector: 'app-my-payroll',
@@ -39,22 +14,22 @@ export interface MonthlyPayrollRecord {
   templateUrl: './my-payroll.html',
   styleUrl: './my-payroll.css',
 })
-export class MyPayroll {
-  // Financial Year Filter
+export class MyPayroll implements OnInit {
+  private workspaceService = inject(WorkspaceService);
+  private authService = inject(AuthService);
+
   selectedFY: string = 'FY 2026-27';
   availableFYs: string[] = ['FY 2026-27', 'FY 2025-26', 'FY 2024-25'];
 
-  // Document Type Filter: 'ALL' | 'SALARY' | 'TAX'
   docTypeFilter: string = 'ALL';
   searchTerm: string = '';
 
-  // Employee Information for Payslip
   employeeInfo = {
-    name: 'John Doe',
-    employeeId: 'WS-EMP-1042',
-    designation: 'Senior Software Engineer',
-    department: 'Engineering (Frontend)',
-    joiningDate: '15 Jan 2024',
+    name: '',
+    employeeId: '',
+    designation: '',
+    department: '',
+    joiningDate: '',
     bankName: 'HDFC Bank Ltd.',
     accountNo: '•••• •••• 4821',
     ifscCode: 'HDFC0001234',
@@ -63,297 +38,113 @@ export class MyPayroll {
     pfNumber: 'MH/BAN/0048219/000/1042',
   };
 
-  // Top Stat Totals
-  currentMonthNetPay: number = 85400;
-  annualCtc: number = 1250000;
-  totalTdsYtd: number = 29400; // 7 months * 4200
-  totalPfYtd: number = 25200;  // 7 months * 3600
-  nextPayDate: string = '31 Oct 2026';
+  currentMonthNetPay: number = 0;
+  annualCtc: number = 0;
+  totalTdsYtd: number = 0;
+  totalPfYtd: number = 0;
+  nextPayDate: string = '';
 
-  // Modal active payslip
   selectedModalRecord: MonthlyPayrollRecord | null = null;
   showPayslipModal: boolean = false;
   isDownloading: boolean = false;
   downloadSuccessMessage: string = '';
 
-  // All Monthly Payroll Records (Financial Year 2026-27: April 2026 to March 2027)
-  monthlyRecords: MonthlyPayrollRecord[] = [
-    {
-      month: 'October 2026',
-      monthShort: 'Oct 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '31 Oct 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Oct_2026.pdf',
-        fileSize: '142 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Oct_2026.pdf',
-        fileSize: '98 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'September 2026',
-      monthShort: 'Sep 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '30 Sep 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Sep_2026.pdf',
-        fileSize: '140 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Sep_2026.pdf',
-        fileSize: '97 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'August 2026',
-      monthShort: 'Aug 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '31 Aug 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Aug_2026.pdf',
-        fileSize: '141 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Aug_2026.pdf',
-        fileSize: '96 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'July 2026',
-      monthShort: 'Jul 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '31 Jul 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Jul_2026.pdf',
-        fileSize: '139 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Jul_2026.pdf',
-        fileSize: '95 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'June 2026',
-      monthShort: 'Jun 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '30 Jun 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Jun_2026.pdf',
-        fileSize: '143 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Jun_2026.pdf',
-        fileSize: '98 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'May 2026',
-      monthShort: 'May 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '31 May 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_May_2026.pdf',
-        fileSize: '140 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_May_2026.pdf',
-        fileSize: '96 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'April 2026',
-      monthShort: 'Apr 2026',
-      financialYear: 'FY 2026-27',
-      payDate: '30 Apr 2026',
-      status: 'Paid',
-      basicSalary: 45000,
-      hra: 22500,
-      specialAllowance: 17500,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 95000,
-      epfDeduction: 3600,
-      professionalTax: 200,
-      tdsDeduction: 4200,
-      insuranceDeduction: 1600,
-      totalDeductions: 9600,
-      netSalary: 85400,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Apr_2026.pdf',
-        fileSize: '138 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Apr_2026.pdf',
-        fileSize: '94 KB',
-        downloadUrl: '#',
-      },
-    },
+  monthlyRecords: MonthlyPayrollRecord[] = [];
 
-    // FY 2025-26 Records (sample)
-    {
-      month: 'March 2026',
-      monthShort: 'Mar 2026',
-      financialYear: 'FY 2025-26',
-      payDate: '31 Mar 2026',
-      status: 'Paid',
-      basicSalary: 42000,
-      hra: 21000,
-      specialAllowance: 15000,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 88000,
-      epfDeduction: 3360,
-      professionalTax: 200,
-      tdsDeduction: 3800,
-      insuranceDeduction: 1500,
-      totalDeductions: 8860,
-      netSalary: 79140,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Mar_2026.pdf',
-        fileSize: '135 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Mar_2026.pdf',
-        fileSize: '92 KB',
-        downloadUrl: '#',
-      },
-    },
-    {
-      month: 'February 2026',
-      monthShort: 'Feb 2026',
-      financialYear: 'FY 2025-26',
-      payDate: '28 Feb 2026',
-      status: 'Paid',
-      basicSalary: 42000,
-      hra: 21000,
-      specialAllowance: 15000,
-      conveyance: 4000,
-      medicalAllowance: 6000,
-      grossEarnings: 88000,
-      epfDeduction: 3360,
-      professionalTax: 200,
-      tdsDeduction: 3800,
-      insuranceDeduction: 1500,
-      totalDeductions: 8860,
-      netSalary: 79140,
-      salarySlipPdf: {
-        fileName: 'WorkSphere_Payslip_Feb_2026.pdf',
-        fileSize: '136 KB',
-        downloadUrl: '#',
-      },
-      taxSlipPdf: {
-        fileName: 'WorkSphere_TDS_TaxSlip_Feb_2026.pdf',
-        fileSize: '93 KB',
-        downloadUrl: '#',
-      },
-    },
-  ];
+  ngOnInit(): void {
+    const user = this.authService.currentUser;
+    if (user) {
+      this.employeeInfo.name = user.fullName || '';
+      this.employeeInfo.employeeId = user.employeeCode || '';
+      this.employeeInfo.designation = user.designationTitle || '';
+      this.employeeInfo.department = user.departmentName || '';
+    }
+
+    const empCode = this.authService.getCurrentEmployeeCode();
+    this.workspaceService.getMyPayroll$(empCode).subscribe((res: any) => {
+      if (res?.employee) {
+        this.employeeInfo.name = res.employee.fullName || this.employeeInfo.name;
+        this.employeeInfo.employeeId = res.employee.employeeCode || this.employeeInfo.employeeId;
+        this.employeeInfo.designation = res.employee.designation || this.employeeInfo.designation;
+        this.employeeInfo.department = res.employee.department || this.employeeInfo.department;
+        this.employeeInfo.joiningDate = res.employee.joiningDate || this.employeeInfo.joiningDate;
+      }
+      if (res?.summary) {
+        this.currentMonthNetPay = Number(res.summary.currentMonthNetPay ?? 0);
+        this.annualCtc = Number(res.summary.annualCtc ?? 0);
+        this.totalTdsYtd = Number(res.summary.totalTdsYtd ?? 0);
+        this.totalPfYtd = Number(res.summary.totalPfYtd ?? 0);
+        this.nextPayDate = res.summary.nextPayDate || '';
+      }
+      const slips = res?.payslips || (Array.isArray(res) ? res : []);
+      this.monthlyRecords = slips.map((s: any) => ({
+        month: s.month || '',
+        monthShort: s.monthShort || '',
+        financialYear: s.financialYear || 'FY 2026-27',
+        payDate: s.payDate || '',
+        status: (s.status as MonthlyPayrollRecord['status']) || 'Paid',
+        basicSalary: Number(s.basicSalary ?? 0),
+        hra: Number(s.hra ?? 0),
+        specialAllowance: Number(s.specialAllowance ?? 0),
+        conveyance: Number(s.conveyance ?? 0),
+        medicalAllowance: Number(s.medicalAllowance ?? 0),
+        grossEarnings: Number(s.grossEarnings ?? 0),
+        epfDeduction: Number(s.epfDeduction ?? 0),
+        professionalTax: Number(s.professionalTax ?? 0),
+        tdsDeduction: Number(s.tdsDeduction ?? 0),
+        insuranceDeduction: Number(s.insuranceDeduction ?? 0),
+        totalDeductions: Number(s.totalDeductions ?? 0),
+        netSalary: Number(s.netSalary ?? 0),
+        salarySlipPdf: {
+          fileName:
+            s.salarySlipFileName ||
+            `WorkSphere_Payslip_${(s.monthShort || 'Slip').replace(' ', '_')}.pdf`,
+          fileSize: '142 KB',
+          downloadUrl: '#',
+        },
+        taxSlipPdf: {
+          fileName:
+            s.taxSlipFileName ||
+            `WorkSphere_TDS_TaxSlip_${(s.monthShort || 'Slip').replace(' ', '_')}.pdf`,
+          fileSize: '98 KB',
+          downloadUrl: '#',
+        },
+      }));
+      this.onFYChange();
+    });
+  }
 
   get currentMonthRecord(): MonthlyPayrollRecord {
-    return this.monthlyRecords[0]; // October 2026
+    return (
+      this.monthlyRecords[0] || {
+        month: '',
+        monthShort: '',
+        financialYear: this.selectedFY,
+        payDate: '',
+        status: 'Paid',
+        basicSalary: 0,
+        hra: 0,
+        specialAllowance: 0,
+        conveyance: 0,
+        medicalAllowance: 0,
+        grossEarnings: 0,
+        epfDeduction: 0,
+        professionalTax: 0,
+        tdsDeduction: 0,
+        insuranceDeduction: 0,
+        totalDeductions: 0,
+        netSalary: 0,
+        salarySlipPdf: { fileName: '', fileSize: '', downloadUrl: '#' },
+        taxSlipPdf: { fileName: '', fileSize: '', downloadUrl: '#' },
+      }
+    );
   }
 
   get filteredRecords(): MonthlyPayrollRecord[] {
     return this.monthlyRecords.filter((rec) => {
-      // Filter by Financial Year
       if (rec.financialYear !== this.selectedFY) {
         return false;
       }
-      // Filter by Search Term (month name)
       if (this.searchTerm.trim() !== '') {
         const query = this.searchTerm.toLowerCase();
         if (!rec.month.toLowerCase().includes(query)) {
@@ -365,7 +156,6 @@ export class MyPayroll {
   }
 
   onFYChange(): void {
-    // Recompute YTD stats based on selected FY
     const fyRecs = this.monthlyRecords.filter((r) => r.financialYear === this.selectedFY);
     if (fyRecs.length > 0) {
       this.currentMonthNetPay = fyRecs[0].netSalary;
@@ -392,12 +182,9 @@ export class MyPayroll {
     this.isDownloading = true;
     const docName = type === 'salary' ? record.salarySlipPdf.fileName : record.taxSlipPdf.fileName;
 
-    // Simulate instant secure PDF document generation and download
     setTimeout(() => {
       this.isDownloading = false;
       this.downloadSuccessMessage = `Downloaded ${docName}`;
-
-      // Create a printable payslip HTML view for downloading/printing
       this.generatePrintableSlip(record, type);
 
       setTimeout(() => {
@@ -411,7 +198,9 @@ export class MyPayroll {
     if (!printWindow) return;
 
     const isSalary = type === 'salary';
-    const title = isSalary ? `Salary Payslip - ${record.month}` : `Tax Deduction (TDS) Certificate - ${record.month}`;
+    const title = isSalary
+      ? `Salary Payslip - ${record.month}`
+      : `Tax Deduction (TDS) Certificate - ${record.month}`;
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -433,10 +222,6 @@ export class MyPayroll {
           .net-box { background: #f0fdf4; border: 2px solid #10b981; padding: 15px; border-radius: 8px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
           .net-val { font-size: 22px; font-weight: bold; color: #047857; }
           .footer { margin-top: 35px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
-          @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
-          }
         </style>
       </head>
       <body>
@@ -448,10 +233,8 @@ export class MyPayroll {
           <div style="text-align: right;">
             <div class="slip-title">${title}</div>
             <div style="font-size: 12px; color: #64748b;">Disbursed: ${record.payDate}</div>
-            <div style="font-size: 11px; color: #10b981; font-weight: 600;">Status: Verified & Paid</div>
           </div>
         </div>
-
         <table class="info-table">
           <tr>
             <td class="label">Employee Name</td>
@@ -465,71 +248,12 @@ export class MyPayroll {
             <td class="label">Department</td>
             <td>${this.employeeInfo.department}</td>
           </tr>
-          <tr>
-            <td class="label">Bank Name</td>
-            <td>${this.employeeInfo.bankName}</td>
-            <td class="label">Bank A/C No.</td>
-            <td>${this.employeeInfo.accountNo}</td>
-          </tr>
-          <tr>
-            <td class="label">PAN Number</td>
-            <td>${this.employeeInfo.panNumber}</td>
-            <td class="label">UAN / PF No.</td>
-            <td>${this.employeeInfo.uanNumber}</td>
-          </tr>
         </table>
-
-        <div style="display: flex; gap: 20px;">
-          <div style="flex: 1;">
-            <table class="breakdown-table">
-              <thead>
-                <tr>
-                  <th>EARNINGS</th>
-                  <th class="text-right">AMOUNT (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>Basic Salary</td><td class="text-right">₹${record.basicSalary.toLocaleString('en-IN')}</td></tr>
-                <tr><td>House Rent Allowance (HRA)</td><td class="text-right">₹${record.hra.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Special Allowance</td><td class="text-right">₹${record.specialAllowance.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Conveyance Allowance</td><td class="text-right">₹${record.conveyance.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Medical Allowance</td><td class="text-right">₹${record.medicalAllowance.toLocaleString('en-IN')}</td></tr>
-                <tr style="font-weight: 700; background: #f8fafc;"><td>Gross Earnings</td><td class="text-right">₹${record.grossEarnings.toLocaleString('en-IN')}</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div style="flex: 1;">
-            <table class="breakdown-table">
-              <thead>
-                <tr>
-                  <th>DEDUCTIONS</th>
-                  <th class="text-right">AMOUNT (₹)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>Employees Provident Fund (EPF)</td><td class="text-right">₹${record.epfDeduction.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Professional Tax (PT)</td><td class="text-right">₹${record.professionalTax.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Tax Deducted at Source (TDS)</td><td class="text-right">₹${record.tdsDeduction.toLocaleString('en-IN')}</td></tr>
-                <tr><td>Group Health Insurance</td><td class="text-right">₹${record.insuranceDeduction.toLocaleString('en-IN')}</td></tr>
-                <tr style="color: transparent;"><td>Placeholder</td><td>-</td></tr>
-                <tr style="font-weight: 700; background: #f8fafc;"><td>Total Deductions</td><td class="text-right">₹${record.totalDeductions.toLocaleString('en-IN')}</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <div class="net-box">
           <div>
-            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #065f46; font-weight: 600;">Net Payable Salary</div>
-            <div style="font-size: 11px; color: #047857; margin-top: 2px;">Rupees Eighty-Five Thousand Four Hundred Only</div>
+            <div style="font-size: 12px; text-transform: uppercase; color: #065f46; font-weight: 600;">Net Payable Salary</div>
           </div>
           <div class="net-val">₹${record.netSalary.toLocaleString('en-IN')}</div>
-        </div>
-
-        <div class="footer">
-          This is a system-generated document and does not require a physical signature.<br/>
-          Work-Sphere Inc. &copy; 2026. Confidential Employee Compensation Document.
         </div>
       </body>
       </html>

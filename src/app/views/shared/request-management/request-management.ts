@@ -41,7 +41,16 @@ export class RequestManagement implements OnInit {
   constructor(private requestService: RequestService) {}
 
   ngOnInit(): void {
-    this.loadRequests();
+    this.requestService.requests$.subscribe((list) => {
+      this.requests = list || [];
+      if (!this.selectedRequest && this.requests.length > 0) {
+        this.selectedRequest = this.requests[0];
+      } else if (this.selectedRequest) {
+        const updated = this.requests.find((r) => r.id === this.selectedRequest?.id);
+        if (updated) this.selectedRequest = updated;
+      }
+    });
+    this.requestService.refreshRequests();
   }
 
   loadRequests(): void {

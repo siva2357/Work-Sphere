@@ -34,7 +34,11 @@ export class TeamManagement implements OnInit {
 
   ngOnInit(): void {
     this.departments = this.teamService.availableDepartments;
-    this.loadTeam();
+    this.teamService.members$.subscribe((list) => {
+      this.teamMembers = list || [];
+      this.departments = this.teamService.availableDepartments;
+    });
+    this.teamService.refreshMembers();
   }
 
   loadTeam(): void {
