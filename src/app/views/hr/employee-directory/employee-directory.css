@@ -134,3 +134,18 @@
   font-weight: 600;
   border-top: none;
 }
+
+.upload-dropzone {
+  border-color: #cbd5e1 !important;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--emerald-primary) !important;
+  background-color: #f0fdf4;
+}
+
+.max-vh-40 {
+  max-height: 40vh;
+}

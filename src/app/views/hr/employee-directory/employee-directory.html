@@ -15,19 +15,25 @@
               <div class="d-flex align-items-center gap-2 mb-1">
                 <h1 class="h4 mb-0 fw-bold text-dark">Employee Directory</h1>
                 <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-semibold">
-                  248 Staff Members
+                  {{ employees.length }} Staff Members
+                </span>
+                <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1 extra-small">
+                  {{ activeCompanyCode }}
                 </span>
               </div>
               <p class="text-muted small mb-0">
-                Centralized workplace roster. Search, view profiles, and manage employee records.
+                Centralized workplace roster for {{ activeCompanyName || 'Company' }}. Search, view profiles, and manage employee records.
               </p>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-md-5 text-md-end d-flex align-items-center justify-content-md-end gap-2">
-          <button class="btn btn-outline-emerald px-3 py-2 rounded-3 fw-semibold shadow-xs">
+        <div class="col-12 col-md-5 text-md-end d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
+          <button class="btn btn-outline-emerald px-3 py-2 rounded-3 fw-semibold shadow-xs" (click)="exportRosterToCsv()" title="Export roster to CSV">
             <i class="bi bi-download me-1"></i> Export Roster
+          </button>
+          <button class="btn btn-outline-primary px-3 py-2 rounded-3 fw-semibold shadow-xs" (click)="openImportModal()" title="Bulk import employees via CSV">
+            <i class="bi bi-file-earmark-arrow-up me-1"></i> Import CSV
           </button>
           <button class="btn btn-emerald px-3 py-2 rounded-3 fw-semibold shadow-sm" (click)="openAddEmployee()">
             <i class="bi bi-person-plus-fill me-1.5"></i> Add New Employee
@@ -50,10 +56,10 @@
             <div class="stat-icon-wrapper"><i class="bi bi-people"></i></div>
           </div>
           <div>
-            <div class="h3 fw-bold text-dark mb-1">248</div>
+            <div class="h3 fw-bold text-dark mb-1">{{ employees.length }}</div>
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted extra-small">220 Full-time · 28 Contract</span>
-              <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small">+5% YoY</span>
+              <span class="text-muted extra-small">Active in Company Directory</span>
+              <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small">100% Real DB</span>
             </div>
           </div>
         </div>
@@ -68,10 +74,10 @@
             <div class="stat-icon-wrapper"><i class="bi bi-person-check"></i></div>
           </div>
           <div>
-            <div class="h3 fw-bold text-dark mb-1">234</div>
+            <div class="h3 fw-bold text-dark mb-1">{{ employees.length }}</div>
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted extra-small">218 In-Office · 16 Remote</span>
-              <span class="badge bg-success-subtle text-success rounded-pill extra-small">94.2%</span>
+              <span class="text-muted extra-small">Available on duty</span>
+              <span class="badge bg-success-subtle text-success rounded-pill extra-small">Active</span>
             </div>
           </div>
         </div>
@@ -82,14 +88,14 @@
       <div class="card h-100 border-0 shadow-sm rounded-4 stat-card">
         <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">On Leave</span>
-            <div class="stat-icon-wrapper"><i class="bi bi-calendar-x"></i></div>
+            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">Departments</span>
+            <div class="stat-icon-wrapper"><i class="bi bi-diagram-3"></i></div>
           </div>
           <div>
-            <div class="h3 fw-bold text-dark mb-1">14</div>
+            <div class="h3 fw-bold text-dark mb-1">{{ departmentsList.length || 22 }}</div>
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted extra-small">Approved PTO / Casual</span>
-              <span class="badge bg-warning-subtle text-warning rounded-pill extra-small">Tracked</span>
+              <span class="text-muted extra-small">Across organization</span>
+              <span class="badge bg-info-subtle text-info rounded-pill extra-small">Seeded</span>
             </div>
           </div>
         </div>
@@ -100,14 +106,14 @@
       <div class="card h-100 border-0 shadow-sm rounded-4 stat-card">
         <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
           <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">New This Month</span>
-            <div class="stat-icon-wrapper"><i class="bi bi-person-heart"></i></div>
+            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">Company Access</span>
+            <div class="stat-icon-wrapper"><i class="bi bi-shield-check"></i></div>
           </div>
           <div>
-            <div class="h3 fw-bold text-dark mb-1">12</div>
+            <div class="h3 fw-bold text-dark mb-1">{{ activeCompanyCode }}</div>
             <div class="d-flex align-items-center justify-content-between">
-              <span class="text-muted extra-small">Joined in October</span>
-              <span class="badge bg-info-subtle text-info rounded-pill extra-small">Onboarding</span>
+              <span class="text-muted extra-small">Main HR Provisioned</span>
+              <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small">Verified</span>
             </div>
           </div>
         </div>
@@ -424,6 +430,159 @@
             </button>
             <button class="btn btn-emerald flex-grow-1 rounded-3 btn-sm fw-semibold" (click)="closeProfileModal()">
               Done
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       BULK CSV IMPORT MODAL
+  ===================================================================== -->
+  <div class="modal-backdrop fade show" *ngIf="showImportModal"></div>
+  <div class="modal fade show d-block" tabindex="-1" *ngIf="showImportModal">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header border-bottom border-light-subtle px-4 py-3 bg-light d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="widget-icon-box bg-primary-subtle text-primary">
+              <i class="bi bi-file-earmark-arrow-up-fill fs-5"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h2 class="h6 mb-0 fw-bold text-dark">Bulk Import Employees (CSV)</h2>
+                <span class="badge bg-primary-subtle text-primary extra-small">{{ activeCompanyCode }}</span>
+              </div>
+              <span class="extra-small text-muted">Upload CSV or load sample dataset with RBAC role codes to populate directory</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="closeImportModal()"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <!-- Success Alert -->
+          <div class="alert alert-success d-flex align-items-center gap-2 mb-3 rounded-3" *ngIf="importSuccessMsg">
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            <div>{{ importSuccessMsg }}</div>
+          </div>
+
+          <!-- Error Alert -->
+          <div class="alert alert-danger mb-3 rounded-3" *ngIf="importErrors.length > 0">
+            <div class="fw-semibold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Validation / Import Notice:</div>
+            <ul class="mb-0 ps-3 extra-small">
+              <li *ngFor="let err of importErrors">{{ err }}</li>
+            </ul>
+          </div>
+
+          <!-- Instructions & Action Bar -->
+          <div class="card bg-light-subtle border mb-4 rounded-3 p-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <div>
+                <span class="fw-bold small text-dark d-block mb-1">
+                  <i class="bi bi-info-circle-fill text-primary me-1"></i> Required CSV Format & Headers:
+                </span>
+                <code class="extra-small text-muted bg-white px-2 py-1 rounded border d-inline-block">
+                  FullName, Email, DepartmentCode, DesignationCode, RoleCode, EmploymentType, WorkLocation, Phone, InitialPassword, ManagerEmployeeCode
+                </code>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 fw-semibold" (click)="downloadTemplateCsv()">
+                  <i class="bi bi-download me-1"></i> Download Template
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-3 fw-semibold" (click)="loadSample100Employees()">
+                  <i class="bi bi-lightning-charge-fill me-1"></i> Load 100 Sample Employees
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Drag and Drop Dropzone -->
+          <div
+            class="upload-dropzone border border-2 border-dashed rounded-4 p-4 text-center cursor-pointer mb-4"
+            (dragover)="onDragOver($event)"
+            (drop)="onFileDropped($event)"
+            (click)="fileInput.click()">
+            <input #fileInput type="file" accept=".csv" class="d-none" (change)="onFileSelected($event)">
+            <div class="mb-2">
+              <i class="bi bi-cloud-arrow-up text-primary fs-1"></i>
+            </div>
+            <p class="mb-1 fw-bold text-dark">
+              Drag & Drop your CSV file here, or <span class="text-primary text-decoration-underline">Browse</span>
+            </p>
+            <p class="text-muted extra-small mb-0">Supports standard UTF-8 encoded .csv files</p>
+            <div *ngIf="importFileName" class="mt-2">
+              <span class="badge bg-primary text-white rounded-pill px-3 py-1.5 small">
+                <i class="bi bi-file-earmark-check me-1"></i> {{ importFileName }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Preview Table -->
+          <div *ngIf="parsedImportEmployees.length > 0">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="small fw-bold text-dark">
+                Preview Rows Ready to Import ({{ parsedImportEmployees.length }} Records)
+              </span>
+              <span class="badge bg-success-subtle text-success rounded-pill extra-small">
+                Validated
+              </span>
+            </div>
+
+            <div class="table-responsive border rounded-3 max-vh-40 overflow-auto">
+              <table class="table table-sm table-hover align-middle mb-0 extra-small">
+                <thead class="table-light text-muted sticky-top">
+                  <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Dept</th>
+                    <th>Designation</th>
+                    <th>System Role</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let emp of parsedImportEmployees.slice(0, 15); let i = index">
+                    <td class="text-muted">{{ i + 1 }}</td>
+                    <td class="fw-semibold text-dark">{{ emp.fullName }}</td>
+                    <td>{{ emp.email }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ emp.departmentCode }}</span></td>
+                    <td class="text-dark">{{ emp.designationCode }}</td>
+                    <td><span class="badge bg-primary-subtle text-primary">{{ emp.roleCode }}</span></td>
+                    <td>{{ emp.employmentType }}</td>
+                    <td class="text-muted">{{ emp.workLocation }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="parsedImportEmployees.length > 15" class="text-muted text-center extra-small mt-2">
+              ... and {{ parsedImportEmployees.length - 15 }} more records ready to be stored in the database.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-top px-4 py-3 bg-light d-flex justify-content-between">
+          <div class="text-muted extra-small">
+            <span *ngIf="parsedImportEmployees.length > 0" class="fw-semibold text-dark">
+              {{ parsedImportEmployees.length }} employees queued for {{ activeCompanyCode }}
+            </span>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-light rounded-3 px-3 btn-sm" (click)="closeImportModal()">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-emerald rounded-3 px-4 btn-sm fw-semibold shadow-sm"
+              [disabled]="parsedImportEmployees.length === 0 || isUploading"
+              (click)="submitBulkImport()">
+              <span *ngIf="isUploading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <i *ngIf="!isUploading" class="bi bi-cloud-check-fill me-1"></i>
+              Confirm & Import {{ parsedImportEmployees.length > 0 ? '(' + parsedImportEmployees.length + ')' : '' }}
             </button>
           </div>
         </div>

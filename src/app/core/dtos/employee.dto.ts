@@ -54,3 +54,24 @@ export interface TeamAllocationRequestDto {
   allocationPercentage: number;
 }
 
+export interface BulkImportEmployeesDto {
+  createdByHrEmailOrCode?: string;
+  employees: MainHrCreateEmployeeDto[];
+}
+
+export interface BulkImportResultDto {
+  totalSubmitted: number;
+  totalImported: number;
+  totalSkipped: number;
+  messages: string[];
+  importedEmployees: Array<{
+    employeeCode: string;
+    name: string;
+    email: string;
+    department: string;
+    role: string;
+    level?: string;
+    portalType?: string;
+  }>;
+}
+

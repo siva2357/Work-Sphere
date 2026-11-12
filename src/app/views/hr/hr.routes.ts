@@ -7,6 +7,7 @@ import { Announcements } from './announcements/announcements';
 import { RecruitmentManagement } from './recruitment-management/recruitment-management';
 import { RequestManagement } from '../shared/request-management/request-management';
 import { MyProfile } from '../shared/my-profile/my-profile';
+import { RolesOrganizationsDepartments } from './roles-organizations-departments/roles-organizations-departments';
 
 export const HR_ROUTES: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -16,6 +17,7 @@ export const HR_ROUTES: Routes = [
   { path: 'payroll-management', component: PayrollManagement },
   { path: 'announcements', component: Announcements },
   { path: 'requests-management', component: RequestManagement },
+  { path: 'organizations&departments', component: RolesOrganizationsDepartments },
   { path: 'my-profile', component: MyProfile },
 
 ];

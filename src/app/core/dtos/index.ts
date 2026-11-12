@@ -8,4 +8,5 @@ export * from './leave.dto';
 export * from './recruitment.dto';
 export * from './document.dto';
 export * from './dropdown.dto';
+export * from './rbac.dto';
 

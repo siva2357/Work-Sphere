@@ -23,13 +23,21 @@ export const API_ENDPOINTS = {
     EMPLOYEE_DIRECTORY: `${API_BASE_URL}/api/employee-directory`,
     CREATE_EMPLOYEE_BY_MAIN_HR: (companyCode: string = 'CMP-001') =>
       `${API_BASE_URL}/api/companies/${companyCode}/directory/employees`,
+    BULK_IMPORT: (companyCode: string = 'CMP-001') =>
+      `${API_BASE_URL}/api/companies/${companyCode}/directory/bulk-import`,
+    IMPORT_CSV: (companyCode: string = 'CMP-001') =>
+      `${API_BASE_URL}/api/companies/${companyCode}/directory/import-csv`,
   },
 
   // 3. RBAC, Organizational Hierarchy (L1-L10 & H1-H6) & 22 Departments (/api/rbac)
   RBAC: {
     DEPARTMENTS: `${API_BASE_URL}/api/rbac/departments`,
+    DEPARTMENT_BY_ID: (id: string) => `${API_BASE_URL}/api/rbac/departments/${id}`,
     LEVELS: `${API_BASE_URL}/api/rbac/levels`,
+    DESIGNATIONS: `${API_BASE_URL}/api/rbac/designations`,
+    DESIGNATION_BY_ID: (id: string) => `${API_BASE_URL}/api/rbac/designations/${id}`,
     ROLES: `${API_BASE_URL}/api/rbac/roles`,
+    PERMISSIONS: `${API_BASE_URL}/api/rbac/permissions`,
     ROLE_PERMISSIONS: (roleCode: string) =>
       `${API_BASE_URL}/api/rbac/roles/${roleCode}/permissions`,
     EMPLOYEES: `${API_BASE_URL}/api/rbac/employees`,

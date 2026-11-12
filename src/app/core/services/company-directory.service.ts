@@ -105,4 +105,110 @@ export class CompanyDirectoryService {
       }
     );
   }
+
+  /**
+   * Main HR Action: Bulk imports multiple employee records into the Company's Employee Directory
+   * (POST /api/companies/{companyCode}/directory/bulk-import).
+   */
+  bulkImportEmployees$(
+    employees: CreateDirectoryEmployeePayload[],
+    companyCode?: string
+  ): Observable<any> {
+    const targetCompany = companyCode || this.authService.getCurrentCompanyCode();
+    const currentUser = this.authService.currentUser;
+    const defaultHr =
+      targetCompany === 'CMP-002'
+        ? 'hr.admin@nexacloud.io'
+        : 'chro@worksphere.com';
+
+    return this.http.post<any>(
+      API_ENDPOINTS.COMPANIES.BULK_IMPORT(targetCompany),
+      {
+        createdByHrEmailOrCode: currentUser?.email || defaultHr,
+        employees: employees.map((e) => ({
+          ...e,
+          createdByHrEmailOrCode: currentUser?.email || defaultHr,
+          initialPassword: e.initialPassword || 'Welcome@12345',
+          departmentCode: e.departmentCode || 'ENG',
+          designationCode: e.designationCode || 'DESIG_DEV',
+          employmentType: e.employmentType || 'Full-time',
+          workLocation: e.workLocation || 'Bangalore, India',
+        })),
+      }
+    );
+  }
+
+  /**
+   * Main HR Action: Uploads and imports a CSV file directly via multipart/form-data
+   * (POST /api/companies/{companyCode}/directory/import-csv).
+   */
+  importEmployeesCsv$(file: File, companyCode?: string): Observable<any> {
+    const targetCompany = companyCode || this.authService.getCurrentCompanyCode();
+    const currentUser = this.authService.currentUser;
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    if (currentUser?.email) {
+      formData.append('createdByHrEmailOrCode', currentUser.email);
+    }
+
+    return this.http.post<any>(
+      API_ENDPOINTS.COMPANIES.IMPORT_CSV(targetCompany),
+      formData
+    );
+  }
+
+  /**
+   * Exports employee directory records to CSV and triggers a client-side download.
+   */
+  exportDirectoryCsv(employees: any[], filename?: string): void {
+    if (!employees || employees.length === 0) return;
+
+    const headers = [
+      'EmployeeCode',
+      'FullName',
+      'Email',
+      'Department',
+      'Designation',
+      'Status',
+      'EmploymentType',
+      'Location',
+      'Phone',
+      'ReportingManager',
+      'JoiningDate',
+    ];
+
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = employees.map((e) => [
+      escapeCsv(e.id || e.employeeCode),
+      escapeCsv(e.name || e.fullName),
+      escapeCsv(e.email),
+      escapeCsv(e.department),
+      escapeCsv(e.role || e.designationTitle),
+      escapeCsv(e.status || 'Active'),
+      escapeCsv(e.type || e.employmentType || 'Full-time'),
+      escapeCsv(e.location || e.workLocation),
+      escapeCsv(e.phone),
+      escapeCsv(e.manager || e.managerEmployeeCode || 'Department Head'),
+      escapeCsv(e.joiningDate || e.joinedAt || ''),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      filename || `WorkSphere_Employee_Directory_${new Date().toISOString().split('T')[0]}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }
