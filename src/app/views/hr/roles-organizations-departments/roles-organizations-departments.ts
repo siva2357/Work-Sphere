@@ -2,6 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RbacService } from '../../../core/services/rbac.service';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { DepartmentCard } from '../../../library/shared/components/department-card/department-card';
+import { LevelDesignationCard } from '../../../library/shared/components/level-designation-card/level-designation-card';
+import { Button } from '../../../library/UI/components/button/button';
 import { RolePermissionItemDto } from '../../../core/dtos/auth.dto';
 import {
   CreateDepartmentDto,
@@ -21,7 +25,7 @@ import {
 @Component({
   selector: 'app-roles-organizations-departments',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, DepartmentCard, LevelDesignationCard, Button],
   templateUrl: './roles-organizations-departments.html',
   styleUrl: './roles-organizations-departments.css',
 })
@@ -54,6 +58,50 @@ export class RolesOrganizationsDepartments implements OnInit {
   roles: RoleItem[] = [];
   allPermissions: PermissionModuleGroup[] = [];
   employees: EmployeeHierarchyItem[] = [];
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Departments',
+        value: this.departments.length,
+        subtitle: `${this.totalSubDepartmentsCount} Sub-departments`,
+        badgeText: 'Hierarchy',
+        badgeType: 'emerald',
+        icon: 'bi-buildings-fill',
+      },
+      {
+        title: 'Levels & Titles',
+        value: `${this.levels.length} Levels`,
+        subtitle: `${this.designations.length} Designations Mapped`,
+        badgeText: 'L1–L10 & H1–H6',
+        badgeType: 'info',
+        icon: 'bi-layers-fill',
+      },
+      {
+        title: 'RBAC Roles',
+        value: `${this.roles.length} Roles`,
+        subtitle: `${this.allPermissions.length} Permission Modules`,
+        badgeText: 'Matrix Active',
+        badgeType: 'warning',
+        icon: 'bi-shield-lock-fill',
+      },
+      {
+        title: 'Hierarchy Roster',
+        value: this.employees.length,
+        subtitle: 'Staff Assigned Roles',
+        badgeText: 'Synced DB',
+        badgeType: 'success',
+        icon: 'bi-people-fill',
+      },
+    ];
+  }
+
+  onStatCardSelected(card: StatMetric): void {
+    if (card.title === 'Departments') this.activeTab = 'departments';
+    else if (card.title === 'Levels & Titles') this.activeTab = 'levels';
+    else if (card.title === 'RBAC Roles') this.activeTab = 'roles';
+    else if (card.title === 'Hierarchy Roster') this.activeTab = 'roster';
+  }
 
   // Selected Role & Permission Matrix
   selectedRole: RoleItem | null = null;
@@ -404,6 +452,9 @@ export class RolesOrganizationsDepartments implements OnInit {
     this.rbacService.getAllPermissions$().subscribe({
       next: (groups) => {
         this.allPermissions = groups || [];
+        if (this.selectedRole) {
+          this.loadRolePermissions(this.selectedRole.code);
+        }
       },
       error: () => {
         this.showToast('Failed to load permissions catalog.', 'danger');

@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmployeeDocument } from '../../../core/models/workspace.interface';
+import { LetterDocument } from '../../../library/shared/components/letter-document/letter-document';
 
 export type { EmployeeDocument };
 
 @Component({
   selector: 'app-my-documents',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LetterDocument],
   templateUrl: './my-documents.html',
   styleUrl: './my-documents.css',
 })

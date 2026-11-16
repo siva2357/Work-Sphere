@@ -1,0 +1,59 @@
+<div class="card border rounded-4 p-3 p-md-4 h-100 document-card shadow-sm d-flex flex-column justify-content-between">
+
+  <div class="d-flex align-items-start justify-content-between gap-3">
+    <!-- Left: PDF Icon + Clean Space + Title & Details -->
+    <div class="d-flex align-items-start gap-3 overflow-hidden">
+      <div class="doc-badge-icon bg-danger-subtle text-danger rounded-3 flex-shrink-0 mt-1">
+        <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+          <h3 class="h6 fw-bold text-dark mb-0 text-truncate" [title]="document.title">
+            {{ document.title }}
+          </h3>
+          @if (document.badge) {
+            <span class="badge rounded-pill extra-small flex-shrink-0"
+              [ngClass]="{
+                'bg-emerald-subtle text-emerald': document.badgeType === 'emerald',
+                'bg-primary-subtle text-primary': document.badgeType === 'primary',
+                'bg-warning-subtle text-warning': document.badgeType === 'warning',
+                'bg-secondary-subtle text-secondary': document.badgeType === 'secondary'
+              }">
+              {{ document.badge }}
+            </span>
+          }
+        </div>
+
+        <span class="extra-small text-muted d-block text-truncate mb-1">
+          Issued: {{ document.issueDate }} &middot; {{ document.fileSize }} &middot; {{ document.fileFormat }}
+        </span>
+
+        <p class="doc-desc-text mb-0 text-muted" [title]="document.description">
+          {{ document.description }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: Download as Circular Icon Button -->
+    <button type="button"
+      class="btn btn-emerald btn-download-icon rounded-circle d-flex align-items-center justify-content-center shadow-sm flex-shrink-0"
+      (click)="onDownload($event)"
+      [disabled]="isDownloading"
+      [title]="'Download ' + document.title + ' PDF'">
+      <i class="bi bi-download"></i>
+    </button>
+  </div>
+
+  <!-- Card Bottom: Category Tag & Official HR Record Status -->
+  <div class="doc-card-footer pt-3 mt-3 border-top d-flex align-items-center justify-content-between">
+    <span class="extra-small text-muted fw-medium d-inline-flex align-items-center gap-1">
+      <i class="bi bi-tag text-emerald"></i>
+      {{ document.categoryLabel }}
+    </span>
+    <span class="extra-small text-emerald fw-semibold d-inline-flex align-items-center gap-1">
+      <i class="bi bi-shield-check"></i>
+      Official HR Record
+    </span>
+  </div>
+
+</div>

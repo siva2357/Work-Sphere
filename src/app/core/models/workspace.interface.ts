@@ -43,12 +43,13 @@ export interface MonthlyPayrollRecord {
 
 export interface StatMetric {
   title: string;
-  value: string;
-  subtitle: string;
-  badgeText: string;
-  badgeType: 'emerald' | 'success' | 'warning' | 'info';
+  value: string | number;
+  subtitle?: string;
+  badgeText?: string;
+  badgeType?: 'emerald' | 'success' | 'warning' | 'info' | 'danger' | 'primary' | 'secondary' | string;
   icon: string;
-  route: string;
+  route?: string;
+  trend?: string;
 }
 
 export interface DeptMetric {

@@ -19,13 +19,16 @@ import {
   SAMPLE_EMPLOYEES_CSV_HEADER,
   generateSampleEmployeesCsv
 } from '../../../core/constants/sample-employees.data';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { EmployeeCard } from '../../../library/shared/components/employee-card/employee-card';
+import { Button } from '../../../library/UI/components/button/button';
 
 export type { EmployeeRecord };
 
 @Component({
   selector: 'app-employee-directory',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, EmployeeCard, Button],
   templateUrl: './employee-directory.html',
   styleUrl: './employee-directory.css',
 })
@@ -44,6 +47,8 @@ export class EmployeeDirectory implements OnInit {
   showAddEmployeeModal = false;
   showProfileModal = false;
   showImportModal = false;
+  isEditMode = false;
+  editingEmployeeId: string | null = null;
   selectedEmployee: EmployeeRecord | null = null;
 
   // Bulk CSV Import State
@@ -63,16 +68,66 @@ export class EmployeeDirectory implements OnInit {
     email: '',
     phone: '',
     department: 'ENG',
+    subDepartment: '',
     levelCode: 'L8',
     role: 'DESIG_DEV',
     systemRole: 'EMP_DEVELOPER',
     type: 'Full-time' as 'Full-time' | 'Contract' | 'Intern',
+    status: 'Active' as 'Active' | 'Remote' | 'On Leave',
     location: 'Bangalore, India',
     manager: '',
     joiningDate: new Date().toISOString().split('T')[0],
   };
 
+  readonly workLocationsList: string[] = [
+    'Bangalore, India',
+    'Hyderabad, India',
+    'Pune, India',
+    'Mumbai, India',
+    'Chennai, India',
+    'Delhi NCR, India',
+    'Remote (India)',
+  ];
+
   employees: EmployeeRecord[] = [];
+
+  get statCards(): StatMetric[] {
+    const activeCount = this.employees.filter((e) => e.status === 'Active' || !e.status).length;
+    return [
+      {
+        title: 'Total Workforce',
+        value: this.employees.length,
+        subtitle: 'Active in Company Directory',
+        badgeText: '100% Real DB',
+        badgeType: 'emerald',
+        icon: 'bi-people',
+      },
+      {
+        title: 'Active Today',
+        value: activeCount,
+        subtitle: 'Available on duty',
+        badgeText: 'Active',
+        badgeType: 'success',
+        icon: 'bi-person-check',
+      },
+      {
+        title: 'Departments',
+        value: this.departmentsList.length || 22,
+        subtitle: 'Across organization',
+        badgeText: 'Seeded',
+        badgeType: 'info',
+        icon: 'bi-diagram-3',
+      },
+      {
+        title: 'Company Access',
+        value: this.activeCompanyCode,
+        subtitle: 'Main HR Provisioned',
+        badgeText: 'Verified',
+        badgeType: 'emerald',
+        icon: 'bi-shield-check',
+      },
+    ];
+  }
 
   ngOnInit(): void {
     const companyCode = this.authService.getCurrentCompanyCode();
@@ -90,6 +145,134 @@ export class EmployeeDirectory implements OnInit {
     });
   }
 
+  get subDepartmentsForSelectedDept() {
+    const found = this.departmentsList.find((d) => d.code === this.newEmployee.department);
+    return found?.subDepartments || [];
+  }
+
+  get selectedDesignationInfo(): HelperDesignationOption | undefined {
+    return this.designationsList.find((d) => d.code === this.newEmployee.role);
+  }
+
+  private parseRankFromLevelCode(levelStr?: string): { track: string; rank: number; code: string } {
+    if (!levelStr) return { track: 'Employee', rank: 8, code: 'L8' };
+    const match = levelStr.toUpperCase().match(/\b([LH])(\d{1,2})\b/);
+    if (match) {
+      return {
+        track: match[1] === 'H' ? 'HR' : 'Employee',
+        rank: parseInt(match[2], 10),
+        code: `${match[1]}${match[2]}`,
+      };
+    }
+    return { track: 'Employee', rank: 8, code: 'L8' };
+  }
+
+  /**
+   * Computes eligible Reporting Managers from the employee directory based on:
+   * 1. Selected Organizational Level (managers must have higher seniority / lower rank number than the employee)
+   * 2. Selected Department (same-department leaders prioritized first)
+   * 3. Designation's TypicalReportingTo & Executive fallback options
+   */
+  get reportingManagerOptions(): { value: string; label: string; group: string }[] {
+    const currentLvl = this.parseRankFromLevelCode(this.newEmployee.levelCode);
+    const selectedDeptObj = this.departmentsList.find((d) => d.code === this.newEmployee.department);
+    const selectedDeptName = (selectedDeptObj?.name || this.newEmployee.department).toLowerCase();
+
+    const sameDeptManagers: { value: string; label: string; group: string; rank: number }[] = [];
+    const crossDeptManagers: { value: string; label: string; group: string; rank: number }[] = [];
+
+    for (const emp of this.employees) {
+      if (this.editingEmployeeId && emp.id === this.editingEmployeeId) {
+        continue;
+      }
+
+      const empLvl = this.parseRankFromLevelCode(emp.role);
+      // Manager should be strictly more senior (lower rank number, e.g. L1..L7 for an L8 employee)
+      // or L1/H1 executive if the employee is also Rank 1
+      const isMoreSenior =
+        currentLvl.rank === 1 ? empLvl.rank === 1 : empLvl.rank < currentLvl.rank;
+
+      if (!isMoreSenior) {
+        continue;
+      }
+
+      const isSameDept =
+        emp.department.toLowerCase().includes(selectedDeptName) ||
+        selectedDeptName.includes(emp.department.toLowerCase());
+
+      const optionItem = {
+        value: emp.name,
+        label: `${emp.name} — ${emp.role} [${emp.department}] (${emp.id})`,
+        group: isSameDept ? 'Department Leadership' : 'Organization & HR Leadership',
+        rank: empLvl.rank,
+      };
+
+      if (isSameDept) {
+        sameDeptManagers.push(optionItem);
+      } else {
+        crossDeptManagers.push(optionItem);
+      }
+    }
+
+    // Sort by seniority rank (closest senior manager or top leader)
+    sameDeptManagers.sort((a, b) => a.rank - b.rank);
+    crossDeptManagers.sort((a, b) => a.rank - b.rank);
+
+    const combined: { value: string; label: string; group: string }[] = [
+      ...sameDeptManagers,
+      ...crossDeptManagers,
+    ];
+
+    // Also include typical reporting role / executive fallbacks so dropdown is always rich even before bulk import
+    const typical = this.selectedDesignationInfo?.typicalReportingTo;
+    if (typical && !combined.some((o) => o.value.toLowerCase() === typical.toLowerCase())) {
+      combined.push({
+        value: typical,
+        label: `${typical} (Default Reporting Line for ${this.newEmployee.levelCode})`,
+        group: 'Standard Reporting Line',
+      });
+    }
+
+    if (currentLvl.rank === 1) {
+      combined.unshift({
+        value: 'CEO / Board',
+        label: 'CEO / Board of Directors (Executive Governance)',
+        group: 'Executive Board',
+      });
+    }
+
+    if (
+      this.newEmployee.manager &&
+      !combined.some((o) => o.value.toLowerCase() === this.newEmployee.manager.toLowerCase())
+    ) {
+      combined.unshift({
+        value: this.newEmployee.manager,
+        label: `${this.newEmployee.manager} (Current Assigned Manager)`,
+        group: 'Assigned',
+      });
+    }
+
+    return combined;
+  }
+
+  onDepartmentChange(deptCode: string): void {
+    this.newEmployee.department = deptCode;
+    this.newEmployee.subDepartment = '';
+    this.autoSelectReportingManager();
+  }
+
+  onLevelChange(levelCode: string): void {
+    this.newEmployee.levelCode = levelCode;
+    const matchingDesigs = this.designationsList.filter((d) => d.levelCode === levelCode);
+    if (matchingDesigs.length > 0) {
+      this.newEmployee.role = matchingDesigs[0].code;
+      if (matchingDesigs[0].defaultRoleCode) {
+        this.newEmployee.systemRole = matchingDesigs[0].defaultRoleCode;
+      }
+    }
+    this.autoSelectReportingManager();
+  }
+
   onDesignationChange(desigCode: string): void {
     const found = this.designationsList.find((d) => d.code === desigCode);
     if (found) {
@@ -97,6 +280,14 @@ export class EmployeeDirectory implements OnInit {
       if (found.defaultRoleCode) {
         this.newEmployee.systemRole = found.defaultRoleCode;
       }
+    }
+    this.autoSelectReportingManager();
+  }
+
+  private autoSelectReportingManager(): void {
+    const options = this.reportingManagerOptions;
+    if (options.length > 0) {
+      this.newEmployee.manager = options[0].value;
     }
   }
 
@@ -161,15 +352,142 @@ export class EmployeeDirectory implements OnInit {
   }
 
   openAddEmployee(): void {
+    this.isEditMode = false;
+    this.editingEmployeeId = null;
+    const defaultDept = this.departmentsList[0]?.code || 'ENG';
+    const defaultDesig =
+      this.designationsList.find((d) => d.code === 'DESIG_DEV') || this.designationsList[0];
+
+    this.newEmployee = {
+      name: '',
+      email: '',
+      phone: '',
+      department: defaultDept,
+      subDepartment: '',
+      levelCode: defaultDesig?.levelCode || 'L8',
+      role: defaultDesig?.code || 'DESIG_DEV',
+      systemRole: defaultDesig?.defaultRoleCode || 'EMP_DEVELOPER',
+      type: 'Full-time',
+      status: 'Active',
+      location: 'Bangalore, India',
+      manager: '',
+      joiningDate: new Date().toISOString().split('T')[0],
+    };
+    this.autoSelectReportingManager();
+    this.showAddEmployeeModal = true;
+  }
+
+  openEditEmployee(emp: EmployeeRecord): void {
+    this.showProfileModal = false;
+    this.isEditMode = true;
+    this.editingEmployeeId = emp.id;
+    this.selectedEmployee = emp;
+
+    let matchedParentCode = 'ENG';
+    let matchedSubCode = '';
+
+    for (const d of this.departmentsList) {
+      if (
+        d.name.toLowerCase() === emp.department.toLowerCase() ||
+        d.code.toLowerCase() === emp.department.toLowerCase()
+      ) {
+        matchedParentCode = d.code;
+        break;
+      }
+      const sub = d.subDepartments?.find(
+        (s) =>
+          s.name.toLowerCase() === emp.department.toLowerCase() ||
+          s.code.toLowerCase() === emp.department.toLowerCase()
+      );
+      if (sub) {
+        matchedParentCode = d.code;
+        matchedSubCode = sub.code;
+        break;
+      }
+    }
+
+    const matchedDesig = this.designationsList.find((d) =>
+      emp.role.toLowerCase().includes(d.title.toLowerCase())
+    );
+    const parsedLvl = this.parseRankFromLevelCode(emp.role);
+
+    // Format joiningDate to YYYY-MM-DD for <input type="date">
+    let formattedJoinDate = new Date().toISOString().split('T')[0];
+    if (emp.joiningDate) {
+      const parsedDate = new Date(emp.joiningDate);
+      if (!isNaN(parsedDate.getTime())) {
+        formattedJoinDate = parsedDate.toISOString().split('T')[0];
+      }
+    }
+
+    const cleanManager =
+      emp.manager && emp.manager !== 'Department Head' ? emp.manager : '';
+
+    this.newEmployee = {
+      name: emp.name,
+      email: emp.email,
+      phone: emp.phone || '',
+      department: matchedParentCode,
+      subDepartment: matchedSubCode,
+      levelCode: matchedDesig?.levelCode || parsedLvl.code || 'L8',
+      role: matchedDesig?.code || 'DESIG_DEV',
+      systemRole: matchedDesig?.defaultRoleCode || 'EMP_DEVELOPER',
+      type: emp.type || 'Full-time',
+      status: emp.status || 'Active',
+      location: emp.location || 'Bangalore, India',
+      manager: cleanManager,
+      joiningDate: formattedJoinDate,
+    };
+
+    if (!this.newEmployee.manager) {
+      this.autoSelectReportingManager();
+    }
+
     this.showAddEmployeeModal = true;
   }
 
   closeAddEmployee(): void {
     this.showAddEmployeeModal = false;
+    this.isEditMode = false;
+    this.editingEmployeeId = null;
   }
 
   saveEmployee(): void {
     if (!this.newEmployee.name || !this.newEmployee.email) return;
+
+    const targetDeptCode = this.newEmployee.subDepartment || this.newEmployee.department;
+    const matchedDept = this.departmentsList.find((d) => d.code === this.newEmployee.department);
+    const matchedSub = matchedDept?.subDepartments?.find(
+      (s) => s.code === this.newEmployee.subDepartment
+    );
+    const displayDeptName = matchedSub?.name || matchedDept?.name || targetDeptCode;
+
+    if (this.isEditMode && this.editingEmployeeId) {
+      const matchedDesig = this.designationsList.find((d) => d.code === this.newEmployee.role);
+      const roleDisplay = matchedDesig
+        ? `${matchedDesig.title} (${matchedDesig.levelCode})`
+        : this.selectedEmployee?.role || this.newEmployee.role;
+
+      this.employees = this.employees.map((emp) =>
+        emp.id === this.editingEmployeeId
+          ? {
+            ...emp,
+            name: this.newEmployee.name,
+            email: this.newEmployee.email,
+            phone: this.newEmployee.phone,
+            department: displayDeptName,
+            role: roleDisplay,
+            type: this.newEmployee.type,
+            status: this.newEmployee.status,
+            location: this.newEmployee.location,
+            manager: this.newEmployee.manager || emp.manager,
+            joiningDate: this.newEmployee.joiningDate || emp.joiningDate,
+          }
+          : emp
+      );
+      this.closeAddEmployee();
+      return;
+    }
 
     this.companyDirectoryService
       .createEmployeeByMainHr$(
@@ -177,7 +495,7 @@ export class EmployeeDirectory implements OnInit {
           fullName: this.newEmployee.name,
           email: this.newEmployee.email,
           phone: this.newEmployee.phone,
-          departmentCode: this.newEmployee.department,
+          departmentCode: targetDeptCode,
           designationCode: this.newEmployee.role || 'DESIG_DEV',
           roleCode: this.newEmployee.systemRole || 'EMP_DEVELOPER',
           employmentType: this.newEmployee.type,
@@ -413,9 +731,8 @@ export class EmployeeDirectory implements OnInit {
           this.isUploading = false;
           const imported = res?.totalImported ?? this.parsedImportEmployees.length;
           const skipped = res?.totalSkipped ?? 0;
-          this.importSuccessMsg = `Successfully imported ${imported} employees into ${this.activeCompanyCode}! ${
-            skipped > 0 ? `(${skipped} skipped/duplicate)` : ''
-          }`;
+          this.importSuccessMsg = `Successfully imported ${imported} employees into ${this.activeCompanyCode}! ${skipped > 0 ? `(${skipped} skipped/duplicate)` : ''
+            }`;
 
           // Reload employee directory from PostgreSQL
           this.loadDirectoryFromBackend(this.activeCompanyCode);

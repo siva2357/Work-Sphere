@@ -5,13 +5,14 @@ import { HttpClient } from '@angular/common/http';
 
 import { AssignedProject } from '../../../core/models/task-project-team.interface';
 import { API_ENDPOINTS } from '../../../core/constants/api.constants';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 
 export type { AssignedProject } from '../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-my-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards],
   templateUrl: './my-projects.html',
   styleUrl: './my-projects.css',
 })
@@ -96,6 +97,43 @@ export class MyProjects implements OnInit {
 
   get completedCount(): number {
     return this.projectsList.filter((p) => p.status === 'Completed').length;
+  }
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Total Assigned',
+        value: `${this.totalProjectsCount} Projects`,
+        subtitle: 'IT Department scope',
+        badgeText: 'Assigned',
+        badgeType: 'emerald',
+        icon: 'bi-folder-check',
+      },
+      {
+        title: 'In Progress',
+        value: `${this.inProgressCount} Active Sprints`,
+        subtitle: 'Under active development',
+        badgeText: 'Active',
+        badgeType: 'info',
+        icon: 'bi-arrow-repeat',
+      },
+      {
+        title: 'In Planning',
+        value: `${this.planningCount} Upcoming`,
+        subtitle: 'Architecture & design',
+        badgeText: 'Planning',
+        badgeType: 'warning',
+        icon: 'bi-diagram-3',
+      },
+      {
+        title: 'Delivered',
+        value: `${this.completedCount} Completed`,
+        subtitle: 'Production deployed',
+        badgeText: 'Delivered',
+        badgeType: 'success',
+        icon: 'bi-check2-circle',
+      },
+    ];
   }
 
   // Status Filter Setter

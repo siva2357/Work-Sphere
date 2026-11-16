@@ -6,13 +6,14 @@ import { HttpClient } from '@angular/common/http';
 
 import { EmployeeRequest } from '../../../core/models/request.interface';
 import { API_ENDPOINTS } from '../../../core/constants/api.constants';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 
 export type { EmployeeRequest } from '../../../core/models/request.interface';
 
 @Component({
   selector: 'app-my-requests',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatCards],
   templateUrl: './my-requests.html',
   styleUrl: './my-requests.css',
 })
@@ -38,6 +39,43 @@ export class MyRequests implements OnInit {
   pendingRequests: number = 0;
   approvedRequests: number = 0;
   rejectedRequests: number = 0;
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Total Requests',
+        value: `${this.totalRequests} Submissions`,
+        subtitle: 'All raised service requests',
+        badgeText: 'Total',
+        badgeType: 'emerald',
+        icon: 'bi-inbox-fill',
+      },
+      {
+        title: 'Pending Requests',
+        value: `${this.pendingRequests} Awaiting Action`,
+        subtitle: 'In multi-stage review',
+        badgeText: 'Pending',
+        badgeType: 'warning',
+        icon: 'bi-hourglass-split',
+      },
+      {
+        title: 'Approved Requests',
+        value: `${this.approvedRequests} Completed`,
+        subtitle: 'Cleared by hierarchy',
+        badgeText: 'Approved',
+        badgeType: 'success',
+        icon: 'bi-check2-circle',
+      },
+      {
+        title: 'Rejected Requests',
+        value: `${this.rejectedRequests} Declined`,
+        subtitle: 'Closed with remarks',
+        badgeText: 'Declined',
+        badgeType: 'danger',
+        icon: 'bi-x-circle',
+      },
+    ];
+  }
 
   // Real-time Employee Requests from Backend Database
   requestsList: EmployeeRequest[] = [];

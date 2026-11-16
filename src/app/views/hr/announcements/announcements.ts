@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AnnouncementItem } from '../../../core/models/workspace.interface';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { Button } from '../../../library/UI/components/button/button';
 
 export type { AnnouncementItem };
 
 @Component({
   selector: 'app-announcements',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, Button],
   templateUrl: './announcements.html',
   styleUrl: './announcements.css',
 })
@@ -33,6 +35,44 @@ export class Announcements implements OnInit {
   };
 
   announcements: AnnouncementItem[] = [];
+
+  get statCards(): StatMetric[] {
+    const pinnedCount = this.announcements.filter((a) => a.isPinned).length;
+    return [
+      {
+        title: 'Total Broadcasts',
+        value: this.announcements.length,
+        subtitle: 'Published announcements',
+        badgeText: 'Active',
+        badgeType: 'emerald',
+        icon: 'bi-megaphone',
+      },
+      {
+        title: 'Pinned Notices',
+        value: pinnedCount,
+        subtitle: 'Urgent priority',
+        badgeText: 'Top of feed',
+        badgeType: 'warning',
+        icon: 'bi-pin-angle-fill',
+      },
+      {
+        title: 'Avg. Read Rate',
+        value: '94.8%',
+        subtitle: 'Across workforce',
+        badgeText: 'Engaged',
+        badgeType: 'success',
+        icon: 'bi-eye',
+      },
+      {
+        title: 'Target Reach',
+        value: 'All Staff',
+        subtitle: 'Company-wide & Dept notices',
+        badgeText: 'Company',
+        badgeType: 'info',
+        icon: 'bi-broadcast-pin',
+      },
+    ];
+  }
 
   ngOnInit(): void {
     const empCode = this.authService.getCurrentEmployeeCode();

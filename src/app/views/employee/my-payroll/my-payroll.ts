@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { MonthlyPayrollRecord } from '../../../core/models/workspace.interface';
+import { PayslipDocument } from '../../../library/shared/components/payslip-document/payslip-document';
 
 export type { MonthlyPayrollRecord };
 
 @Component({
   selector: 'app-my-payroll',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PayslipDocument],
   templateUrl: './my-payroll.html',
   styleUrl: './my-payroll.css',
 })

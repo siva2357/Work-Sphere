@@ -5,7 +5,7 @@
   --emerald-dark: #059669;
   --emerald-subtle: #ecfdf5;
   --emerald-light: #f0fdf4;
-  --emerald-border: rgba(16, 185, 129, 0.2);
+  --emerald-border: rgba(16, 185, 129, 0.22);
 }
 
 .text-emerald {
@@ -20,32 +20,6 @@
   background-color: var(--emerald-subtle) !important;
 }
 
-.btn-emerald {
-  background-color: var(--emerald-primary);
-  border-color: var(--emerald-primary);
-  color: #ffffff;
-}
-
-.btn-emerald:hover,
-.btn-emerald:focus {
-  background-color: var(--emerald-dark);
-  border-color: var(--emerald-dark);
-  color: #ffffff;
-}
-
-.btn-outline-emerald {
-  border-color: var(--emerald-primary);
-  color: var(--emerald-primary);
-  background-color: transparent;
-}
-
-.btn-outline-emerald:hover,
-.btn-outline-emerald:focus {
-  background-color: var(--emerald-primary);
-  border-color: var(--emerald-primary);
-  color: #ffffff;
-}
-
 .extra-small {
   font-size: 0.75rem;
 }
@@ -58,6 +32,10 @@
   cursor: pointer;
 }
 
+.min-w-0 {
+  min-width: 0;
+}
+
 .shadow-xs {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
@@ -66,6 +44,9 @@
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.03);
 }
 
+/* ====================================================================
+   1. PAGE HEADER & NAVIGATION TABS
+===================================================================== */
 .page-header {
   background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
   border: 1px solid var(--emerald-border) !important;
@@ -76,62 +57,59 @@
   height: 52px;
 }
 
-.nav-pills .nav-link {
-  color: #4b5563;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+.org-tab-btn {
+  color: #475569;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.85rem;
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
 }
 
-.nav-pills .nav-link:hover {
-  background-color: #f3f4f6;
-  color: #111827;
+.org-tab-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
-.nav-pills .nav-link.active {
+.org-tab-btn.active {
   background-color: var(--emerald-primary);
   border-color: var(--emerald-primary);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.22);
 }
 
-.dept-card,
-.level-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  border: 1px solid #f1f5f9 !important;
+/* ====================================================================
+   2. SEARCH & TOOLBAR INPUTS
+===================================================================== */
+.search-input-group .input-group-text,
+.search-input-group .form-control {
+  border-color: #e2e8f0;
 }
 
-.dept-card:hover,
-.level-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
+.search-input-group:focus-within .input-group-text,
+.search-input-group:focus-within .form-control {
+  border-color: var(--emerald-primary);
 }
 
-.sub-dept-pill {
-  transition: background-color 0.15s ease;
-}
-
-.sub-dept-pill:hover {
-  background-color: #f8fafc !important;
-}
-
-.level-code-badge {
-  font-size: 0.85rem;
-  min-width: 44px;
-  text-align: center;
-}
-
+/* ====================================================================
+   3. ROLES SIDEBAR & RBAC MATRIX
+===================================================================== */
 .role-item {
+  border-color: #f1f5f9 !important;
   transition: all 0.15s ease;
 }
 
 .role-item:hover {
-  background-color: #e5e7eb;
+  background-color: #f1f5f9;
+  border-color: #cbd5e1 !important;
 }
 
 .active-role {
   background-color: var(--emerald-primary) !important;
+  border-color: var(--emerald-primary) !important;
   color: #ffffff !important;
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
 }
 
 .module-card {
@@ -143,13 +121,17 @@
   transition: all 0.15s ease;
 }
 
+.action-tile:hover {
+  border-color: #cbd5e1;
+}
+
 .action-tile-active {
   border-color: var(--emerald-primary) !important;
   background-color: #f0fdf4 !important;
 }
 
 .scope-select {
-  max-width: 130px;
+  max-width: 132px;
   font-size: 0.72rem;
   color: var(--emerald-dark);
   font-weight: 600;
@@ -158,8 +140,8 @@
 }
 
 .avatar-circle {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   font-size: 0.85rem;
 }
 
@@ -175,4 +157,3 @@
 .animate-pulse {
   animation: pulseGlow 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-

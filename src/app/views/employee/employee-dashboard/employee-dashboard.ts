@@ -7,6 +7,7 @@ import { LeaveService } from '../../../core/services/leave.service';
 import { TaskService } from '../../../core/services/task.service';
 import { RequestService } from '../../../core/services/request.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { StatCards } from '../../../library/shared/components/stat-cards/stat-cards';
 import {
   DayAttendance,
   QuickAction,
@@ -20,7 +21,7 @@ export type { DayAttendance, QuickAction, RecentRequest, StatCard, TaskItem };
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, StatCards],
   templateUrl: './employee-dashboard.html',
   styleUrl: './employee-dashboard.css',
 })

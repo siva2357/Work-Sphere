@@ -47,40 +47,9 @@
 
 
   <!-- ====================================================================
-       2. TOP 4 KEY STAT CARDS
+       2. TOP 4 KEY STAT CARDS (Reusable Shared Component)
   ===================================================================== -->
-  <section class="stat-cards-row row g-3 g-md-4 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3" *ngFor="let card of statCards">
-      <div class="card h-100 border-0 shadow-sm rounded-4 stat-card" [routerLink]="card.route">
-        <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span class="text-muted small fw-semibold text-uppercase letter-spacing-1">
-              {{ card.title }}
-            </span>
-            <div class="stat-icon-wrapper">
-              <i class="bi {{ card.icon }}"></i>
-            </div>
-          </div>
-
-          <div>
-            <div class="h3 fw-bold text-dark mb-1">{{ card.value }}</div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
-              <span class="text-muted extra-small">{{ card.subtitle }}</span>
-              <span class="badge rounded-pill extra-small"
-                [ngClass]="{
-                  'bg-success-subtle text-success': card.badgeType === 'success',
-                  'bg-emerald-subtle text-emerald': card.badgeType === 'emerald',
-                  'bg-warning-subtle text-warning': card.badgeType === 'warning',
-                  'bg-info-subtle text-info': card.badgeType === 'info'
-                }">
-                {{ card.badgeText }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <app-stat-cards [cards]="statCards"></app-stat-cards>
 
 
   <!-- ====================================================================
@@ -183,22 +152,29 @@
                   <span class="extra-small text-muted">Active candidate pipeline</span>
                 </div>
               </div>
-              <a routerLink="/hr/recruitment-management" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0 extra-small">
-                Open Pipeline <i class="bi bi-arrow-right"></i>
-              </a>
+              <app-button
+                label="Open Pipeline"
+                variant="link-emerald"
+                size="xs"
+                icon="bi-arrow-right"
+                iconPosition="right"
+                route="/recruitment-management">
+              </app-button>
             </div>
 
             <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between">
               <div class="d-flex flex-column gap-2.5">
-                <div *ngFor="let stage of recruitmentStages" class="d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-chevron-right extra-small text-muted"></i>
-                    <span class="small fw-semibold text-dark">{{ stage.stage }}</span>
+                @for (stage of recruitmentStages; track stage.stage) {
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-chevron-right extra-small text-muted"></i>
+                      <span class="small fw-semibold text-dark">{{ stage.stage }}</span>
+                    </div>
+                    <span class="badge rounded-pill bg-light text-dark border extra-small px-2.5 py-1 fw-bold">
+                      {{ stage.count }} candidates
+                    </span>
                   </div>
-                  <span class="badge rounded-pill bg-light text-dark border extra-small px-2.5 py-1 fw-bold">
-                    {{ stage.count }} candidates
-                  </span>
-                </div>
+                }
               </div>
 
               <div class="pt-3 border-top border-light-subtle d-flex align-items-center justify-content-between extra-small text-muted">
@@ -220,27 +196,34 @@
             </div>
             <div>
               <h2 class="h6 mb-0 fw-bold text-dark">Department Distribution</h2>
-              <span class="extra-small text-muted">Total 248 full-time personnel across departments</span>
+              <span class="extra-small text-muted">Total full-time personnel across departments</span>
             </div>
           </div>
-          <a routerLink="/hr/employee-directory" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0 extra-small">
-            View Directory <i class="bi bi-arrow-right"></i>
-          </a>
+          <app-button
+            label="View Directory"
+            variant="link-emerald"
+            size="xs"
+            icon="bi-arrow-right"
+            iconPosition="right"
+            route="/employee-directory">
+          </app-button>
         </div>
 
         <div class="card-body p-3 p-md-4">
           <div class="row g-3">
-            <div class="col-12 col-md-6" *ngFor="let dept of departmentBreakdown">
-              <div class="p-2.5 rounded-3 border bg-light-subtle">
-                <div class="d-flex justify-content-between align-items-baseline mb-1.5">
-                  <span class="small fw-semibold text-dark">{{ dept.name }}</span>
-                  <span class="extra-small text-muted fw-bold">{{ dept.count }} staff ({{ dept.percentage }}%)</span>
-                </div>
-                <div class="progress rounded-pill" style="height: 8px;">
-                  <div class="progress-bar" [ngClass]="dept.colorClass" [style.width.%]="dept.percentage"></div>
+            @for (dept of departmentBreakdown; track dept.name) {
+              <div class="col-12 col-md-6">
+                <div class="p-2.5 rounded-3 border bg-light-subtle">
+                  <div class="d-flex justify-content-between align-items-baseline mb-1.5">
+                    <span class="small fw-semibold text-dark">{{ dept.name }}</span>
+                    <span class="extra-small text-muted fw-bold">{{ dept.count }} staff ({{ dept.percentage }}%)</span>
+                  </div>
+                  <div class="progress rounded-pill" style="height: 8px;">
+                    <div class="progress-bar" [ngClass]="dept.colorClass" [style.width.%]="dept.percentage"></div>
+                  </div>
                 </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </section>
@@ -261,19 +244,21 @@
 
         <div class="card-body p-3 p-md-4">
           <div class="timeline-wrapper d-flex flex-column gap-3">
-            <div *ngFor="let item of recentActivities" class="d-flex align-items-start gap-3 p-2.5 rounded-3 hover-bg-subtle border border-transparent">
-              <div class="activity-icon-box rounded-3 p-2 d-flex align-items-center justify-content-center"
-                [ngClass]="item.badgeClass">
-                <i class="bi {{ item.icon }} fs-6"></i>
-              </div>
-              <div class="flex-grow-1">
-                <div class="d-flex align-items-center justify-content-between mb-0.5">
-                  <h3 class="h6 mb-0 small fw-bold text-dark">{{ item.title }}</h3>
-                  <span class="extra-small text-muted">{{ item.time }}</span>
+            @for (item of recentActivities; track item.id) {
+              <div class="d-flex align-items-start gap-3 p-2.5 rounded-3 hover-bg-subtle border border-transparent">
+                <div class="activity-icon-box rounded-3 p-2 d-flex align-items-center justify-content-center"
+                  [ngClass]="item.badgeClass">
+                  <i class="bi {{ item.icon }} fs-6"></i>
                 </div>
-                <p class="text-muted extra-small mb-0">{{ item.description }}</p>
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center justify-content-between mb-0.5">
+                    <h3 class="h6 mb-0 small fw-bold text-dark">{{ item.title }}</h3>
+                    <span class="extra-small text-muted">{{ item.time }}</span>
+                  </div>
+                  <p class="text-muted extra-small mb-0">{{ item.description }}</p>
+                </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </section>
@@ -302,19 +287,21 @@
 
         <div class="card-body p-3 p-md-4">
           <div class="d-flex flex-column gap-2">
-            <a *ngFor="let action of quickActions" [routerLink]="action.route"
-              class="quick-action-btn text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3">
-              <div class="d-flex align-items-center gap-3">
-                <div class="action-icon-circle">
-                  <i class="bi {{ action.icon }}"></i>
+            @for (action of quickActions; track action.title) {
+              <a [routerLink]="action.route"
+                class="quick-action-btn text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="action-icon-circle">
+                    <i class="bi {{ action.icon }}"></i>
+                  </div>
+                  <div>
+                    <span class="d-block fw-semibold text-dark small action-title">{{ action.title }}</span>
+                    <span class="d-block text-muted extra-small">{{ action.desc }}</span>
+                  </div>
                 </div>
-                <div>
-                  <span class="d-block fw-semibold text-dark small action-title">{{ action.title }}</span>
-                  <span class="d-block text-muted extra-small">{{ action.desc }}</span>
-                </div>
-              </div>
-              <i class="bi bi-chevron-right action-chevron"></i>
-            </a>
+                <i class="bi bi-chevron-right action-chevron"></i>
+              </a>
+            }
           </div>
         </div>
       </section>
@@ -333,9 +320,15 @@
           <div class="progress rounded-pill mb-3" style="height: 6px;">
             <div class="progress-bar bg-emerald" style="width: 92%;"></div>
           </div>
-          <a routerLink="/hr/payroll-management" class="btn btn-emerald w-100 btn-sm rounded-3 fw-semibold">
-            <i class="bi bi-cash-stack me-1.5"></i> Review & Process Payroll
-          </a>
+          <app-button
+            class="w-100"
+            label="Review & Process Payroll"
+            variant="emerald"
+            size="sm"
+            icon="bi-cash-stack"
+            [block]="true"
+            route="/payroll-management">
+          </app-button>
         </div>
       </section>
 
@@ -355,22 +348,24 @@
 
         <div class="card-body p-3 p-md-4">
           <div class="d-flex flex-column gap-3">
-            <div *ngFor="let item of celebrations" class="d-flex align-items-center justify-content-between p-2 rounded-3 border bg-light-subtle">
-              <div class="d-flex align-items-center gap-2.5">
-                <img [src]="item.avatar" alt="{{ item.name }}" class="rounded-circle object-fit-cover shadow-xs" width="38" height="38">
-                <div>
-                  <span class="d-block fw-semibold text-dark small">{{ item.name }}</span>
-                  <span class="extra-small text-muted">{{ item.role }} · {{ item.department }}</span>
+            @for (item of celebrations; track item.name) {
+              <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border bg-light-subtle">
+                <div class="d-flex align-items-center gap-2.5">
+                  <img [src]="item.avatar" alt="{{ item.name }}" class="rounded-circle object-fit-cover shadow-xs" width="38" height="38">
+                  <div>
+                    <span class="d-block fw-semibold text-dark small">{{ item.name }}</span>
+                    <span class="extra-small text-muted">{{ item.role }} · {{ item.department }}</span>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <span class="badge rounded-pill extra-small px-2 py-1"
+                    [ngClass]="item.type === 'birthday' ? 'bg-warning-subtle text-warning' : 'bg-emerald-subtle text-emerald'">
+                    {{ item.event }}
+                  </span>
+                  <span class="d-block extra-small text-muted mt-0.5">{{ item.date }}</span>
                 </div>
               </div>
-              <div class="text-end">
-                <span class="badge rounded-pill extra-small px-2 py-1"
-                  [ngClass]="item.type === 'birthday' ? 'bg-warning-subtle text-warning' : 'bg-emerald-subtle text-emerald'">
-                  {{ item.event }}
-                </span>
-                <span class="d-block extra-small text-muted mt-0.5">{{ item.date }}</span>
-              </div>
-            </div>
+            }
           </div>
         </div>
       </section>

@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RecruitmentService } from '../../../core/services/recruitment.service';
 import { Candidate, JobOpening } from '../../../core/models/recruitment.interface';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { Button } from '../../../library/UI/components/button/button';
 
 export type { Candidate, JobOpening };
 
 @Component({
   selector: 'app-recruitment-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, Button],
   templateUrl: './recruitment-management.html',
   styleUrl: './recruitment-management.css',
 })
@@ -36,6 +38,49 @@ export class RecruitmentManagement implements OnInit {
 
   jobs: JobOpening[] = [];
   candidates: Candidate[] = [];
+
+  get statCards(): StatMetric[] {
+    const inInterview = this.candidates.filter(
+      (c) => c.stage === 'Technical' || c.stage === 'HR Round'
+    ).length;
+    const offers = this.candidates.filter(
+      (c) => c.stage === 'Offered' || c.stage === 'Hired'
+    ).length;
+    return [
+      {
+        title: 'Active Vacancies',
+        value: this.jobs.length,
+        subtitle: 'Across departments',
+        badgeText: 'Hiring',
+        badgeType: 'emerald',
+        icon: 'bi-briefcase',
+      },
+      {
+        title: 'Total Applicants',
+        value: this.candidates.length,
+        subtitle: 'Synced from Career Portal',
+        badgeText: 'Pipeline',
+        badgeType: 'info',
+        icon: 'bi-people',
+      },
+      {
+        title: 'In Interview',
+        value: inInterview,
+        subtitle: 'Technical & HR Rounds',
+        badgeText: 'Active',
+        badgeType: 'warning',
+        icon: 'bi-camera-video',
+      },
+      {
+        title: 'Offers Extended',
+        value: offers,
+        subtitle: 'Offered & Hired',
+        badgeText: 'Finalizing',
+        badgeType: 'success',
+        icon: 'bi-award',
+      },
+    ];
+  }
 
   stagesList: Candidate['stage'][] = [
     'Applied',

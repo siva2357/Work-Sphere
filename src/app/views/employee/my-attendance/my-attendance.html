@@ -36,82 +36,9 @@
 
 
     <!-- ====================================================================
-       2. TOP 4 STAT CARDS (Clean Green Theme, 16px Values)
+       2. TOP 4 STAT CARDS (Reusable Shared Component)
   ===================================================================== -->
-    <section class="stat-cards-row row g-3 mb-4">
-
-        <!-- Card 1: Present Days -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Present Days
-                        </span>
-                        <div class="stat-value text-dark fw-bold">{{ presentDays }} <span class="text-muted fw-normal">/
-                                {{totalWorkingDays}}</span></div>
-                    </div>
-                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
-                        <i class="bi bi-calendar2-check"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2: Absent Days -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Absent Days
-                        </span>
-                        <div class="stat-value text-dark fw-bold">{{ absentDays }} <span class="text-muted fw-normal">/
-                                {{totalWorkingDays}}</span></div>
-                    </div>
-                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
-                        <i class="bi bi-calendar2-x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3: Leave Days -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Leave Days
-                        </span>
-                        <div class="stat-value text-dark fw-bold">{{ leaveDays }} <span class="text-muted fw-normal">/
-                                {{totalWorkingDays}}</span></div>
-                    </div>
-                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
-                        <i class="bi bi-calendar2-minus"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 4: Overall Hours Present -->
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-3 attendance-stat-card">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Overall Hours Present
-                        </span>
-                        <div class="stat-value text-dark fw-bold">{{ overallHoursPresent }}</div>
-                    </div>
-                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </section>
+    <app-stat-cards [cards]="statCards"></app-stat-cards>
 
 
     <!-- ====================================================================

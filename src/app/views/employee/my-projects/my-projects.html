@@ -54,92 +54,9 @@
 
 
     <!-- ====================================================================
-       3. TOP 4 STATIC STAT CARDS (Emerald / Modern Theme)
-       Total Projects | In Progress | In Planning | Delivered
+       3. TOP 4 STAT CARDS (Reusable Shared Component)
   ===================================================================== -->
-    <section class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
-
-        <!-- Card 1: Total IT Projects -->
-        <div class="col">
-            <div class="card border-0 shadow-sm rounded-4 stat-card h-100">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Total Assigned
-                        </span>
-                        <div class="stat-value text-dark fw-bold">
-                            {{ totalProjectsCount }} <span class="text-muted fw-normal small">Projects</span>
-                        </div>
-                        <span class="extra-small text-muted mt-1 d-block">IT Department scope</span>
-                    </div>
-                    <div class="stat-icon-box bg-emerald-subtle text-emerald">
-                        <i class="bi bi-folder-check"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2: In Progress -->
-        <div class="col">
-            <div class="card border-0 shadow-sm rounded-4 stat-card h-100">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            In Progress
-                        </span>
-                        <div class="stat-value text-dark fw-bold">
-                            {{ inProgressCount }} <span class="text-muted fw-normal small">Active Sprints</span>
-                        </div>
-                        <span class="extra-small text-primary mt-1 d-block">Under active development</span>
-                    </div>
-                    <div class="stat-icon-box bg-primary-subtle text-primary">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3: Planning & Design -->
-        <div class="col">
-            <div class="card border-0 shadow-sm rounded-4 stat-card h-100">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            In Planning
-                        </span>
-                        <div class="stat-value text-dark fw-bold">
-                            {{ planningCount }} <span class="text-muted fw-normal small">Upcoming</span>
-                        </div>
-                        <span class="extra-small text-warning mt-1 d-block">Architecture & design</span>
-                    </div>
-                    <div class="stat-icon-box bg-warning-subtle text-warning">
-                        <i class="bi bi-diagram-3"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 4: Completed -->
-        <div class="col">
-            <div class="card border-0 shadow-sm rounded-4 stat-card h-100">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted extra-small fw-semibold text-uppercase letter-spacing-1 d-block mb-1">
-                            Delivered
-                        </span>
-                        <div class="stat-value text-dark fw-bold">
-                            {{ completedCount }} <span class="text-muted fw-normal small">Completed</span>
-                        </div>
-                        <span class="extra-small text-success mt-1 d-block">Production deployed</span>
-                    </div>
-                    <div class="stat-icon-box bg-success-subtle text-success">
-                        <i class="bi bi-check2-circle"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </section>
+    <app-stat-cards [cards]="statCards"></app-stat-cards>
 
 
     <!-- ====================================================================

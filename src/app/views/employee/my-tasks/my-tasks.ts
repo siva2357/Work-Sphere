@@ -7,13 +7,14 @@ import { HttpClient } from '@angular/common/http';
 import { TaskService } from '../../../core/services/task.service';
 import { AssignedTask } from '../../../core/models/task-project-team.interface';
 import { API_ENDPOINTS } from '../../../core/constants/api.constants';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 
 export type { AssignedTask } from '../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-my-tasks',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatCards],
   templateUrl: './my-tasks.html',
   styleUrl: './my-tasks.css',
 })
@@ -88,6 +89,43 @@ export class MyTasks implements OnInit {
 
   get completedCount(): number {
     return this.tasksList.filter((t) => t.status === 'Completed').length;
+  }
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Tasks Assigned',
+        value: `${this.totalAssignedCount} Total`,
+        subtitle: 'Across all active projects',
+        badgeText: 'Assigned',
+        badgeType: 'emerald',
+        icon: 'bi-clipboard-data',
+      },
+      {
+        title: 'Tasks Pending',
+        value: `${this.pendingCount} Pending`,
+        subtitle: 'Awaiting start / action',
+        badgeText: 'Queue',
+        badgeType: 'warning',
+        icon: 'bi-hourglass-split',
+      },
+      {
+        title: 'Tasks In Progress',
+        value: `${this.inProgressCount} Active`,
+        subtitle: 'Currently in development',
+        badgeText: 'In Progress',
+        badgeType: 'info',
+        icon: 'bi-arrow-repeat',
+      },
+      {
+        title: 'Tasks Completed',
+        value: `${this.completedCount} Done`,
+        subtitle: 'Successfully verified',
+        badgeText: 'Completed',
+        badgeType: 'success',
+        icon: 'bi-check2-circle',
+      },
+    ];
   }
 
   // --- Filtered and Sorted Tasks ---

@@ -1,9 +1,29 @@
-<button [type]="type" class="btn" [class]="'btn-' + variant + ' btn-' + size" [class.btn-icon-only]="iconOnly"
-    [class.w-100]="block" [class.disabled]="disabled" [class.loading]="loading" [disabled]="disabled || loading"
-    (click)="onClick($event)">
+<button
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="disabled || loading"
+  [attr.title]="title || null"
+  (click)="onClick($event)">
+  @if (loading) {
+    <span class="spinner-border spinner-border-sm ws-btn-spinner" role="status" aria-hidden="true"></span>
+    @if (loadingText) {
+      <span>{{ loadingText }}</span>
+    } @else if (!iconOnly && label) {
+      <span>{{ label }}</span>
+    }
+  } @else {
+    @if (icon && iconPosition === 'left') {
+      <i [class]="formattedIcon"></i>
+    }
+
     <ng-content></ng-content>
 
     @if (!iconOnly && label) {
-    <span>{{ label }}</span>
+      <span>{{ label }}</span>
     }
+
+    @if (icon && iconPosition === 'right') {
+      <i [class]="formattedIcon"></i>
+    }
+  }
 </button>

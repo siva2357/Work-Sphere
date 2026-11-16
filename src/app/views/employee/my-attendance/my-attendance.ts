@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { AttendanceService } from '../../../core/services/attendance.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AttendanceRecord, CalendarDay } from '../../../core/models/attendance.interface';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 
 export type { AttendanceRecord, CalendarDay };
 
 @Component({
   selector: 'app-my-attendance',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatCards],
   templateUrl: './my-attendance.html',
   styleUrl: './my-attendance.css',
 })
@@ -34,6 +35,43 @@ export class MyAttendance implements OnInit {
   absentDays = 0;
   leaveDays = 0;
   overallHoursPresent = '0 hrs';
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Present Days',
+        value: `${this.presentDays} / ${this.totalWorkingDays}`,
+        subtitle: 'Logged this month',
+        badgeText: 'Present',
+        badgeType: 'emerald',
+        icon: 'bi-calendar2-check',
+      },
+      {
+        title: 'Absent Days',
+        value: `${this.absentDays} / ${this.totalWorkingDays}`,
+        subtitle: 'Unscheduled absences',
+        badgeText: this.absentDays === 0 ? 'Optimal' : 'Recorded',
+        badgeType: this.absentDays === 0 ? 'success' : 'danger',
+        icon: 'bi-calendar2-x',
+      },
+      {
+        title: 'Leave Days',
+        value: `${this.leaveDays} / ${this.totalWorkingDays}`,
+        subtitle: 'Approved time-off',
+        badgeText: 'Leave',
+        badgeType: 'warning',
+        icon: 'bi-calendar2-minus',
+      },
+      {
+        title: 'Overall Hours Present',
+        value: this.overallHoursPresent,
+        subtitle: 'Cumulative shift hours',
+        badgeText: 'Tracked',
+        badgeType: 'info',
+        icon: 'bi-clock-history',
+      },
+    ];
+  }
 
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   calendarDays: (CalendarDay | null)[] = [];

@@ -4,13 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { CompanyDirectoryService } from '../../../core/services/company-directory.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PayrollRecord } from '../../../core/models/workspace.interface';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { Button } from '../../../library/UI/components/button/button';
 
 export type { PayrollRecord };
 
 @Component({
   selector: 'app-payroll-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, Button],
   templateUrl: './payroll-management.html',
   styleUrl: './payroll-management.css',
 })
@@ -85,6 +87,43 @@ export class PayrollManagement implements OnInit {
 
   get totalDeductions(): number {
     return this.payrollList.reduce((acc, curr) => acc + curr.deductions, 0);
+  }
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Estimated Net Pay',
+        value: `$${this.totalNetPayroll.toLocaleString('en-US')}`,
+        subtitle: `${this.payrollList.length} active employees`,
+        badgeText: 'Ready',
+        badgeType: 'emerald',
+        icon: 'bi-wallet2',
+      },
+      {
+        title: 'Total Allowances',
+        value: `$${this.totalAllowances.toLocaleString('en-US')}`,
+        subtitle: 'HRA, Travel & Medical',
+        badgeText: '+4.2%',
+        badgeType: 'info',
+        icon: 'bi-gift',
+      },
+      {
+        title: 'Taxes & Deductions',
+        value: `$${this.totalDeductions.toLocaleString('en-US')}`,
+        subtitle: 'TDS, PF & Insurance',
+        badgeText: 'Compliant',
+        badgeType: 'warning',
+        icon: 'bi-shield-check',
+      },
+      {
+        title: 'Disbursement Date',
+        value: 'Oct 31',
+        subtitle: 'Automated ACH Direct',
+        badgeText: 'Scheduled',
+        badgeType: 'success',
+        icon: 'bi-calendar-event',
+      },
+    ];
   }
 
   viewPayslip(item: PayrollRecord): void {

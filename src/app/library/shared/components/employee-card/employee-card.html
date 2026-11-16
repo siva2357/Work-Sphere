@@ -1,0 +1,145 @@
+@if (isGridMode) {
+  <div class="row g-3 g-md-4">
+    @for (emp of employees; track emp.id) {
+      <div [class]="colClass">
+        <div class="card h-100 border-0 shadow-sm rounded-4 ws-employee-card cursor-pointer" (click)="onSelectEmployee(emp)">
+          <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between text-center">
+            <div>
+              <!-- Top Status & ID Row -->
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="badge bg-light text-muted border extra-small font-monospace px-2 py-1">
+                  {{ emp.id }}
+                </span>
+                <span class="badge rounded-pill extra-small px-2 py-1 fw-semibold" [ngClass]="getStatusBadgeClass(emp.status)">
+                  ● {{ emp.status }}
+                </span>
+              </div>
+
+              <!-- Avatar & Status Dot -->
+              <div class="position-relative d-inline-block my-2">
+                <div class="avatar-ring">
+                  <img
+                    [src]="emp.avatar"
+                    [alt]="emp.name"
+                    class="rounded-circle object-fit-cover shadow-xs avatar-large"
+                    width="72"
+                    height="72">
+                </div>
+                <span
+                  class="status-indicator-dot position-absolute bottom-0 end-0 rounded-circle border border-2 border-white"
+                  [ngClass]="getStatusDotClass(emp.status)">
+                </span>
+              </div>
+
+              <h2 class="h6 fw-bold text-dark mb-0.5 text-truncate" [title]="emp.name">{{ emp.name }}</h2>
+              <p class="small text-muted mb-2 text-truncate" [title]="emp.role">{{ emp.role }}</p>
+
+              <div class="d-flex align-items-center justify-content-center gap-1.5 flex-wrap mb-3">
+                <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2.5 py-1 fw-semibold">
+                  {{ emp.department }}
+                </span>
+                @if (emp.type) {
+                  <span class="badge bg-light text-secondary border rounded-pill extra-small px-2 py-1">
+                    {{ emp.type }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Footer Details & Action -->
+            <div class="pt-3 border-top border-light-subtle text-start extra-small text-muted d-flex flex-column gap-1.5">
+              <div class="d-flex align-items-center gap-2 text-truncate" [title]="emp.email">
+                <i class="bi bi-envelope text-emerald"></i>
+                <span class="text-truncate">{{ emp.email }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-truncate" [title]="emp.location">
+                <i class="bi bi-geo-alt text-emerald"></i>
+                <span class="text-truncate">{{ emp.location }}</span>
+              </div>
+              <div class="pt-2 mt-1">
+                <app-button
+                  class="w-100"
+                  label="View Profile"
+                  variant="soft-emerald"
+                  size="xs"
+                  icon="bi-person-lines-fill"
+                  [block]="true"
+                  (clicked)="onSelectEmployee(emp, $event)">
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+} @else if (employee) {
+  <div class="card h-100 border-0 shadow-sm rounded-4 ws-employee-card cursor-pointer" (click)="onSelectEmployee(employee)">
+    <div class="card-body p-3 p-md-4 d-flex flex-column justify-content-between text-center">
+      <div>
+        <!-- Top Status & ID Row -->
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="badge bg-light text-muted border extra-small font-monospace px-2 py-1">
+            {{ employee.id }}
+          </span>
+          <span class="badge rounded-pill extra-small px-2 py-1 fw-semibold" [ngClass]="getStatusBadgeClass(employee.status)">
+            ● {{ employee.status }}
+          </span>
+        </div>
+
+        <!-- Avatar & Status Dot -->
+        <div class="position-relative d-inline-block my-2">
+          <div class="avatar-ring">
+            <img
+              [src]="employee.avatar"
+              [alt]="employee.name"
+              class="rounded-circle object-fit-cover shadow-xs avatar-large"
+              width="72"
+              height="72">
+          </div>
+          <span
+            class="status-indicator-dot position-absolute bottom-0 end-0 rounded-circle border border-2 border-white"
+            [ngClass]="getStatusDotClass(employee.status)">
+          </span>
+        </div>
+
+        <h2 class="h6 fw-bold text-dark mb-0.5 text-truncate" [title]="employee.name">{{ employee.name }}</h2>
+        <p class="small text-muted mb-2 text-truncate" [title]="employee.role">{{ employee.role }}</p>
+
+        <div class="d-flex align-items-center justify-content-center gap-1.5 flex-wrap mb-3">
+          <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2.5 py-1 fw-semibold">
+            {{ employee.department }}
+          </span>
+          @if (employee.type) {
+            <span class="badge bg-light text-secondary border rounded-pill extra-small px-2 py-1">
+              {{ employee.type }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Footer Details & Action -->
+      <div class="pt-3 border-top border-light-subtle text-start extra-small text-muted d-flex flex-column gap-1.5">
+        <div class="d-flex align-items-center gap-2 text-truncate" [title]="employee.email">
+          <i class="bi bi-envelope text-emerald"></i>
+          <span class="text-truncate">{{ employee.email }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-truncate" [title]="employee.location">
+          <i class="bi bi-geo-alt text-emerald"></i>
+          <span class="text-truncate">{{ employee.location }}</span>
+        </div>
+        <div class="pt-2 mt-1">
+          <app-button
+            class="w-100"
+            label="View Profile"
+            variant="soft-emerald"
+            size="xs"
+            icon="bi-person-lines-fill"
+            [block]="true"
+            (clicked)="onSelectEmployee(employee, $event)">
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { API_ENDPOINTS } from '../constants/api.constants';
 import { RolePermissionItemDto } from '../dtos/auth.dto';
 import {
@@ -11,6 +11,7 @@ import {
   DesignationItem,
   EmployeeHierarchyItem,
   OrganizationalLevelHierarchyItem,
+  PermissionCatalogItem,
   PermissionModuleGroup,
   RoleItem,
   RolePermissionsResponse,
@@ -53,7 +54,9 @@ export class RbacService {
   }
 
   getDesignations$(): Observable<DesignationItem[]> {
-    return this.http.get<DesignationItem[]>(API_ENDPOINTS.RBAC.DESIGNATIONS);
+    return this.http.get<DesignationItem[]>(API_ENDPOINTS.RBAC.DESIGNATIONS).pipe(
+      catchError(() => this.http.get<DesignationItem[]>(API_ENDPOINTS.HELPERS.DESIGNATIONS))
+    );
   }
 
   createDesignation$(dto: CreateDesignationDto): Observable<any> {
@@ -81,7 +84,43 @@ export class RbacService {
   }
 
   getAllPermissions$(): Observable<PermissionModuleGroup[]> {
-    return this.http.get<PermissionModuleGroup[]>(API_ENDPOINTS.RBAC.PERMISSIONS);
+    return this.http.get<any[]>(API_ENDPOINTS.RBAC.PERMISSIONS).pipe(
+      map((res) => this.normalizePermissionGroups(res)),
+      catchError(() =>
+        this.http
+          .get<PermissionCatalogItem[]>(API_ENDPOINTS.HELPERS.PERMISSIONS)
+          .pipe(map((flat) => this.normalizePermissionGroups(flat)))
+      )
+    );
+  }
+
+  private normalizePermissionGroups(data: any[]): PermissionModuleGroup[] {
+    if (!Array.isArray(data) || data.length === 0) {
+      return [];
+    }
+    // Already grouped by module
+    if (data[0] && Array.isArray(data[0].permissions)) {
+      return data as PermissionModuleGroup[];
+    }
+    // Flat list from /api/helpers/permissions -> group by module
+    const groupedMap = new Map<string, PermissionCatalogItem[]>();
+    for (const item of data) {
+      const mod = item.module || 'General';
+      if (!groupedMap.has(mod)) {
+        groupedMap.set(mod, []);
+      }
+      groupedMap.get(mod)!.push({
+        id: item.id,
+        code: item.code,
+        module: mod,
+        action: item.action,
+        description: item.description,
+      });
+    }
+    return Array.from(groupedMap.entries()).map(([module, permissions]) => ({
+      module,
+      permissions,
+    }));
   }
 
   getRolePermissions$(roleCode: string): Observable<RolePermissionsResponse> {

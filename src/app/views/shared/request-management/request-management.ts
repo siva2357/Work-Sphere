@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RequestService, ManagedRequest, ApprovalLevel } from '../../../core/services/request.service';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
+import { Button } from '../../../library/UI/components/button/button';
 
 @Component({
   selector: 'app-request-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, StatCards, Button],
   templateUrl: './request-management.html',
   styleUrl: './request-management.css',
 })
@@ -276,6 +278,43 @@ export class RequestManagement implements OnInit {
     const parts = name.trim().split(' ');
     if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Total Submissions',
+        value: this.totalCount,
+        subtitle: 'Multi-Stage Approval Queue',
+        badgeText: 'All Categories',
+        badgeType: 'emerald',
+        icon: 'bi-inbox-fill',
+      },
+      {
+        title: 'Pending Review',
+        value: this.pendingReviewCount,
+        subtitle: 'Awaiting stage sign-off',
+        badgeText: 'Action Req.',
+        badgeType: 'warning',
+        icon: 'bi-hourglass-split',
+      },
+      {
+        title: 'Approved Requests',
+        value: this.approvedCount,
+        subtitle: 'Cleared by hierarchy',
+        badgeText: 'Verified',
+        badgeType: 'success',
+        icon: 'bi-check-circle-fill',
+      },
+      {
+        title: 'Declined Requests',
+        value: this.rejectedCount,
+        subtitle: 'Returned with rationale',
+        badgeText: 'Closed',
+        badgeType: 'danger',
+        icon: 'bi-x-circle-fill',
+      },
+    ];
   }
 
   private showToast(msg: string): void {

@@ -25,14 +25,21 @@
       <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-3 small font-monospace">
         <i class="bi bi-hourglass-split me-1"></i>{{ pendingReviewCount }} In Review
       </span>
-      <button type="button"
-        class="btn btn-outline-secondary rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-2 text-nowrap small fw-medium"
-        (click)="resetFilters()" title="Refresh requests">
-        <i class="bi bi-arrow-clockwise"></i>
-        <span>Refresh</span>
-      </button>
+      <app-button
+        label="Refresh"
+        variant="outline-secondary"
+        size="sm"
+        icon="bi-arrow-clockwise"
+        title="Refresh requests"
+        (clicked)="resetFilters()">
+      </app-button>
     </div>
   </header>
+
+  <!-- ====================================================================
+       STAT SUMMARY CARDS (Reusable Shared Component)
+  ===================================================================== -->
+  <app-stat-cards [cards]="statCards"></app-stat-cards>
 
 
   <!-- ====================================================================
@@ -461,26 +468,21 @@
                 [(ngModel)]="managerRemarks"></textarea>
 
               <div class="d-flex align-items-center justify-content-between gap-2.5 flex-wrap">
-                <button type="button"
-                  class="btn btn-outline-danger btn-sm px-3.5 py-2 rounded-3 small fw-semibold d-inline-flex align-items-center gap-1.5"
-                  (click)="onRejectCurrentStage()">
-                  <i class="bi bi-x-circle-fill"></i>
-                  <span>Decline Request</span>
-                </button>
+                <app-button
+                  label="Decline Request"
+                  variant="outline-danger"
+                  size="sm"
+                  icon="bi-x-circle-fill"
+                  (clicked)="onRejectCurrentStage()">
+                </app-button>
 
-                <button type="button"
-                  class="btn btn-emerald btn-sm px-4 py-2 rounded-3 text-white fw-semibold shadow-sm d-inline-flex align-items-center gap-2 ms-auto"
-                  (click)="onApproveCurrentStage()">
-                  <ng-container *ngIf="!isCurrentLevelFinalHR(selectedRequest)">
-                    <i class="bi bi-arrow-right-circle-fill fs-6"></i>
-                    <span>Approve & Forward to Next Level</span>
-                  </ng-container>
-
-                  <ng-container *ngIf="isCurrentLevelFinalHR(selectedRequest)">
-                    <i class="bi bi-shield-check fs-6"></i>
-                    <span>Final Approve (HR Sign-Off)</span>
-                  </ng-container>
-                </button>
+                <app-button
+                  [label]="isCurrentLevelFinalHR(selectedRequest) ? 'Final Approve (HR Sign-Off)' : 'Approve & Forward to Next Level'"
+                  variant="emerald"
+                  size="sm"
+                  [icon]="isCurrentLevelFinalHR(selectedRequest) ? 'bi-shield-check' : 'bi-arrow-right-circle-fill'"
+                  (clicked)="onApproveCurrentStage()">
+                </app-button>
               </div>
             </div>
 
@@ -602,9 +604,7 @@
       </div>
 
       <div class="card-footer bg-light border-top p-3 text-end">
-        <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3 py-1.5 small" (click)="closeFormModal()">
-          Close
-        </button>
+        <app-button label="Close" variant="secondary" size="sm" (clicked)="closeFormModal()"></app-button>
       </div>
     </div>
   </div>
@@ -662,9 +662,7 @@
       </div>
 
       <div class="card-footer bg-light border-top p-3 text-end">
-        <button type="button" class="btn btn-secondary btn-sm rounded-3 px-3 py-1.5 small" (click)="closeDetailsModal()">
-          Close
-        </button>
+        <app-button label="Close" variant="secondary" size="sm" (clicked)="closeDetailsModal()"></app-button>
       </div>
     </div>
   </div>

@@ -1,130 +1,377 @@
-/* Bootstrap-style Button Classes with Custom Theme Colors */
-.btn {
+:host {
+  display: inline-block;
+}
+
+:host(.w-100) {
+  display: block;
+  width: 100%;
+}
+
+/* ====================================================================
+   WORK-SPHERE UNIFIED BUTTON SYSTEM
+===================================================================== */
+.ws-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.18s ease-in-out;
   outline: none;
   white-space: nowrap;
   position: relative;
   text-decoration: none;
-  gap: 8px; /* Space between icon and text */
+  gap: 0.45rem;
+  line-height: 1.25;
 }
 
 /* Sizes */
-.btn-xs { height: 28px; padding: 0 12px; font-size: 12px; border-radius: 4px; }
-.btn-sm { height: 32px; padding: 0 16px; font-size: 13px; }
-.btn-md { height: 40px; padding: 0 20px; font-size: 14px; }
-.btn-lg { height: 48px; padding: 0 24px; font-size: 16px; border-radius: 8px; }
-.btn-xl { height: 56px; padding: 0 28px; font-size: 18px; border-radius: 8px; }
+.ws-btn-xs {
+  height: 28px;
+  padding: 0 0.65rem;
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  gap: 0.3rem;
+}
 
-/* Icon Only Button Sizes (1:1 Aspect Ratio) */
-.btn.btn-icon-only { padding: 0; justify-content: center; }
-.btn-icon-only.btn-xs { width: 28px; height: 28px; }
-.btn-icon-only.btn-sm { width: 32px; height: 32px; }
-.btn-icon-only.btn-md { width: 40px; height: 40px; }
-.btn-icon-only.btn-lg { width: 48px; height: 48px; }
-.btn-icon-only.btn-xl { width: 56px; height: 56px; }
+.ws-btn-sm {
+  height: 34px;
+  padding: 0 0.85rem;
+  font-size: 0.8125rem;
+  border-radius: 0.45rem;
+}
 
-/* States (General) */
-.btn:disabled, .btn.disabled {
-  opacity: 0.65;
+.ws-btn-md {
+  height: 40px;
+  padding: 0 1.1rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.ws-btn-lg {
+  height: 46px;
+  padding: 0 1.4rem;
+  font-size: 0.95rem;
+  border-radius: 0.6rem;
+}
+
+.ws-btn-xl {
+  height: 52px;
+  padding: 0 1.75rem;
+  font-size: 1.05rem;
+  border-radius: 0.65rem;
+}
+
+/* Icon-Only Aspect Ratio */
+.ws-btn.ws-btn-icon-only {
+  padding: 0;
+  justify-content: center;
+}
+.ws-btn-icon-only.ws-btn-xs { width: 28px; height: 28px; }
+.ws-btn-icon-only.ws-btn-sm { width: 34px; height: 34px; }
+.ws-btn-icon-only.ws-btn-md { width: 40px; height: 40px; }
+.ws-btn-icon-only.ws-btn-lg { width: 46px; height: 46px; }
+.ws-btn-icon-only.ws-btn-xl { width: 52px; height: 52px; }
+
+/* Disabled & Loading States */
+.ws-btn:disabled,
+.ws-btn.disabled {
+  opacity: 0.6;
   cursor: not-allowed;
   pointer-events: none;
 }
-.btn.loading {
+
+.ws-btn.loading {
   cursor: wait;
   pointer-events: none;
 }
 
-/* --- VARIANTS --- */
+/* ====================================================================
+   VARIANTS
+===================================================================== */
 
-/* Primary */
-.btn-primary { background-color: #2563eb; color: #ffffff; border-color: #2563eb; }
-.btn-primary:hover, .btn-primary.hover { background-color: #1d4ed8; border-color: #1d4ed8; }
-.btn-primary:active, .btn-primary.active { background-color: #1e40af; border-color: #1e40af; }
+/* 1. Emerald (Work-Sphere Brand Primary) */
+.ws-btn-emerald {
+  background-color: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.22);
+}
+.ws-btn-emerald:hover {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+}
+.ws-btn-emerald:active {
+  background-color: #047857;
+  border-color: #047857;
+  transform: translateY(0);
+}
 
-/* Primary Outline */
-.btn-outline-primary { background-color: transparent; border-color: #2563eb; color: #2563eb; }
-.btn-outline-primary:hover, .btn-outline-primary.hover { background-color: #eff6ff; }
-.btn-outline-primary:active, .btn-outline-primary.active { background-color: #dbeafe; }
+/* Outline Emerald */
+.ws-btn-outline-emerald {
+  background-color: #ffffff;
+  border-color: #10b981;
+  color: #059669;
+}
+.ws-btn-outline-emerald:hover {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.ws-btn-outline-emerald:active {
+  background-color: #059669;
+  color: #ffffff;
+}
 
-/* Secondary */
-.btn-secondary { background-color: #ffffff; color: #374151; border-color: #d1d5db; }
-.btn-secondary:hover, .btn-secondary.hover { background-color: #f3f4f6; }
-.btn-secondary:active, .btn-secondary.active { background-color: #e5e7eb; border-color: #9ca3af; }
+/* Soft Emerald */
+.ws-btn-soft-emerald {
+  background-color: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #059669;
+}
+.ws-btn-soft-emerald:hover {
+  background-color: #d1fae5;
+  color: #047857;
+}
 
-/* Secondary Outline */
-.btn-outline-secondary { background-color: transparent; border-color: #d1d5db; color: #4b5563; }
-.btn-outline-secondary:hover, .btn-outline-secondary.hover { background-color: #f3f4f6; color: #111827; border-color: #9ca3af; }
-.btn-outline-secondary:active, .btn-outline-secondary.active { background-color: #e5e7eb; color: #111827; }
+/* Link Emerald */
+.ws-btn-link-emerald {
+  background-color: transparent;
+  border: none;
+  color: #10b981;
+  padding: 0 0.25rem;
+  height: auto;
+}
+.ws-btn-link-emerald:hover {
+  color: #059669;
+  text-decoration: underline;
+}
 
-/* Success */
-.btn-success { background-color: #10b981; color: #ffffff; border-color: #10b981; }
-.btn-success:hover, .btn-success.hover { background-color: #059669; border-color: #059669; }
-.btn-success:active, .btn-success.active { background-color: #047857; border-color: #047857; }
+/* 2. Primary (Blue) */
+.ws-btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+.ws-btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.ws-btn-primary:active {
+  background-color: #1e40af;
+  border-color: #1e40af;
+}
 
-/* Success Outline */
-.btn-outline-success { background-color: transparent; border-color: #10b981; color: #10b981; }
-.btn-outline-success:hover, .btn-outline-success.hover { background-color: #ecfdf5; }
-.btn-outline-success:active, .btn-outline-success.active { background-color: #d1fae5; }
+/* Outline Primary */
+.ws-btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+.ws-btn-outline-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
 
-/* Danger */
-.btn-danger { background-color: #ef4444; color: #ffffff; border-color: #ef4444; }
-.btn-danger:hover, .btn-danger.hover { background-color: #dc2626; border-color: #dc2626; }
-.btn-danger:active, .btn-danger.active { background-color: #b91c1c; border-color: #b91c1c; }
+/* Soft Primary */
+.ws-btn-soft-primary {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+.ws-btn-soft-primary:hover {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
 
-/* Danger Outline */
-.btn-outline-danger { background-color: transparent; border-color: #ef4444; color: #ef4444; }
-.btn-outline-danger:hover, .btn-outline-danger.hover { background-color: #fef2f2; }
-.btn-outline-danger:active, .btn-outline-danger.active { background-color: #fee2e2; }
+/* 3. Secondary (Slate Neutral) */
+.ws-btn-secondary {
+  background-color: #f8fafc;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+.ws-btn-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
 
-/* Warning */
-.btn-warning { background-color: #f59e0b; color: #ffffff; border-color: #f59e0b; }
-.btn-warning:hover, .btn-warning.hover { background-color: #d97706; border-color: #d97706; }
-.btn-warning:active, .btn-warning.active { background-color: #b45309; border-color: #b45309; }
+/* Outline Secondary */
+.ws-btn-outline-secondary {
+  background-color: transparent;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.ws-btn-outline-secondary:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
 
-/* Warning Outline */
-.btn-outline-warning { background-color: transparent; border-color: #f59e0b; color: #f59e0b; }
-.btn-outline-warning:hover, .btn-outline-warning.hover { background-color: #fffbeb; }
-.btn-outline-warning:active, .btn-outline-warning.active { background-color: #fef3c7; }
+/* 4. Success */
+.ws-btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+.ws-btn-success:hover {
+  background-color: #15803d;
+  border-color: #15803d;
+  color: #ffffff;
+}
 
-/* Info */
-.btn-info { background-color: #0ea5e9; color: #ffffff; border-color: #0ea5e9; }
-.btn-info:hover, .btn-info.hover { background-color: #0284c7; border-color: #0284c7; }
-.btn-info:active, .btn-info.active { background-color: #0369a1; border-color: #0369a1; }
+.ws-btn-outline-success {
+  background-color: transparent;
+  border-color: #16a34a;
+  color: #16a34a;
+}
+.ws-btn-outline-success:hover {
+  background-color: #dcfce7;
+}
 
-/* Info Outline */
-.btn-outline-info { background-color: transparent; border-color: #0ea5e9; color: #0ea5e9; }
-.btn-outline-info:hover, .btn-outline-info.hover { background-color: #f0f9ff; }
-.btn-outline-info:active, .btn-outline-info.active { background-color: #e0f2fe; }
+/* 5. Danger */
+.ws-btn-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+.ws-btn-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
 
-/* Light */
-.btn-light { background-color: #f9fafb; color: #111827; border-color: #f3f4f6; }
-.btn-light:hover, .btn-light.hover { background-color: #f3f4f6; border-color: #e5e7eb; }
-.btn-light:active, .btn-light.active { background-color: #e5e7eb; }
+.ws-btn-outline-danger {
+  background-color: transparent;
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.ws-btn-outline-danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
 
-/* Light Outline */
-.btn-outline-light { background-color: transparent; border-color: #f3f4f6; color: #374151; }
-.btn-outline-light:hover, .btn-outline-light.hover { background-color: #f9fafb; }
-.btn-outline-light:active, .btn-outline-light.active { background-color: #f3f4f6; }
+.ws-btn-soft-danger {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+.ws-btn-soft-danger:hover {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
 
-/* Dark */
-.btn-dark { background-color: #1f2937; color: #ffffff; border-color: #1f2937; }
-.btn-dark:hover, .btn-dark.hover { background-color: #111827; border-color: #111827; }
-.btn-dark:active, .btn-dark.active { background-color: #000000; border-color: #000000; }
+/* 6. Warning */
+.ws-btn-warning {
+  background-color: #f59e0b;
+  color: #ffffff;
+  border-color: #f59e0b;
+}
+.ws-btn-warning:hover {
+  background-color: #d97706;
+  border-color: #d97706;
+}
 
-/* Dark Outline */
-.btn-outline-dark { background-color: transparent; border-color: #1f2937; color: #1f2937; }
-.btn-outline-dark:hover, .btn-outline-dark.hover { background-color: #f3f4f6; }
-.btn-outline-dark:active, .btn-outline-dark.active { background-color: #e5e7eb; }
+.ws-btn-outline-warning {
+  background-color: transparent;
+  border-color: #f59e0b;
+  color: #d97706;
+}
+.ws-btn-outline-warning:hover {
+  background-color: #fffbeb;
+}
 
-/* Link */
-.btn-link { background-color: transparent; color: #2563eb; padding: 0; height: auto; border: none; }
-.btn-link:hover, .btn-link.hover { text-decoration: underline; color: #1d4ed8; }
-.btn-link:active, .btn-link.active { color: #1e40af; }
+/* 7. Info */
+.ws-btn-info {
+  background-color: #0ea5e9;
+  color: #ffffff;
+  border-color: #0ea5e9;
+}
+.ws-btn-info:hover {
+  background-color: #0284c7;
+  border-color: #0284c7;
+}
+
+.ws-btn-outline-info {
+  background-color: transparent;
+  border-color: #0ea5e9;
+  color: #0284c7;
+}
+.ws-btn-outline-info:hover {
+  background-color: #f0f9ff;
+}
+
+/* 8. Light & Ghost */
+.ws-btn-light {
+  background-color: #f8fafc;
+  color: #1e293b;
+  border-color: #e2e8f0;
+}
+.ws-btn-light:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.ws-btn-outline-light {
+  background-color: transparent;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+.ws-btn-outline-light:hover {
+  background-color: #f8fafc;
+}
+
+.ws-btn-ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: #475569;
+}
+.ws-btn-ghost:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* 9. Dark */
+.ws-btn-dark {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+.ws-btn-dark:hover {
+  background-color: #1e293b;
+  border-color: #1e293b;
+}
+
+.ws-btn-outline-dark {
+  background-color: transparent;
+  border-color: #0f172a;
+  color: #0f172a;
+}
+.ws-btn-outline-dark:hover {
+  background-color: #f1f5f9;
+}
+
+/* 10. Link */
+.ws-btn-link {
+  background-color: transparent;
+  color: #2563eb;
+  padding: 0 0.25rem;
+  height: auto;
+  border: none;
+}
+.ws-btn-link:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}

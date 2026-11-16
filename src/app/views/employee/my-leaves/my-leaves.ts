@@ -9,13 +9,14 @@ import {
   LeaveRecord,
   UpcomingHoliday,
 } from '../../../core/models/leave.interface';
+import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 
 export type { LeaveBalance, LeaveRecord, UpcomingHoliday };
 
 @Component({
   selector: 'app-my-leaves',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatCards],
   templateUrl: './my-leaves.html',
   styleUrl: './my-leaves.css',
 })
@@ -45,6 +46,59 @@ export class MyLeaves implements OnInit {
   rejectedLeaves = 0;
   earnedLeaves = 0;
   paidLeaves = 0;
+
+  get statCards(): StatMetric[] {
+    return [
+      {
+        title: 'Applied Leaves',
+        value: `${this.appliedLeaves} Days`,
+        subtitle: 'Submitted this cycle',
+        badgeText: 'Applied',
+        badgeType: 'emerald',
+        icon: 'bi-calendar-plus',
+      },
+      {
+        title: 'Pending Leaves',
+        value: `${this.pendingLeaves} Days`,
+        subtitle: 'Awaiting approval',
+        badgeText: 'Pending',
+        badgeType: 'warning',
+        icon: 'bi-hourglass-split',
+      },
+      {
+        title: 'Approved Leaves',
+        value: `${this.approvedLeaves} Days`,
+        subtitle: 'Sanctioned time-off',
+        badgeText: 'Approved',
+        badgeType: 'success',
+        icon: 'bi-calendar-check',
+      },
+      {
+        title: 'Rejected Leaves',
+        value: `${this.rejectedLeaves} Days`,
+        subtitle: 'Declined requests',
+        badgeText: 'Declined',
+        badgeType: 'danger',
+        icon: 'bi-x-circle',
+      },
+      {
+        title: 'Earned Leaves',
+        value: `${this.earnedLeaves} Days`,
+        subtitle: 'Accrued balance',
+        badgeText: 'Earned',
+        badgeType: 'info',
+        icon: 'bi-award',
+      },
+      {
+        title: 'Paid Leaves',
+        value: `${this.paidLeaves} Days`,
+        subtitle: 'Total available quota',
+        badgeText: 'Available',
+        badgeType: 'emerald',
+        icon: 'bi-wallet2',
+      },
+    ];
+  }
 
   leaveBalances: LeaveBalance[] = [];
   upcomingHolidays: UpcomingHoliday[] = [];

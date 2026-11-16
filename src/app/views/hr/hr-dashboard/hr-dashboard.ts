@@ -5,6 +5,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CompanyDirectoryService } from '../../../core/services/company-directory.service';
 import { RecruitmentService } from '../../../core/services/recruitment.service';
 import { RequestService } from '../../../core/services/request.service';
+import { StatCards } from '../../../library/shared/components/stat-cards/stat-cards';
+import { Button } from '../../../library/UI/components/button/button';
 import {
   ActivityItem,
   CelebrationItem,
@@ -17,7 +19,7 @@ export type { ActivityItem, CelebrationItem, DeptMetric, StatMetric };
 @Component({
   selector: 'app-hr-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, StatCards, Button],
   templateUrl: './hr-dashboard.html',
   styleUrl: './hr-dashboard.css',
 })

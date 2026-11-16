@@ -1,0 +1,32 @@
+<div class="card border rounded-4 p-3 p-md-4 h-100 salary-slip-card shadow-sm d-flex justify-content-center">
+
+  <div class="d-flex align-items-center justify-content-between gap-3">
+    <!-- Left: PDF Icon + Clean Space + Month Title & Disbursed Date -->
+    <div class="d-flex align-items-center gap-3 overflow-hidden">
+      <div class="doc-badge-icon bg-danger-subtle text-danger rounded-3 flex-shrink-0">
+        <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h3 class="h6 fw-bold text-dark mb-0 text-truncate">{{ record.month }}</h3>
+          @if (isLatest || record.month === 'October 2026') {
+            <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small flex-shrink-0">Latest</span>
+          }
+        </div>
+        <span class="extra-small text-muted d-block text-truncate">
+          Disbursed on {{ record.payDate }} &middot; {{ record.salarySlipPdf.fileSize }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Right: Download as Icon Button Only -->
+    <button type="button"
+      class="btn btn-emerald btn-download-icon rounded-circle d-flex align-items-center justify-content-center shadow-sm flex-shrink-0"
+      (click)="onDownload($event)"
+      [disabled]="isDownloading"
+      [title]="'Download ' + record.month + ' Salary Slip PDF'">
+      <i class="bi bi-download"></i>
+    </button>
+  </div>
+
+</div>
