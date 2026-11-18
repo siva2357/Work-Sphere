@@ -1,1 +1,163 @@
-<p>features-page works!</p>
+<div class="features-page">
+
+  <!-- ====================================================================
+       1. HERO HEADER
+  ===================================================================== -->
+  <section class="features-hero card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-body p-4 p-md-5 text-center">
+      <span class="badge bg-emerald-subtle text-emerald rounded-pill px-3 py-1.5 extra-small fw-bold text-uppercase letter-spacing-1 mb-3">
+        Platform Capabilities
+      </span>
+      <h1 class="fw-bold text-dark mb-3 mx-auto" style="max-width: 760px;">
+        Purpose-Built Modules for <span class="text-emerald">Modern Enterprises</span>
+      </h1>
+      <p class="text-muted mx-auto mb-4" style="max-width: 640px; font-size: 1rem; line-height: 1.65;">
+        Explore how Work-Sphere 2.0 combines HR governance, attendance &amp; payroll automation, and agile project execution into one cohesive experience.
+      </p>
+
+      <!-- Category Filter Pills -->
+      <div class="d-flex flex-wrap justify-content-center gap-2">
+        @for (cat of categories; track cat.key) {
+          <button
+            type="button"
+            class="btn filter-pill rounded-pill px-3.5 py-2 small fw-semibold d-inline-flex align-items-center gap-2"
+            [class.active]="selectedCategory === cat.key"
+            (click)="setCategory(cat.key)">
+            <i class="bi {{ cat.icon }}"></i>
+            <span>{{ cat.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       2. INTERACTIVE MODULE GRID
+  ===================================================================== -->
+  <section class="mb-5">
+    <div class="row g-3 g-md-4">
+      @for (mod of filteredModules; track mod.id) {
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 h-100 module-card">
+            <div class="card-body p-4 d-flex flex-column justify-content-between">
+              <div>
+                <!-- Icon + Category Badge -->
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="module-icon-box bg-emerald-subtle text-emerald">
+                    <i class="bi {{ mod.icon }}"></i>
+                  </div>
+                  <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2.5 py-1 fw-semibold">
+                    {{ mod.categoryLabel }}
+                  </span>
+                </div>
+
+                <h2 class="h5 fw-bold text-dark mb-2">{{ mod.title }}</h2>
+                <p class="text-muted small mb-3" style="line-height: 1.6;">
+                  {{ mod.subtitle }}
+                </p>
+
+                <!-- Key Highlights -->
+                <ul class="list-unstyled d-flex flex-column gap-2 mb-4">
+                  @for (point of mod.highlights; track point) {
+                    <li class="extra-small text-dark d-flex align-items-start gap-2">
+                      <i class="bi bi-check-circle-fill text-emerald mt-0.5"></i>
+                      <span>{{ point }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+
+              <!-- Role Badges Footer -->
+              <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                <span class="extra-small text-muted">Available in:</span>
+                <div class="d-flex flex-wrap gap-1.5">
+                  @for (role of mod.roles; track role) {
+                    <span class="badge bg-light text-secondary border rounded-pill extra-small px-2 py-0.5">
+                      {{ role }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       3. COMPARISON TABLE: LEGACY VS WORK-SPHERE
+  ===================================================================== -->
+  <section class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
+    <div class="card-header bg-white border-bottom p-4">
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+        <div>
+          <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-bold mb-1">
+            Why Upgrade
+          </span>
+          <h3 class="h5 fw-bold text-dark mb-0">Work-Sphere 2.0 vs. Fragmented Legacy Tools</h3>
+        </div>
+        <span class="extra-small text-muted">Single-database consistency across all workflows</span>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light extra-small text-uppercase text-muted letter-spacing-1">
+          <tr>
+            <th class="ps-4 py-3">Enterprise Capability</th>
+            <th class="py-3">Disconnected Point Solutions</th>
+            <th class="pe-4 py-3 text-emerald">Work-Sphere 2.0 Unified Platform</th>
+          </tr>
+        </thead>
+        <tbody class="small">
+          @for (row of comparisonRows; track row.capability) {
+            <tr>
+              <td class="ps-4 py-3 fw-semibold text-dark">{{ row.capability }}</td>
+              <td class="py-3 text-muted">
+                <i class="bi bi-x-circle text-danger me-1.5"></i>{{ row.legacy }}
+              </td>
+              <td class="pe-4 py-3 fw-semibold text-dark">
+                <span class="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill bg-emerald-subtle text-emerald extra-small">
+                  <i class="bi bi-check-circle-fill"></i> {{ row.worksphere }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       4. BOTTOM CTA
+  ===================================================================== -->
+  <section class="card border-0 shadow-sm rounded-4 cta-strip p-4 p-md-5 text-white">
+    <div class="row align-items-center g-4">
+      <div class="col-12 col-lg-8">
+        <h3 class="fw-bold mb-2">Experience Every Module Live</h3>
+        <p class="text-white-50 small mb-0">
+          Log in with an HR Administrator or Employee account to explore interactive dashboards, document generators, and task boards.
+        </p>
+      </div>
+      <div class="col-12 col-lg-4 text-lg-end">
+        <div class="d-flex flex-wrap justify-content-lg-end gap-2.5">
+          <app-button
+            label="Sign In Now"
+            variant="light"
+            size="md"
+            icon="bi-box-arrow-in-right"
+            route="/login">
+          </app-button>
+          <app-button
+            label="Request Demo"
+            variant="outline-light"
+            size="md"
+            route="/contact">
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

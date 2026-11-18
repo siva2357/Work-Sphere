@@ -1,1 +1,214 @@
-<p>contact-us works!</p>
+<div class="contact-page">
+
+  <!-- ====================================================================
+       1. HEADER BANNER
+  ===================================================================== -->
+  <section class="contact-hero card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <div class="card-body p-4 p-md-5 text-center">
+      <span class="badge bg-emerald-subtle text-emerald rounded-pill px-3 py-1.5 extra-small fw-bold text-uppercase letter-spacing-1 mb-2">
+        Connect With Us
+      </span>
+      <h1 class="fw-bold text-dark mb-2">Talk to the <span class="text-emerald">Work-Sphere</span> Team</h1>
+      <p class="text-muted mx-auto mb-0" style="max-width: 620px; font-size: 0.98rem; line-height: 1.65;">
+        Have questions about onboarding your organization, configuring role hierarchies, or scheduling a live product walkthrough? We are here to help.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       2. MAIN SPLIT: CONTACT FORM (7 COLS) & CHANNELS + FAQ (5 COLS)
+  ===================================================================== -->
+  <div class="row g-4 mb-5">
+
+    <!-- Left: Interactive Inquiry & Demo Form -->
+    <div class="col-12 col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <h2 class="h5 fw-bold text-dark mb-1">Send Us a Message</h2>
+              <p class="extra-small text-muted mb-0">Fill out the details below and our enterprise specialists will respond promptly.</p>
+            </div>
+            <div class="contact-icon-box bg-emerald-subtle text-emerald">
+              <i class="bi bi-envelope-paper-fill"></i>
+            </div>
+          </div>
+
+          @if (submittedSuccess) {
+            <div class="p-4 rounded-4 bg-emerald-subtle border border-success border-opacity-25 text-center my-4">
+              <div class="contact-icon-box bg-emerald text-white mx-auto mb-3">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <h3 class="h5 fw-bold text-dark mb-1">Inquiry Received!</h3>
+              <p class="small text-muted mb-3">
+                Thank you, <strong>{{ contactForm.fullName }}</strong>. We have logged your request regarding
+                <strong>{{ contactForm.topic }}</strong> and will reach out to <strong>{{ contactForm.workEmail }}</strong> shortly.
+              </p>
+              <app-button
+                label="Send Another Message"
+                variant="outline-emerald"
+                size="sm"
+                icon="bi-arrow-repeat"
+                (clicked)="resetForm()">
+              </app-button>
+            </div>
+          } @else {
+            @if (errorMessage) {
+              <div class="alert alert-danger d-flex align-items-center gap-2 py-2.5 px-3 rounded-3 small mb-3">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>{{ errorMessage }}</span>
+              </div>
+            }
+
+            <form (ngSubmit)="onSubmit()">
+              <div class="row g-3">
+                <!-- Full Name -->
+                <div class="col-12 col-md-6">
+                  <label class="form-label small fw-semibold text-secondary mb-1">Full Name <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-secondary">
+                      <i class="bi bi-person"></i>
+                    </span>
+                    <input
+                      type="text"
+                      name="fullName"
+                      class="form-control border-start-0"
+                      placeholder="e.g. Priya Sharma"
+                      [(ngModel)]="contactForm.fullName"
+                      required />
+                  </div>
+                </div>
+
+                <!-- Corporate Email -->
+                <div class="col-12 col-md-6">
+                  <label class="form-label small fw-semibold text-secondary mb-1">Corporate Email <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-secondary">
+                      <i class="bi bi-envelope"></i>
+                    </span>
+                    <input
+                      type="email"
+                      name="workEmail"
+                      class="form-control border-start-0"
+                      placeholder="name@company.com"
+                      [(ngModel)]="contactForm.workEmail"
+                      required />
+                  </div>
+                </div>
+
+                <!-- Organization Name -->
+                <div class="col-12 col-md-6">
+                  <label class="form-label small fw-semibold text-secondary mb-1">Organization Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-secondary">
+                      <i class="bi bi-building"></i>
+                    </span>
+                    <input
+                      type="text"
+                      name="companyName"
+                      class="form-control border-start-0"
+                      placeholder="Acme Corporation"
+                      [(ngModel)]="contactForm.companyName" />
+                  </div>
+                </div>
+
+                <!-- Team Size -->
+                <div class="col-12 col-md-6">
+                  <label class="form-label small fw-semibold text-secondary mb-1">Workforce Size</label>
+                  <select name="teamSize" class="form-select" [(ngModel)]="contactForm.teamSize">
+                    <option value="1-50">1 – 50 Employees</option>
+                    <option value="50-250">50 – 250 Employees</option>
+                    <option value="250-1000">250 – 1,000 Employees</option>
+                    <option value="1000+">1,000+ Enterprise</option>
+                  </select>
+                </div>
+
+                <!-- Topic -->
+                <div class="col-12">
+                  <label class="form-label small fw-semibold text-secondary mb-1">Inquiry Topic</label>
+                  <select name="topic" class="form-select" [(ngModel)]="contactForm.topic">
+                    <option value="Enterprise Demo Request">Enterprise Demo Request</option>
+                    <option value="HR & Payroll Module Inquiry">HR &amp; Payroll Module Inquiry</option>
+                    <option value="Workspace Onboarding & Migration">Workspace Onboarding &amp; CSV Migration</option>
+                    <option value="Technical & Security Support">Technical &amp; RBAC Security Support</option>
+                  </select>
+                </div>
+
+                <!-- Message -->
+                <div class="col-12">
+                  <label class="form-label small fw-semibold text-secondary mb-1">How can we help your team? <span class="text-danger">*</span></label>
+                  <textarea
+                    name="message"
+                    rows="4"
+                    class="form-control"
+                    placeholder="Tell us about your departments, HR workflows, or project management requirements..."
+                    [(ngModel)]="contactForm.message"
+                    required></textarea>
+                </div>
+
+                <div class="col-12 pt-2">
+                  <app-button
+                    type="submit"
+                    label="Submit Inquiry"
+                    variant="emerald"
+                    size="lg"
+                    icon="bi-send-fill"
+                    [block]="true"
+                    [loading]="isSubmitting"
+                    loadingText="Sending message...">
+                  </app-button>
+                </div>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Direct Contact Channels & Quick FAQs -->
+    <div class="col-12 col-lg-5">
+      <div class="d-flex flex-column gap-3">
+        @for (ch of contactChannels; track ch.title) {
+          <div class="card border-0 shadow-sm rounded-4 channel-card">
+            <div class="card-body p-3.5 d-flex align-items-start gap-3">
+              <div class="contact-icon-box bg-emerald-subtle text-emerald flex-shrink-0">
+                <i class="bi {{ ch.icon }}"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                  <h3 class="h6 fw-bold text-dark mb-0 small">{{ ch.title }}</h3>
+                  <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2 py-0.5">
+                    {{ ch.badge }}
+                  </span>
+                </div>
+                <p class="extra-small text-muted mb-1.5">{{ ch.detail }}</p>
+                <span class="small fw-semibold text-emerald">{{ ch.contact }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Mini FAQ Card -->
+        <div class="card border-0 shadow-sm rounded-4 mt-1">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-patch-question-fill text-emerald fs-5"></i>
+              <h3 class="h6 fw-bold text-dark mb-0">Frequently Asked Questions</h3>
+            </div>
+
+            <div class="d-flex flex-column gap-3">
+              @for (item of faqs; track item.q) {
+                <div class="p-3 rounded-3 bg-light-subtle border">
+                  <h4 class="small fw-bold text-dark mb-1">{{ item.q }}</h4>
+                  <p class="extra-small text-muted mb-0" style="line-height: 1.6;">{{ item.a }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

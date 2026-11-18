@@ -1,0 +1,125 @@
+/* ====================================================================
+   LANDING PAGE STYLES (Work-Sphere Emerald Green & Slate Theme)
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 65%, #ecfdf5 100%);
+  border: 1px solid rgba(16, 185, 129, 0.22) !important;
+}
+
+.hero-title {
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.hero-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: hero-pulse 1.8s infinite;
+}
+
+@keyframes hero-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.hero-preview-shell {
+  border-color: rgba(16, 185, 129, 0.22) !important;
+}
+
+.window-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.preview-icon-box {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* Stat Strip */
+.stat-strip-card {
+  border: 1px solid #e2e8f0 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-strip-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-icon-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* Feature Pillars */
+.feature-pillar-card {
+  border: 1px solid #e2e8f0 !important;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.feature-pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+.pillar-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+/* Talent Hub Bridge Card */
+.talent-bridge-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 55%, #ecfdf5 100%);
+  border: 1px solid rgba(16, 185, 129, 0.28) !important;
+}
+
+/* Dual Portal Cards */
+.hr-portal-card {
+  background: linear-gradient(145deg, #ffffff 0%, #ecfdf5 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+
+.emp-portal-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Bottom CTA Banner */
+.cta-banner {
+  background: linear-gradient(135deg, #065f46 0%, #047857 50%, #10b981 100%);
+}

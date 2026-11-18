@@ -1,1 +1,185 @@
-<p>about-page works!</p>
+<div class="about-page">
+
+  <!-- ====================================================================
+       1. ABOUT HERO BANNER
+  ===================================================================== -->
+  <section class="about-hero card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+    <div class="card-body p-4 p-md-5">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-7">
+          <span class="badge bg-emerald-subtle text-emerald rounded-pill px-3 py-1.5 extra-small fw-bold text-uppercase letter-spacing-1 mb-3">
+            About Work-Sphere
+          </span>
+          <h1 class="fw-bold text-dark mb-3">
+            Building the Operating System for <span class="text-emerald">Modern Workplaces</span>
+          </h1>
+          <p class="text-muted mb-4" style="font-size: 1rem; line-height: 1.7;">
+            Work-Sphere was created to solve a fundamental disconnect in growing organizations: HR teams manage people in one system while managers and employees track daily projects, tasks, and requests in another. We unified both worlds into a single, role-aware platform.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <app-button
+              label="Explore Platform Features"
+              variant="emerald"
+              size="md"
+              icon="bi-grid-1x2"
+              route="/features">
+            </app-button>
+            <app-button
+              label="Get in Touch"
+              variant="outline-emerald"
+              size="md"
+              icon="bi-chat-dots"
+              route="/contact">
+            </app-button>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+          <div class="p-4 rounded-4 bg-white border shadow-xs">
+            <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+              <div class="about-icon-badge bg-emerald text-white">
+                <i class="bi bi-bullseye"></i>
+              </div>
+              <div>
+                <span class="extra-small text-uppercase text-emerald fw-bold letter-spacing-1">Our Mission</span>
+                <h2 class="h6 fw-bold text-dark mb-0">Clarity Across Every Level</h2>
+              </div>
+            </div>
+            <p class="small text-muted mb-3" style="line-height: 1.65;">
+              To empower organizations with transparent hierarchy management, effortless self-service HR, and real-time operational visibility—from executive leadership to every individual contributor.
+            </p>
+            <div class="row g-2 text-center">
+              <div class="col-4">
+                <div class="p-2.5 rounded-3 bg-emerald-subtle">
+                  <strong class="d-block h5 mb-0 fw-bold text-emerald">100%</strong>
+                  <span class="extra-small text-muted">Role-Guarded</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2.5 rounded-3 bg-emerald-subtle">
+                  <strong class="d-block h5 mb-0 fw-bold text-emerald">360°</strong>
+                  <span class="extra-small text-muted">Workforce View</span>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="p-2.5 rounded-3 bg-emerald-subtle">
+                  <strong class="d-block h5 mb-0 fw-bold text-emerald">24/7</strong>
+                  <span class="extra-small text-muted">Self-Service</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       2. CORE DESIGN PRINCIPLES & VALUES
+  ===================================================================== -->
+  <section class="mb-5">
+    <div class="text-center mx-auto mb-4" style="max-width: 640px;">
+      <span class="badge bg-emerald-subtle text-emerald rounded-pill px-3 py-1.5 extra-small fw-bold text-uppercase letter-spacing-1 mb-2">
+        Core Principles
+      </span>
+      <h2 class="h3 fw-bold text-dark mb-2">What Drives Work-Sphere 2.0</h2>
+      <p class="text-muted small mb-0">
+        Every screen, component, and workflow is engineered around four foundational pillars.
+      </p>
+    </div>
+
+    <div class="row g-3 g-md-4">
+      @for (val of values; track val.title) {
+        <div class="col-12 col-md-6">
+          <div class="card border-0 shadow-sm rounded-4 h-100 value-card">
+            <div class="card-body p-4 d-flex align-items-start gap-3">
+              <div class="about-icon-badge bg-emerald-subtle text-emerald flex-shrink-0">
+                <i class="bi {{ val.icon }}"></i>
+              </div>
+              <div>
+                <h3 class="h6 fw-bold text-dark mb-1.5">{{ val.title }}</h3>
+                <p class="text-muted small mb-0" style="line-height: 1.65;">{{ val.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       3. PLATFORM EVOLUTION & ARCHITECTURE
+  ===================================================================== -->
+  <div class="row g-4 mb-5">
+    <!-- Evolution Timeline -->
+    <div class="col-12 col-lg-7">
+      <section class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4 p-md-5">
+          <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-bold mb-2">
+            Product Journey
+          </span>
+          <h3 class="h5 fw-bold text-dark mb-4">How We Built Work-Sphere 2.0</h3>
+
+          <div class="d-flex flex-column gap-3">
+            @for (item of milestones; track item.year) {
+              <div class="p-3 rounded-3 border bg-light-subtle d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-emerald text-white rounded-pill extra-small px-2.5 py-0.5">{{ item.year }}</span>
+                    <h4 class="h6 fw-bold text-dark mb-0 small">{{ item.title }}</h4>
+                  </div>
+                  <p class="extra-small text-muted mb-0">{{ item.detail }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Technical Architecture Spec -->
+    <div class="col-12 col-lg-5">
+      <section class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body p-4 p-md-5 d-flex flex-column justify-content-between">
+          <div>
+            <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 extra-small fw-bold mb-2">
+              Enterprise Stack
+            </span>
+            <h3 class="h5 fw-bold text-dark mb-2">Engineered for Reliability</h3>
+            <p class="text-muted small mb-4">
+              Work-Sphere combines a modular standalone Angular architecture with strict type safety and reusable UI components.
+            </p>
+
+            <div class="d-flex flex-column gap-2.5 mb-4">
+              @for (spec of architectureHighlights; track spec.label) {
+                <div class="p-3 rounded-3 border d-flex align-items-center gap-3">
+                  <div class="about-spec-icon bg-emerald-subtle text-emerald">
+                    <i class="bi {{ spec.icon }}"></i>
+                  </div>
+                  <div>
+                    <span class="extra-small text-muted d-block">{{ spec.label }}</span>
+                    <strong class="small text-dark">{{ spec.value }}</strong>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="p-3 rounded-3 bg-emerald-subtle border border-success border-opacity-25 d-flex align-items-center justify-content-between">
+            <div>
+              <span class="d-block small fw-bold text-dark">Ready to explore the workspace?</span>
+              <span class="extra-small text-muted">Sign in to test HR or Employee portals</span>
+            </div>
+            <app-button
+              label="Sign In"
+              variant="emerald"
+              size="sm"
+              route="/login">
+            </app-button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+</div>
