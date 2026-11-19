@@ -1,0 +1,193 @@
+/* ====================================================================
+   WORK-SPHERE REUSABLE BADGE COMPONENT
+===================================================================== */
+
+:host {
+  display: inline-flex;
+}
+
+.ws-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Sizes */
+.ws-badge-xs {
+  padding: 0.18rem 0.55rem;
+  font-size: 11px !important;
+}
+
+.ws-badge-sm {
+  padding: 0.24rem 0.65rem;
+  font-size: 12px !important;
+}
+
+.ws-badge-md {
+  padding: 0.3rem 0.8rem;
+  font-size: 13px !important;
+}
+
+.ws-badge-lg {
+  padding: 0.38rem 0.95rem;
+  font-size: 14px !important;
+}
+
+/* Dot & Pulse Dot */
+.ws-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor !important;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.ws-badge-dot-pulse {
+  animation: ws-badge-pulse 1.6s infinite;
+}
+
+@keyframes ws-badge-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.25);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Variants - Emerald */
+.ws-badge-emerald {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-emerald {
+  background-color: #ecfdf5 !important;
+  border-color: rgba(16, 185, 129, 0.24) !important;
+  color: #059669 !important;
+}
+.ws-badge-outline-emerald {
+  background-color: transparent !important;
+  border-color: #10b981 !important;
+  color: #059669 !important;
+}
+
+/* Variants - Primary */
+.ws-badge-primary {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-primary {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #2563eb !important;
+}
+.ws-badge-outline-primary {
+  background-color: transparent !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+/* Variants - Secondary */
+.ws-badge-secondary {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-secondary {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+.ws-badge-outline-secondary {
+  background-color: transparent !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* Variants - Success */
+.ws-badge-success {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-success {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+.ws-badge-outline-success {
+  background-color: transparent !important;
+  border-color: #16a34a !important;
+  color: #15803d !important;
+}
+
+/* Variants - Warning */
+.ws-badge-warning {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-warning {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  color: #d97706 !important;
+}
+.ws-badge-outline-warning {
+  background-color: transparent !important;
+  border-color: #f59e0b !important;
+  color: #d97706 !important;
+}
+
+/* Variants - Danger */
+.ws-badge-danger {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-danger {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #dc2626 !important;
+}
+.ws-badge-outline-danger {
+  background-color: transparent !important;
+  border-color: #ef4444 !important;
+  color: #dc2626 !important;
+}
+
+/* Variants - Info */
+.ws-badge-info {
+  background-color: #0ea5e9 !important;
+  color: #ffffff !important;
+}
+.ws-badge-soft-info {
+  background-color: #f0f9ff !important;
+  border-color: #bae6fd !important;
+  color: #0284c7 !important;
+}
+.ws-badge-outline-info {
+  background-color: transparent !important;
+  border-color: #0ea5e9 !important;
+  color: #0284c7 !important;
+}
+
+/* Variants - Dark & Light */
+.ws-badge-dark {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+.ws-badge-light {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}

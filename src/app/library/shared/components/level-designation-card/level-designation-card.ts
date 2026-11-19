@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Button } from '../../../UI/components/button/button';
+import { Badge } from '../../../UI/components/badge/badge';
 import {
   DesignationItem,
   OrganizationalLevelHierarchyItem,
@@ -9,7 +10,7 @@ import {
 @Component({
   selector: 'app-level-designation-card',
   standalone: true,
-  imports: [CommonModule, Button],
+  imports: [CommonModule, Button, Badge],
   templateUrl: './level-designation-card.html',
   styleUrl: './level-designation-card.css',
 })
@@ -35,4 +36,3 @@ export class LevelDesignationCard {
     this.deleteDesignation.emit(desig);
   }
 }
-

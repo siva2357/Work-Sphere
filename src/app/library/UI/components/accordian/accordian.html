@@ -1,0 +1,141 @@
+@if (isListMode) {
+  <!-- ====================================================================
+       MULTI-ITEM ACCORDION LIST MODE
+  ===================================================================== -->
+  <div class="ws-accordian-list" [ngClass]="customClass">
+    @for (item of items; track item.id) {
+      <div
+        class="ws-accordian-card"
+        [ngClass]="'ws-accordian-' + variant"
+        [class.ws-accordian-open]="item.isOpen"
+        [class.ws-accordian-disabled]="item.disabled">
+
+        <!-- Header -->
+        <div
+          class="ws-accordian-header"
+          role="button"
+          tabindex="0"
+          [attr.aria-expanded]="!!item.isOpen"
+          (click)="toggleItem(item)"
+          (keydown.enter)="toggleItem(item)"
+          (keydown.space)="toggleItem(item); $event.preventDefault()">
+
+          <div class="ws-accordian-header-main">
+            @if (item.icon) {
+              <div class="ws-accordian-icon-box">
+                <i [class]="formatItemIcon(item.icon)"></i>
+              </div>
+            }
+
+            <div class="ws-accordian-title-group">
+              <div class="ws-accordian-title-row">
+                @if (item.codeBadge) {
+                  <span class="ws-accordian-code-pill">{{ item.codeBadge }}</span>
+                }
+                <h3 class="ws-accordian-title">{{ item.title }}</h3>
+                @if (item.countBadge) {
+                  <app-badge [label]="item.countBadge" variant="soft-emerald" size="xs"></app-badge>
+                }
+                @if (item.statusBadge) {
+                  <app-badge [label]="item.statusBadge" [variant]="item.statusVariant || 'soft-emerald'" size="xs" [dot]="true"></app-badge>
+                }
+              </div>
+
+              @if (item.subtitle) {
+                <p class="ws-accordian-subtitle">{{ item.subtitle }}</p>
+              }
+            </div>
+          </div>
+
+          <div class="ws-accordian-header-right">
+            @if (actionsTemplate) {
+              <div class="ws-accordian-actions" (click)="stopPropagation($event)">
+                <ng-container *ngTemplateOutlet="actionsTemplate; context: { $implicit: item, item: item }"></ng-container>
+              </div>
+            }
+
+            <span class="ws-accordian-chevron" [class.rotated]="item.isOpen">
+              <i class="bi bi-chevron-down"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Collapsible Body -->
+        @if (item.isOpen) {
+          <div class="ws-accordian-body">
+            @if (bodyTemplate) {
+              <ng-container *ngTemplateOutlet="bodyTemplate; context: { $implicit: item, item: item }"></ng-container>
+            } @else if (item.content) {
+              <div class="ws-accordian-text">{{ item.content }}</div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+} @else {
+  <!-- ====================================================================
+       SINGLE ACCORDION PANEL MODE (WITH CONTENT PROJECTION)
+  ===================================================================== -->
+  <div
+    class="ws-accordian-card"
+    [ngClass]="['ws-accordian-' + variant, customClass]"
+    [class.ws-accordian-open]="isOpen"
+    [class.ws-accordian-disabled]="disabled">
+
+    <!-- Header -->
+    <div
+      class="ws-accordian-header"
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="isOpen"
+      (click)="toggleSingle()"
+      (keydown.enter)="toggleSingle()"
+      (keydown.space)="toggleSingle(); $event.preventDefault()">
+
+      <div class="ws-accordian-header-main">
+        @if (icon) {
+          <div class="ws-accordian-icon-box">
+            <i [class]="formattedIcon"></i>
+          </div>
+        }
+
+        <div class="ws-accordian-title-group">
+          <div class="ws-accordian-title-row">
+            @if (codeBadge) {
+              <span class="ws-accordian-code-pill">{{ codeBadge }}</span>
+            }
+            <h3 class="ws-accordian-title">{{ title }}</h3>
+            @if (countBadge) {
+              <app-badge [label]="countBadge" variant="soft-emerald" size="xs"></app-badge>
+            }
+            @if (statusBadge) {
+              <app-badge [label]="statusBadge" [variant]="statusVariant" size="xs" [dot]="true"></app-badge>
+            }
+          </div>
+
+          @if (subtitle) {
+            <p class="ws-accordian-subtitle">{{ subtitle }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="ws-accordian-header-right">
+        <div class="ws-accordian-actions" (click)="stopPropagation($event)">
+          <ng-content select="[accordian-actions]"></ng-content>
+        </div>
+
+        <span class="ws-accordian-chevron" [class.rotated]="isOpen">
+          <i class="bi bi-chevron-down"></i>
+        </span>
+      </div>
+    </div>
+
+    <!-- Collapsible Body -->
+    @if (isOpen) {
+      <div class="ws-accordian-body">
+        <ng-content></ng-content>
+      </div>
+    }
+  </div>
+}

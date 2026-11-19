@@ -1,0 +1,222 @@
+/* ====================================================================
+   WORK-SPHERE REUSABLE ACCORDION COMPONENT
+   Emerald Green (#10b981 / #059669) & Slate Enterprise Theme
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ws-accordian-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.ws-accordian-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.85rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ws-accordian-card:hover:not(.ws-accordian-disabled) {
+  border-color: rgba(16, 185, 129, 0.38);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+}
+
+.ws-accordian-card.ws-accordian-open {
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 8px 22px rgba(16, 185, 129, 0.08);
+}
+
+.ws-accordian-card.ws-accordian-emerald.ws-accordian-open .ws-accordian-header {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.ws-accordian-card.ws-accordian-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Header */
+.ws-accordian-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.18s ease;
+}
+
+.ws-accordian-header:hover {
+  background-color: #f8fafc;
+}
+
+.ws-accordian-open .ws-accordian-header {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+}
+
+.ws-accordian-header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ws-accordian-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.65rem;
+  background-color: #ecfdf5;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ws-accordian-open .ws-accordian-icon-box {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.ws-accordian-title-group {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ws-accordian-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ws-accordian-code-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 0.4rem;
+  background-color: #10b981;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.ws-accordian-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.ws-accordian-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Header Right Actions & Chevron */
+.ws-accordian-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.ws-accordian-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ws-accordian-chevron {
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: transform 0.22s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ws-accordian-chevron.rotated {
+  transform: rotate(180deg);
+  background-color: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #059669;
+}
+
+/* Collapsible Body */
+.ws-accordian-body {
+  padding: 1rem 1.25rem 1.25rem;
+  background-color: #ffffff;
+  font-size: 14px;
+  color: #334155;
+  animation: ws-accordian-expand 0.18s ease-out;
+}
+
+.ws-accordian-text {
+  line-height: 1.6;
+}
+
+@keyframes ws-accordian-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Complete Mobile & Tablet Responsiveness */
+@media (max-width: 767.98px) {
+  .ws-accordian-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+  }
+
+  .ws-accordian-header-right {
+    justify-content: space-between;
+    padding-top: 0.55rem;
+    border-top: 1px dashed #e2e8f0;
+    width: 100%;
+  }
+
+  .ws-accordian-body {
+    padding: 0.9rem 1rem 1rem;
+  }
+}

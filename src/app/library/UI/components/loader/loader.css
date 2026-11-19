@@ -1,0 +1,210 @@
+/* =========================================================
+   WORK-SPHERE LOADER COMPONENT (Emerald Green & Slate Theme)
+   ========================================================= */
+
+/* Standard Spinner */
+.spinner-border {
+  display: inline-block;
+}
+
+.text-emerald-loader {
+  color: #10b981 !important;
+}
+
+/* Dotted Spinner */
+.spinner-dotted {
+  border-style: dotted;
+  border-width: 3px;
+}
+
+/* Thick Spinner */
+.spinner-thick {
+  border-width: 4px;
+}
+
+/* Track Spinner */
+.spinner-track {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+.spinner-track.spinner-primary {
+  border-top-color: #2563eb;
+}
+
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+
+.loader-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+.progress {
+  width: 100%;
+  height: 6px;
+  flex: 1 1 auto;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.progress-bar {
+  height: 100%;
+  min-width: 0;
+  background-color: #10b981;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar.progress-primary {
+  background-color: #2563eb;
+}
+
+.progress-percentage {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PROGRESS - STRIPED
+   ========================================================= */
+
+.progress-bar-striped {
+  background-image: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.18) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0.18) 75%,
+      transparent 75%);
+
+  background-size: 1rem 1rem;
+}
+
+
+/* =========================================================
+   PROGRESS - ANIMATED
+   ========================================================= */
+
+.progress-bar-animated {
+  animation: progress-bar-stripes 1s linear infinite;
+}
+
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 1rem 0;
+  }
+
+  to {
+    background-position: 0 0;
+  }
+}
+
+
+/* =========================================================
+   PROGRESS - HANDLE
+   ========================================================= */
+
+.progress-bar.progress-with-handle {
+  position: relative;
+  overflow: visible;
+}
+
+.progress-bar.progress-with-handle::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateY(-50%);
+  background-color: #059669;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.progress-bar.progress-primary.progress-with-handle::after {
+  background-color: #2563eb;
+}
+
+
+/* =========================================================
+   CIRCULAR PROGRESS
+   ========================================================= */
+
+.circular-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+
+/* Inner Circle */
+.circular-progress::before {
+  content: "";
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+
+/* Percentage */
+.circular-progress span {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* =========================================================
+   CIRCULAR PROGRESS - SIZE
+   ========================================================= */
+
+.circle-size {
+  width: 64px;
+  height: 64px;
+}
+
+
+/* =========================================================
+   CIRCULAR PROGRESS - THIN / MEDIUM / THICK
+   ========================================================= */
+
+.ring-thin::before {
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  left: 4px;
+}
+
+.ring-md::before {
+  top: 6px;
+  right: 6px;
+  bottom: 6px;
+  left: 6px;
+}
+
+.ring-thick::before {
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+}

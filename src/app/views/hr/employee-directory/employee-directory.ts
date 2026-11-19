@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { CompanyDirectoryService } from '../../../core/services/company-directory.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DropdownService } from '../../../core/services/dropdown.service';
@@ -16,19 +17,52 @@ import {
 } from '../../../core/models/helper.interface';
 import {
   SAMPLE_105_EMPLOYEES,
-  SAMPLE_EMPLOYEES_CSV_HEADER,
-  generateSampleEmployeesCsv
+  SAMPLE_EMPLOYEES_CSV_HEADER
 } from '../../../core/constants/sample-employees.data';
 import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
 import { EmployeeCard } from '../../../library/shared/components/employee-card/employee-card';
-import { Button } from '../../../library/UI/components/button/button';
+import {
+  Alert,
+  Badge,
+  BadgeVariant,
+  Button,
+  Chip,
+  InputDropdownOption,
+  InputField,
+  Pagination,
+  Table,
+  TableColumn,
+} from '../../../library/UI/components';
 
 export type { EmployeeRecord };
+
+export interface EmployeeTableRow extends EmployeeRecord {
+  sno: number;
+  initials?: string;
+}
+
+export interface ActiveFilterChip {
+  key: 'search' | 'department' | 'status';
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'app-employee-directory',
   standalone: true,
-  imports: [CommonModule, FormsModule, StatCards, EmployeeCard, Button],
+  imports: [
+    CommonModule,
+    FormsModule,
+    StatCards,
+    EmployeeCard,
+    Button,
+    InputField,
+    Badge,
+    Chip,
+    Alert,
+    Table,
+    Pagination,
+  ],
   templateUrl: './employee-directory.html',
   styleUrl: './employee-directory.css',
 })
@@ -37,10 +71,28 @@ export class EmployeeDirectory implements OnInit {
   private authService = inject(AuthService);
   private dropdownService = inject(DropdownService);
 
+  @ViewChild('profileImgTpl', { static: true }) profileImgTpl!: TemplateRef<any>;
+  @ViewChild('deptTpl', { static: true }) deptTpl!: TemplateRef<any>;
+  @ViewChild('statusTpl', { static: true }) statusTpl!: TemplateRef<any>;
+  @ViewChild('actionsTpl', { static: true }) actionsTpl!: TemplateRef<any>;
+
+  tableColumns: TableColumn[] = [];
+  isLoadingDirectory = false;
+
+  // Draft Filter Inputs (bound to the filter controls)
+  draftSearchTerm = '';
+  draftDepartment = 'All';
+  draftStatus = 'All';
+
+  // Applied Filter Values
   searchTerm = '';
   selectedDepartment = 'All';
   selectedStatus = 'All';
-  viewMode: 'grid' | 'table' = 'grid';
+
+  currentPage = 1;
+  pageSize = 10;
+  effectiveCurrentPage = 1;
+
   activeCompanyCode = 'CMP-001';
   activeCompanyName = '';
 
@@ -62,6 +114,21 @@ export class EmployeeDirectory implements OnInit {
   levelsList: HelperOrganizationalLevelOption[] = [];
   designationsList: HelperDesignationOption[] = [];
   rolesList: HelperRoleOption[] = [];
+
+  // Cached Dropdown & View Arrays (prevents infinite change detection loops in ngx-datatable)
+  departmentFilterOptions: InputDropdownOption[] = [{ label: 'All Departments', value: 'All' }];
+  departmentFormOptions: InputDropdownOption[] = [];
+  subDepartmentFormOptions: InputDropdownOption[] = [];
+  levelFormOptions: InputDropdownOption[] = [];
+  designationFormOptions: InputDropdownOption[] = [];
+  roleFormOptions: InputDropdownOption[] = [];
+  reportingManagerOptions: { value: string; label: string; group: string }[] = [];
+
+  employees: EmployeeRecord[] = [];
+  filteredEmployees: EmployeeRecord[] = [];
+  paginatedEmployees: EmployeeTableRow[] = [];
+  activeFilterChips: ActiveFilterChip[] = [];
+  statCards: StatMetric[] = [];
 
   newEmployee = {
     name: '',
@@ -89,11 +156,151 @@ export class EmployeeDirectory implements OnInit {
     'Remote (India)',
   ];
 
-  employees: EmployeeRecord[] = [];
+  readonly statusFilterOptions: InputDropdownOption[] = [
+    { label: 'All Statuses', value: 'All' },
+    { label: 'Active', value: 'Active' },
+    { label: 'Remote', value: 'Remote' },
+    { label: 'On Leave', value: 'On Leave' },
+  ];
 
-  get statCards(): StatMetric[] {
+  readonly employmentTypeOptions: string[] = ['Full-time', 'Contract', 'Intern'];
+  readonly workStatusOptions: string[] = ['Active', 'Remote', 'On Leave'];
+
+  ngOnInit(): void {
+    this.initTableColumns();
+    const companyCode = this.authService.getCurrentCompanyCode();
+    this.activeCompanyCode = companyCode;
+    this.rebuildStatCards();
+    this.loadHelperDropdowns();
+    this.loadDirectoryFromBackend(companyCode);
+  }
+
+  /**
+   * 12 Table Columns:
+   * S.No, Employee ID, Profile Image, Full Name, Email, Department,
+   * Designation, Reporting Manager, Location, Employment, Status, Actions
+   */
+  private initTableColumns(): void {
+    this.tableColumns = [
+      {
+        field: 'sno',
+        headerName: 'S.No',
+        width: 75,
+      },
+      {
+        field: 'id',
+        headerName: 'Employee ID',
+        width: 120,
+      },
+      {
+        field: 'avatar',
+        headerName: 'Profile Image',
+        cellTemplate: this.profileImgTpl,
+        width: 115,
+      },
+      {
+        field: 'name',
+        headerName: 'Full Name',
+        width: 185,
+      },
+      {
+        field: 'email',
+        headerName: 'Email',
+        width: 245,
+      },
+      {
+        field: 'department',
+        headerName: 'Department',
+        cellTemplate: this.deptTpl,
+        width: 245,
+      },
+      {
+        field: 'role',
+        headerName: 'Designation',
+        width: 215,
+      },
+      {
+        field: 'manager',
+        headerName: 'Reporting Manager',
+        width: 195,
+      },
+      {
+        field: 'location',
+        headerName: 'Location',
+        width: 155,
+      },
+      {
+        field: 'type',
+        headerName: 'Employment',
+        width: 120,
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        cellTemplate: this.statusTpl,
+        width: 115,
+      },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        cellTemplate: this.actionsTpl,
+        width: 90,
+      },
+    ];
+  }
+
+  loadHelperDropdowns(): void {
+    this.dropdownService.dropdowns$.subscribe((dropdowns) => {
+      this.departmentsList = dropdowns.departments || [];
+      this.levelsList = dropdowns.organizationalLevels || [];
+      this.designationsList = dropdowns.designations || [];
+      this.rolesList = dropdowns.roles || [];
+
+      this.departmentFilterOptions = [
+        { label: 'All Departments', value: 'All' },
+        ...this.departmentsList.map((dept) => ({
+          label: `${dept.name} (${dept.code})`,
+          value: dept.name,
+        })),
+      ];
+
+      this.departmentFormOptions = this.departmentsList.map((dept) => ({
+        label: `${dept.name} (${dept.code})`,
+        value: dept.code,
+      }));
+
+      this.levelFormOptions = this.levelsList.map((lvl) => ({
+        label: `${lvl.code} — ${lvl.name} (${lvl.hierarchyTrack})`,
+        value: lvl.code,
+      }));
+
+      this.designationFormOptions = this.designationsList.map((desig) => ({
+        label: `${desig.title} (${desig.levelCode})`,
+        value: desig.code,
+      }));
+
+      this.roleFormOptions = this.rolesList.map((r) => ({
+        label: `${r.name} (${r.code})`,
+        value: r.code,
+      }));
+
+      this.rebuildSubDepartmentOptions();
+      this.rebuildStatCards();
+    });
+  }
+
+  private rebuildSubDepartmentOptions(): void {
+    const found = this.departmentsList.find((d) => d.code === this.newEmployee.department);
+    const subs = found?.subDepartments || [];
+    this.subDepartmentFormOptions = subs.map((sub) => ({
+      label: `${sub.name} (${sub.code})`,
+      value: sub.code,
+    }));
+  }
+
+  private rebuildStatCards(): void {
     const activeCount = this.employees.filter((e) => e.status === 'Active' || !e.status).length;
-    return [
+    this.statCards = [
       {
         title: 'Total Workforce',
         value: this.employees.length,
@@ -129,25 +336,125 @@ export class EmployeeDirectory implements OnInit {
     ];
   }
 
-  ngOnInit(): void {
-    const companyCode = this.authService.getCurrentCompanyCode();
-    this.activeCompanyCode = companyCode;
-    this.loadHelperDropdowns();
-    this.loadDirectoryFromBackend(companyCode);
+  private rebuildActiveFilterChips(): void {
+    const chips: ActiveFilterChip[] = [];
+    if (this.searchTerm.trim()) {
+      chips.push({
+        key: 'search',
+        label: `Search: "${this.searchTerm.trim()}"`,
+        icon: 'bi-search',
+      });
+    }
+    if (this.selectedDepartment && this.selectedDepartment !== 'All') {
+      chips.push({
+        key: 'department',
+        label: `Department: ${this.selectedDepartment}`,
+        icon: 'bi-diagram-3',
+      });
+    }
+    if (this.selectedStatus && this.selectedStatus !== 'All') {
+      chips.push({
+        key: 'status',
+        label: `Status: ${this.selectedStatus}`,
+        icon: 'bi-check2-circle',
+      });
+    }
+    this.activeFilterChips = chips;
   }
 
-  loadHelperDropdowns(): void {
-    this.dropdownService.dropdowns$.subscribe((dropdowns) => {
-      this.departmentsList = dropdowns.departments || [];
-      this.levelsList = dropdowns.organizationalLevels || [];
-      this.designationsList = dropdowns.designations || [];
-      this.rolesList = dropdowns.roles || [];
+  /**
+   * Computes and caches filteredEmployees and paginatedEmployees so ngx-datatable
+   * receives stable array references instead of re-rendering infinitely.
+   */
+  private updateDirectoryView(): void {
+    const q = this.searchTerm.toLowerCase();
+    this.filteredEmployees = this.employees.filter((emp) => {
+      const matchesSearch =
+        !q ||
+        emp.name.toLowerCase().includes(q) ||
+        emp.id.toLowerCase().includes(q) ||
+        emp.role.toLowerCase().includes(q) ||
+        emp.email.toLowerCase().includes(q) ||
+        (emp.manager || '').toLowerCase().includes(q);
+      const matchesDept =
+        this.selectedDepartment === 'All' ||
+        emp.department.toLowerCase().includes(this.selectedDepartment.toLowerCase());
+      const matchesStatus =
+        this.selectedStatus === 'All' || emp.status === this.selectedStatus;
+      return matchesSearch && matchesDept && matchesStatus;
     });
+
+    const totalPages = Math.max(1, Math.ceil(this.filteredEmployees.length / this.pageSize));
+    this.effectiveCurrentPage = Math.min(Math.max(1, this.currentPage), totalPages);
+
+    const start = (this.effectiveCurrentPage - 1) * this.pageSize;
+    this.paginatedEmployees = this.filteredEmployees
+      .slice(start, start + this.pageSize)
+      .map((emp, idx) => ({
+        ...emp,
+        sno: start + idx + 1,
+      }));
+
+    this.rebuildActiveFilterChips();
+    this.rebuildStatCards();
   }
 
-  get subDepartmentsForSelectedDept() {
-    const found = this.departmentsList.find((d) => d.code === this.newEmployee.department);
-    return found?.subDepartments || [];
+  applyFilters(): void {
+    this.searchTerm = this.draftSearchTerm.trim();
+    this.selectedDepartment = this.draftDepartment || 'All';
+    this.selectedStatus = this.draftStatus || 'All';
+    this.currentPage = 1;
+    this.updateDirectoryView();
+  }
+
+  resetFilters(): void {
+    this.draftSearchTerm = '';
+    this.draftDepartment = 'All';
+    this.draftStatus = 'All';
+    this.searchTerm = '';
+    this.selectedDepartment = 'All';
+    this.selectedStatus = 'All';
+    this.currentPage = 1;
+    this.updateDirectoryView();
+  }
+
+  removeFilterChip(key: 'search' | 'department' | 'status'): void {
+    if (key === 'search') {
+      this.draftSearchTerm = '';
+      this.searchTerm = '';
+    } else if (key === 'department') {
+      this.draftDepartment = 'All';
+      this.selectedDepartment = 'All';
+    } else if (key === 'status') {
+      this.draftStatus = 'All';
+      this.selectedStatus = 'All';
+    }
+    this.currentPage = 1;
+    this.updateDirectoryView();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.updateDirectoryView();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.updateDirectoryView();
+  }
+
+  getStatusBadgeVariant(status?: string): BadgeVariant {
+    switch (status) {
+      case 'Active':
+        return 'soft-success';
+      case 'Remote':
+        return 'soft-info';
+      case 'On Leave':
+        return 'soft-warning';
+      default:
+        return 'soft-emerald';
+    }
   }
 
   get selectedDesignationInfo(): HelperDesignationOption | undefined {
@@ -167,13 +474,7 @@ export class EmployeeDirectory implements OnInit {
     return { track: 'Employee', rank: 8, code: 'L8' };
   }
 
-  /**
-   * Computes eligible Reporting Managers from the employee directory based on:
-   * 1. Selected Organizational Level (managers must have higher seniority / lower rank number than the employee)
-   * 2. Selected Department (same-department leaders prioritized first)
-   * 3. Designation's TypicalReportingTo & Executive fallback options
-   */
-  get reportingManagerOptions(): { value: string; label: string; group: string }[] {
+  private rebuildReportingManagerOptions(): void {
     const currentLvl = this.parseRankFromLevelCode(this.newEmployee.levelCode);
     const selectedDeptObj = this.departmentsList.find((d) => d.code === this.newEmployee.department);
     const selectedDeptName = (selectedDeptObj?.name || this.newEmployee.department).toLowerCase();
@@ -187,8 +488,6 @@ export class EmployeeDirectory implements OnInit {
       }
 
       const empLvl = this.parseRankFromLevelCode(emp.role);
-      // Manager should be strictly more senior (lower rank number, e.g. L1..L7 for an L8 employee)
-      // or L1/H1 executive if the employee is also Rank 1
       const isMoreSenior =
         currentLvl.rank === 1 ? empLvl.rank === 1 : empLvl.rank < currentLvl.rank;
 
@@ -214,7 +513,6 @@ export class EmployeeDirectory implements OnInit {
       }
     }
 
-    // Sort by seniority rank (closest senior manager or top leader)
     sameDeptManagers.sort((a, b) => a.rank - b.rank);
     crossDeptManagers.sort((a, b) => a.rank - b.rank);
 
@@ -223,7 +521,6 @@ export class EmployeeDirectory implements OnInit {
       ...crossDeptManagers,
     ];
 
-    // Also include typical reporting role / executive fallbacks so dropdown is always rich even before bulk import
     const typical = this.selectedDesignationInfo?.typicalReportingTo;
     if (typical && !combined.some((o) => o.value.toLowerCase() === typical.toLowerCase())) {
       combined.push({
@@ -252,12 +549,13 @@ export class EmployeeDirectory implements OnInit {
       });
     }
 
-    return combined;
+    this.reportingManagerOptions = combined;
   }
 
   onDepartmentChange(deptCode: string): void {
     this.newEmployee.department = deptCode;
     this.newEmployee.subDepartment = '';
+    this.rebuildSubDepartmentOptions();
     this.autoSelectReportingManager();
   }
 
@@ -285,13 +583,14 @@ export class EmployeeDirectory implements OnInit {
   }
 
   private autoSelectReportingManager(): void {
-    const options = this.reportingManagerOptions;
-    if (options.length > 0) {
-      this.newEmployee.manager = options[0].value;
+    this.rebuildReportingManagerOptions();
+    if (this.reportingManagerOptions.length > 0) {
+      this.newEmployee.manager = this.reportingManagerOptions[0].value;
     }
   }
 
   loadDirectoryFromBackend(companyCode: string = 'CMP-001'): void {
+    this.isLoadingDirectory = true;
     const avatars = [
       'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
@@ -301,44 +600,32 @@ export class EmployeeDirectory implements OnInit {
       'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
     ];
 
-    this.companyDirectoryService.getEmployeeDirectory$(companyCode).subscribe((res) => {
-      if (res?.company) {
-        this.activeCompanyCode = res.company.companyCode || companyCode;
-        this.activeCompanyName = res.company.name || '';
-      }
-      if (res?.employees) {
-        this.employees = res.employees.map((e, idx) => ({
-          id: e.employeeCode || e.id,
-          name: e.name,
-          role: `${e.role} (${e.level})`,
-          department: e.department,
-          email: e.email,
-          phone: e.phone || '+91 98450 12345',
-          location: e.location || 'Bangalore, India',
-          status: (e.status as EmployeeRecord['status']) || 'Active',
-          joiningDate: e.joiningDate || '',
-          avatar: avatars[idx % avatars.length],
-          type: (e.type as EmployeeRecord['type']) || 'Full-time',
-          manager: e.manager || 'Department Head',
-        }));
-      }
-    });
-  }
-
-  get filteredEmployees(): EmployeeRecord[] {
-    return this.employees.filter((emp) => {
-      const matchesSearch =
-        emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.id.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.role.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchesDept =
-        this.selectedDepartment === 'All' ||
-        emp.department.toLowerCase().includes(this.selectedDepartment.toLowerCase());
-      const matchesStatus =
-        this.selectedStatus === 'All' || emp.status === this.selectedStatus;
-      return matchesSearch && matchesDept && matchesStatus;
-    });
+    this.companyDirectoryService
+      .getEmployeeDirectory$(companyCode)
+      .pipe(finalize(() => (this.isLoadingDirectory = false)))
+      .subscribe((res) => {
+        if (res?.company) {
+          this.activeCompanyCode = res.company.companyCode || companyCode;
+          this.activeCompanyName = res.company.name || '';
+        }
+        if (res?.employees) {
+          this.employees = res.employees.map((e, idx) => ({
+            id: e.employeeCode || e.id,
+            name: e.name,
+            role: e.level && !e.role.includes(`(${e.level})`) ? `${e.role} (${e.level})` : e.role,
+            department: e.department,
+            email: e.email,
+            phone: e.phone || '+91 98450 12345',
+            location: e.location || 'Bangalore, India',
+            status: (e.status as EmployeeRecord['status']) || 'Active',
+            joiningDate: e.joiningDate || '',
+            avatar: e.avatar?.startsWith('http') ? e.avatar : avatars[idx % avatars.length],
+            type: (e.type as EmployeeRecord['type']) || 'Full-time',
+            manager: e.manager || (e.isMainHr ? 'CEO / Executive Board' : 'Department Head'),
+          }));
+        }
+        this.updateDirectoryView();
+      });
   }
 
   viewProfile(emp: EmployeeRecord): void {
@@ -373,6 +660,7 @@ export class EmployeeDirectory implements OnInit {
       manager: '',
       joiningDate: new Date().toISOString().split('T')[0],
     };
+    this.rebuildSubDepartmentOptions();
     this.autoSelectReportingManager();
     this.showAddEmployeeModal = true;
   }
@@ -411,7 +699,6 @@ export class EmployeeDirectory implements OnInit {
     );
     const parsedLvl = this.parseRankFromLevelCode(emp.role);
 
-    // Format joiningDate to YYYY-MM-DD for <input type="date">
     let formattedJoinDate = new Date().toISOString().split('T')[0];
     if (emp.joiningDate) {
       const parsedDate = new Date(emp.joiningDate);
@@ -439,8 +726,10 @@ export class EmployeeDirectory implements OnInit {
       joiningDate: formattedJoinDate,
     };
 
-    if (!this.newEmployee.manager) {
-      this.autoSelectReportingManager();
+    this.rebuildSubDepartmentOptions();
+    this.rebuildReportingManagerOptions();
+    if (!this.newEmployee.manager && this.reportingManagerOptions.length > 0) {
+      this.newEmployee.manager = this.reportingManagerOptions[0].value;
     }
 
     this.showAddEmployeeModal = true;
@@ -485,6 +774,7 @@ export class EmployeeDirectory implements OnInit {
           }
           : emp
       );
+      this.updateDirectoryView();
       this.closeAddEmployee();
       return;
     }
@@ -510,13 +800,6 @@ export class EmployeeDirectory implements OnInit {
       });
   }
 
-  // =========================================================================
-  // EXPORT ROSTER & BULK CSV IMPORT
-  // =========================================================================
-
-  /**
-   * Exports the currently displayed employee directory to a CSV file.
-   */
   exportRosterToCsv(): void {
     const listToExport = this.filteredEmployees.length > 0 ? this.filteredEmployees : this.employees;
     this.companyDirectoryService.exportDirectoryCsv(
@@ -538,9 +821,6 @@ export class EmployeeDirectory implements OnInit {
     this.isUploading = false;
   }
 
-  /**
-   * Downloads a clean template CSV with standard headers.
-   */
   downloadTemplateCsv(): void {
     const templateContent = [
       SAMPLE_EMPLOYEES_CSV_HEADER,
@@ -558,9 +838,6 @@ export class EmployeeDirectory implements OnInit {
     URL.revokeObjectURL(url);
   }
 
-  /**
-   * Instantly loads all 105 sample pre-configured employees into the preview table!
-   */
   loadSample100Employees(): void {
     this.importFileName = 'sample_100_employees.csv (Built-in 105 Records)';
     this.importErrors = [];
@@ -714,9 +991,6 @@ export class EmployeeDirectory implements OnInit {
     return values;
   }
 
-  /**
-   * Submits the parsed employees array to POST /api/companies/{companyCode}/directory/bulk-import
-   */
   submitBulkImport(): void {
     if (this.parsedImportEmployees.length === 0) return;
 
@@ -734,7 +1008,6 @@ export class EmployeeDirectory implements OnInit {
           this.importSuccessMsg = `Successfully imported ${imported} employees into ${this.activeCompanyCode}! ${skipped > 0 ? `(${skipped} skipped/duplicate)` : ''
             }`;
 
-          // Reload employee directory from PostgreSQL
           this.loadDirectoryFromBackend(this.activeCompanyCode);
 
           setTimeout(() => {

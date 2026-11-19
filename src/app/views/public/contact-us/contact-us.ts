@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Button } from '../../../library/UI/components/button/button';
+import { InputField } from '../../../library/UI/components/input-field/input-field';
 
 @Component({
   selector: 'app-contact-us',
   standalone: true,
-  imports: [CommonModule, FormsModule, Button],
+  imports: [CommonModule, FormsModule, Button, InputField],
   templateUrl: './contact-us.html',
   styleUrl: './contact-us.css',
 })
@@ -19,6 +20,21 @@ export class ContactUs {
     topic: 'Enterprise Demo Request',
     message: '',
   };
+
+  teamSizeOptions = [
+    { label: '1 – 50 Employees', value: '1-50' },
+    { label: '50 – 250 Employees', value: '50-250' },
+    { label: '250 – 1,000 Employees', value: '250-1000' },
+    { label: '1,000+ Enterprise', value: '1000+' },
+  ];
+
+  topicOptions = [
+    { label: 'Enterprise Demo Request', value: 'Enterprise Demo Request' },
+    { label: 'HR & Payroll Module Inquiry', value: 'HR & Payroll Module Inquiry' },
+    { label: 'Talent Hub Recruitment Sync Inquiry', value: 'Talent Hub Recruitment Sync Inquiry' },
+    { label: 'Workspace Onboarding & CSV Migration', value: 'Workspace Onboarding & Migration' },
+    { label: 'Technical & RBAC Security Support', value: 'Technical & Security Support' },
+  ];
 
   isSubmitting = false;
   submittedSuccess = false;
@@ -54,8 +70,8 @@ export class ContactUs {
       a: 'Upon login, Work-Sphere inspects the authenticated user role and organizational hierarchy to automatically direct HR administrators to the HR Management Center and staff members to the Employee Workspace.',
     },
     {
-      q: 'Can we bulk-import our existing employee directory?',
-      a: 'Yes. Work-Sphere supports structured employee data onboarding including departments, designations, organizational levels, and reporting managers.',
+      q: 'How is Work-Sphere Recruitment linked to Talent Hub?',
+      a: 'Job openings created in Work-Sphere sync conceptually with Talent Hub so external candidate applications flow directly into Work-Sphere’s 4-Phase evaluation and onboarding pipeline.',
     },
     {
       q: 'Are payslips and official HR letters generated inside the platform?',

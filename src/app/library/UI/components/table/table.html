@@ -1,0 +1,47 @@
+<div class="table-component-wrapper position-relative">
+
+    <ngx-datatable class="bootstrap" [rows]="data" [columnMode]="columnModeEnum.force" [headerHeight]="50"
+        [footerHeight]="0" [rowHeight]="'auto'" [limit]="data.length || 10" [messages]="{ emptyMessage: emptyMessage }">
+
+        @for (column of columns; track column.field) {
+
+        <ngx-datatable-column [name]="column.headerName" [prop]="column.field" [width]="$any(column.width)"
+            [minWidth]="$any(column.minWidth)" [maxWidth]="$any(column.maxWidth)" [flexGrow]="$any(column.flexGrow)">
+
+            <ng-template ngx-datatable-cell-template let-row="row" let-value="value" let-rowIndex="rowIndex">
+
+                @if (column.cellTemplate) {
+
+                <ng-container *ngTemplateOutlet="
+                        column.cellTemplate;
+                        context: {
+                            $implicit: value,
+                            row: row,
+                            index: rowIndex
+                        }
+                    ">
+                </ng-container>
+
+                } @else {
+
+                {{ value }}
+
+                }
+
+            </ng-template>
+
+        </ngx-datatable-column>
+
+        }
+
+    </ngx-datatable>
+
+    @if (loading) {
+    <div class="position-absolute w-100 start-0 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75"
+        style="top: 50px; height: calc(100% - 50px); z-index: 10;">
+        <app-loader></app-loader>
+        <span class="mt-2 text-muted ">Loading data...</span>
+    </div>
+    }
+
+</div>

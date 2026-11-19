@@ -1,0 +1,16 @@
+<span [class]="badgeClasses">
+  @if (dot || pulseDot) {
+    <span class="ws-badge-dot" [class.ws-badge-dot-pulse]="pulseDot"></span>
+  }
+
+  @if (icon && iconPosition === 'left') {
+    <i [class]="formattedIcon"></i>
+  }
+
+  <ng-content></ng-content>
+  {{ label }}
+
+  @if (icon && iconPosition === 'right') {
+    <i [class]="formattedIcon"></i>
+  }
+</span>

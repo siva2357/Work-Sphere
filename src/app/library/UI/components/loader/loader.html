@@ -1,0 +1,89 @@
+<!-- =========================================================
+     SPINNER
+     ========================================================= -->
+
+@if (type === 'spinner') {
+
+@if (spinnerVariant === 'track') {
+
+<div class="spinner-track" [class.spinner-primary]="color === 'primary'" role="status" aria-label="Loading">
+</div>
+
+} @else {
+
+<div class="spinner-border text-emerald-loader" [class.text-primary]="color === 'primary'"
+  [class.spinner-dotted]="spinnerVariant === 'dotted'"
+  [class.spinner-thick]="spinnerVariant === 'thick'" role="status" aria-label="Loading">
+
+  <span class="visually-hidden">
+    Loading...
+  </span>
+
+</div>
+
+}
+
+}
+
+
+<!-- =========================================================
+     PROGRESS
+     ========================================================= -->
+
+@if (type === 'progress') {
+
+<div class="loader-progress">
+
+  <div class="progress">
+
+    <div class="progress-bar" [class.progress-primary]="color === 'primary'" [class.progress-bar-striped]="
+                    progressVariant === 'striped' ||
+                    progressVariant === 'animated'
+                " [class.progress-bar-animated]="
+                    progressVariant === 'animated'
+                " [class.progress-with-handle]="
+                    progressVariant === 'handle'
+                " [style.width.%]="safeProgress">
+    </div>
+
+  </div>
+
+  @if (showPercentage) {
+
+  <span class="progress-percentage">
+    {{ safeProgress }}%
+  </span>
+
+  }
+
+</div>
+
+}
+
+
+<!-- =========================================================
+     CIRCULAR PROGRESS
+     ========================================================= -->
+
+@if (type === 'circular') {
+
+<div class="circular-progress circle-size" [class.ring-thin]="circularVariant === 'thin'"
+  [class.ring-md]="circularVariant === 'md'" [class.ring-thick]="circularVariant === 'thick'" [style.background]="
+            'conic-gradient(' +
+            circularColor +
+            ' ' +
+            safeProgress +
+            '%, #f1f5f9 0)'
+        " role="progressbar" [attr.aria-valuenow]="safeProgress" aria-valuemin="0" aria-valuemax="100">
+
+  @if (showPercentage) {
+
+  <span>
+    {{ safeProgress }}%
+  </span>
+
+  }
+
+</div>
+
+}

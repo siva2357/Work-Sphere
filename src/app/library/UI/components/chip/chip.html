@@ -1,0 +1,31 @@
+<div
+  [class]="chipClasses"
+  [attr.role]="selectable ? 'button' : null"
+  [attr.tabindex]="selectable && !disabled ? 0 : null"
+  (click)="onChipClick($event)">
+
+  @if (avatar) {
+    <img [src]="avatar" [alt]="label" class="ws-chip-avatar" />
+  } @else if (icon) {
+    <i [class]="formattedIcon + ' ws-chip-icon'"></i>
+  } @else if (selectable && selected) {
+    <i class="bi bi-check2 ws-chip-icon"></i>
+  }
+
+  <span class="ws-chip-label">
+    @if (label) {
+      {{ label }}
+    }
+    <ng-content></ng-content>
+  </span>
+
+  @if (removable && !disabled) {
+    <button
+      type="button"
+      class="ws-chip-remove"
+      aria-label="Remove"
+      (click)="onRemoveClick($event)">
+      <i class="bi bi-x"></i>
+    </button>
+  }
+</div>

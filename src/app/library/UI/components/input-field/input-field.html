@@ -1,0 +1,167 @@
+<div class="ws-input-wrapper" [ngClass]="customClass">
+  <!-- Optional Field Label -->
+  @if (label) {
+    <label class="ws-input-label" [attr.for]="id || name || null">
+      <span>{{ label }}</span>
+      @if (required) {
+        <span class="ws-required-star">*</span>
+      }
+    </label>
+  }
+
+  <!-- Optional Filter Bar for Dropdown when filterable=true -->
+  @if (isDropdown && filterable) {
+    <div class="ws-dropdown-filter-box mb-1">
+      <i class="bi bi-search ws-filter-icon"></i>
+      <input
+        type="text"
+        class="ws-dropdown-filter-input"
+        [placeholder]="dropdownSearchPlaceholder"
+        [disabled]="disabled"
+        [ngModel]="dropdownFilterQuery"
+        (ngModelChange)="onDropdownSearchInput($event)" />
+      @if (dropdownFilterQuery) {
+        <button
+          type="button"
+          class="ws-clear-btn"
+          title="Clear filter"
+          (click)="onDropdownSearchInput('')">
+          <i class="bi bi-x"></i>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Main Input Control Group -->
+  <div
+    class="ws-input-group"
+    [class.ws-input-disabled]="disabled"
+    [class.ws-input-readonly]="readonly"
+    [class.ws-input-invalid]="showInvalidUI"
+    [class.ws-input-valid]="showValidUI"
+    [class.ws-input-textarea-group]="isTextarea">
+
+    <!-- Left Prefix Icon -->
+    @if (resolvedIcon && iconPosition === 'left') {
+      <span class="ws-input-icon ws-icon-left">
+        <i [class]="resolvedIcon"></i>
+      </span>
+    }
+
+    <!-- 1. DROPDOWN / SELECT -->
+    @if (isDropdown) {
+      <select
+        class="ws-input-control ws-select-control"
+        [attr.id]="id || null"
+        [attr.name]="name || null"
+        [disabled]="disabled"
+        [ngModel]="value"
+        (ngModelChange)="onValueInput($event)"
+        (blur)="onBlur($event)"
+        (focus)="onFocus($event)">
+        @if (showEmptyOption) {
+          <option value="">{{ placeholder || emptyOptionLabel }}</option>
+        }
+        @for (opt of normalizedOptions; track opt.value) {
+          <option [ngValue]="opt.value" [disabled]="opt.disabled">
+            {{ opt.label }}
+          </option>
+        }
+      </select>
+    }
+
+    <!-- 2. TEXTAREA -->
+    @else if (isTextarea) {
+      <textarea
+        class="ws-input-control ws-textarea-control"
+        [attr.id]="id || null"
+        [attr.name]="name || null"
+        [rows]="rows"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [readOnly]="readonly"
+        [attr.maxlength]="maxLength"
+        [ngModel]="value"
+        (ngModelChange)="onValueInput($event)"
+        (blur)="onBlur($event)"
+        (focus)="onFocus($event)"></textarea>
+    }
+
+    <!-- 3. STANDARD INPUT (text, email, password, date, time, number, tel, search, url) -->
+    @else {
+      <input
+        class="ws-input-control"
+        [type]="nativeInputType"
+        [attr.id]="id || null"
+        [attr.name]="name || null"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [readOnly]="readonly"
+        [attr.min]="min"
+        [attr.max]="max"
+        [attr.minlength]="minLength"
+        [attr.maxlength]="maxLength"
+        [ngModel]="value"
+        (ngModelChange)="onValueInput($event)"
+        (blur)="onBlur($event)"
+        (focus)="onFocus($event)" />
+    }
+
+    <!-- Clear Button (for search or clearable inputs) -->
+    @if ((clearable || type === 'search' || filterable) && !isDropdown && value && !disabled && !readonly) {
+      <button
+        type="button"
+        class="ws-action-btn"
+        title="Clear"
+        (click)="clearInput()">
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
+    }
+
+    <!-- Password Show/Hide Toggle -->
+    @if (type === 'password') {
+      <button
+        type="button"
+        class="ws-action-btn"
+        [disabled]="disabled"
+        [title]="showPassword ? 'Hide password' : 'Show password'"
+        (click)="togglePasswordVisibility()">
+        <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+      </button>
+    }
+
+    <!-- Validation Status Indicator Icon (true / false) -->
+    @if (showValidUI && type !== 'password' && !isDropdown) {
+      <span class="ws-validation-icon ws-valid-icon" title="Valid">
+        <i class="bi bi-check-circle-fill"></i>
+      </span>
+    }
+    @if (showInvalidUI && type !== 'password' && !isDropdown) {
+      <span class="ws-validation-icon ws-invalid-icon" title="Invalid">
+        <i class="bi bi-exclamation-circle-fill"></i>
+      </span>
+    }
+
+    <!-- Right Suffix Icon -->
+    @if (resolvedIcon && iconPosition === 'right' && type !== 'password') {
+      <span class="ws-input-icon ws-icon-right">
+        <i [class]="resolvedIcon"></i>
+      </span>
+    }
+  </div>
+
+  <!-- Validation Feedback or Helper Hint -->
+  @if (showInvalidUI && computedErrorText) {
+    <div class="ws-input-feedback ws-feedback-error">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ computedErrorText }}</span>
+    </div>
+  } @else if (showValidUI && validMessage) {
+    <div class="ws-input-feedback ws-feedback-valid">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ validMessage }}</span>
+    </div>
+  } @else if (hint) {
+    <div class="ws-input-hint">{{ hint }}</div>
+  }
+</div>

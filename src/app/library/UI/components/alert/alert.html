@@ -1,0 +1,29 @@
+@if (visible) {
+  <div [class]="alertClasses" role="alert">
+    @if (showIcon && resolvedIcon) {
+      <div class="ws-alert-icon">
+        <i [class]="resolvedIcon"></i>
+      </div>
+    }
+
+    <div class="ws-alert-content">
+      @if (title) {
+        <div class="ws-alert-title">{{ title }}</div>
+      }
+      @if (message) {
+        <div class="ws-alert-message">{{ message }}</div>
+      }
+      <ng-content></ng-content>
+    </div>
+
+    @if (dismissible) {
+      <button
+        type="button"
+        class="ws-alert-close"
+        aria-label="Close alert"
+        (click)="dismiss()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    }
+  </div>
+}

@@ -1,0 +1,259 @@
+/* ====================================================================
+   WORK-SPHERE UNIFIED SMALL INPUT FIELD SYSTEM
+   Fixed 14px Font-Size · Compact Small Size · Validation & Filter Ready
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  font-size: 14px !important;
+}
+
+.ws-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px !important;
+}
+
+/* Label (Fixed 14px) */
+.ws-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.3rem;
+  font-size: 14px !important;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.3;
+}
+
+.ws-required-star {
+  color: #ef4444;
+  font-size: 14px !important;
+}
+
+/* Compact Small Input Container */
+.ws-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 36px;
+  height: 36px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.45rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  overflow: hidden;
+}
+
+.ws-input-group.ws-input-textarea-group {
+  height: auto;
+  min-height: 76px;
+  align-items: flex-start;
+}
+
+.ws-input-group:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+}
+
+/* Disabled & Readonly States */
+.ws-input-group.ws-input-disabled {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.ws-input-group.ws-input-readonly {
+  background-color: #f8fafc;
+}
+
+/* Validation True / False States */
+.ws-input-group.ws-input-valid {
+  border-color: #10b981;
+}
+
+.ws-input-group.ws-input-valid:focus-within {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+.ws-input-group.ws-input-invalid {
+  border-color: #ef4444;
+}
+
+.ws-input-group.ws-input-invalid:focus-within {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Core Input / Select / Textarea Control (Strictly 14px Fixed) */
+.ws-input-control {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 0 0.7rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px !important;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.ws-input-control::placeholder {
+  color: #94a3b8;
+  font-size: 14px !important;
+}
+
+.ws-input-control:disabled {
+  cursor: not-allowed;
+  color: #64748b;
+}
+
+/* Select / Dropdown Specific */
+.ws-select-control {
+  cursor: pointer;
+  padding-right: 1.75rem;
+  font-size: 14px !important;
+}
+
+.ws-select-control option {
+  font-size: 14px !important;
+  color: #0f172a;
+}
+
+/* Textarea Specific */
+.ws-textarea-control {
+  padding: 0.45rem 0.7rem;
+  resize: vertical;
+  font-size: 14px !important;
+}
+
+/* Prefix & Suffix Icons */
+.ws-input-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 14px !important;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.ws-icon-left {
+  padding-left: 0.7rem;
+}
+
+.ws-icon-right {
+  padding-right: 0.7rem;
+}
+
+.ws-input-group:focus-within .ws-input-icon {
+  color: #059669;
+}
+
+/* Action Buttons (Password Eye & Clear Button) */
+.ws-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 0.6rem;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px !important;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ws-action-btn:hover:not(:disabled) {
+  color: #059669;
+}
+
+/* Validation Indicator Icons */
+.ws-validation-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 0.65rem;
+  font-size: 14px !important;
+  flex-shrink: 0;
+}
+
+.ws-valid-icon {
+  color: #10b981;
+}
+
+.ws-invalid-icon {
+  color: #ef4444;
+}
+
+/* Dropdown Inline Filter Search Box */
+.ws-dropdown-filter-box {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 0.55rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.4rem;
+  font-size: 14px !important;
+}
+
+.ws-filter-icon {
+  color: #94a3b8;
+  font-size: 14px !important;
+  margin-right: 0.4rem;
+}
+
+.ws-dropdown-filter-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 14px !important;
+}
+
+.ws-clear-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px !important;
+  padding: 0 0.2rem;
+  cursor: pointer;
+}
+
+/* Validation Feedback & Hint (Fixed 14px) */
+.ws-input-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ws-feedback-error {
+  color: #dc2626;
+}
+
+.ws-feedback-valid {
+  color: #059669;
+}
+
+.ws-input-hint {
+  margin-top: 0.25rem;
+  color: #64748b;
+  font-size: 14px !important;
+  line-height: 1.3;
+}

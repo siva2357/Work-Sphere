@@ -1,0 +1,80 @@
+@if (isOpen) {
+  <div
+    class="ws-modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    (click)="onBackdropClick($event)">
+
+    <div [class]="dialogClasses">
+      <div class="ws-modal-content">
+
+        <!-- Header -->
+        @if (showHeader) {
+          <div class="ws-modal-header">
+            <div class="ws-modal-header-left">
+              @if (icon) {
+                <div class="ws-modal-icon-box">
+                  <i [class]="formattedIcon"></i>
+                </div>
+              }
+              <div>
+                @if (title) {
+                  <h3 class="ws-modal-title">{{ title }}</h3>
+                }
+                @if (subtitle) {
+                  <p class="ws-modal-subtitle">{{ subtitle }}</p>
+                }
+              </div>
+            </div>
+
+            @if (closable) {
+              <button
+                type="button"
+                class="ws-modal-close-btn"
+                aria-label="Close modal"
+                (click)="close()">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Body -->
+        <div class="ws-modal-body">
+          <ng-content></ng-content>
+        </div>
+
+        <!-- Footer -->
+        @if (showFooter) {
+          <div class="ws-modal-footer">
+            <ng-content select="[modal-footer]"></ng-content>
+
+            @if (showCancel) {
+              <app-button
+                [label]="cancelLabel"
+                variant="light"
+                size="sm"
+                (clicked)="onCancel()">
+              </app-button>
+            }
+
+            @if (showConfirm) {
+              <app-button
+                [label]="confirmLabel"
+                [variant]="confirmVariant"
+                size="sm"
+                [icon]="confirmIcon"
+                [disabled]="confirmDisabled"
+                [loading]="confirmLoading"
+                [loadingText]="confirmLoadingText"
+                (clicked)="onConfirm()">
+              </app-button>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+
+  </div>
+}

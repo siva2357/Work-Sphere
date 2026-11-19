@@ -1,0 +1,171 @@
+/* ====================================================================
+   WORK-SPHERE REUSABLE ALERT COMPONENT
+===================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ws-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  transition: all 0.2s ease;
+}
+
+.ws-alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-top: 0.05rem;
+  flex-shrink: 0;
+}
+
+.ws-alert-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ws-alert-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 0.15rem;
+}
+
+.ws-alert-message {
+  font-size: 13.5px;
+}
+
+.ws-alert-close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.65;
+  padding: 0.15rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ws-alert-close:hover {
+  opacity: 1;
+}
+
+/* Soft Appearances (Default) */
+.ws-alert-emerald.ws-alert-soft {
+  background-color: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #065f46;
+}
+.ws-alert-emerald.ws-alert-soft .ws-alert-icon {
+  color: #10b981;
+}
+
+.ws-alert-success.ws-alert-soft {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+.ws-alert-success.ws-alert-soft .ws-alert-icon {
+  color: #16a34a;
+}
+
+.ws-alert-info.ws-alert-soft {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+  color: #075985;
+}
+.ws-alert-info.ws-alert-soft .ws-alert-icon {
+  color: #0ea5e9;
+}
+
+.ws-alert-primary.ws-alert-soft {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+.ws-alert-primary.ws-alert-soft .ws-alert-icon {
+  color: #2563eb;
+}
+
+.ws-alert-warning.ws-alert-soft {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+.ws-alert-warning.ws-alert-soft .ws-alert-icon {
+  color: #f59e0b;
+}
+
+.ws-alert-danger.ws-alert-soft {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+.ws-alert-danger.ws-alert-soft .ws-alert-icon {
+  color: #ef4444;
+}
+
+.ws-alert-secondary.ws-alert-soft {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+.ws-alert-dark.ws-alert-soft {
+  background-color: #1e293b;
+  border-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Outline Appearances */
+.ws-alert-outline {
+  background-color: #ffffff !important;
+}
+.ws-alert-emerald.ws-alert-outline {
+  border-color: #10b981;
+  color: #059669;
+}
+.ws-alert-danger.ws-alert-outline {
+  border-color: #ef4444;
+  color: #dc2626;
+}
+.ws-alert-warning.ws-alert-outline {
+  border-color: #f59e0b;
+  color: #d97706;
+}
+.ws-alert-info.ws-alert-outline {
+  border-color: #0ea5e9;
+  color: #0284c7;
+}
+
+/* Solid Appearances */
+.ws-alert-emerald.ws-alert-solid {
+  background-color: #10b981;
+  border-color: #059669;
+  color: #ffffff;
+}
+.ws-alert-danger.ws-alert-solid {
+  background-color: #ef4444;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+.ws-alert-warning.ws-alert-solid {
+  background-color: #f59e0b;
+  border-color: #d97706;
+  color: #ffffff;
+}
+.ws-alert-info.ws-alert-solid {
+  background-color: #0ea5e9;
+  border-color: #0284c7;
+  color: #ffffff;
+}

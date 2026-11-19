@@ -1,0 +1,158 @@
+/* ====================================================================
+   WORK-SPHERE REUSABLE TOASTER COMPONENT
+===================================================================== */
+
+.ws-toaster-container {
+  position: fixed;
+  z-index: 1080;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 360px;
+  width: calc(100% - 2rem);
+  pointer-events: none;
+}
+
+/* Positions */
+.ws-toaster-top-right {
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+.ws-toaster-top-left {
+  top: 1.25rem;
+  left: 1.25rem;
+}
+
+.ws-toaster-bottom-right {
+  bottom: 1.25rem;
+  right: 1.25rem;
+}
+
+.ws-toaster-bottom-left {
+  bottom: 1.25rem;
+  left: 1.25rem;
+}
+
+.ws-toaster-top-center {
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Toast Card */
+.ws-toast-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.8rem 0.95rem;
+  background-color: #ffffff;
+  border-radius: 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #10b981;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  animation: ws-toast-slide 0.2s ease-out;
+}
+
+.ws-toast-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.ws-toast-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ws-toast-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.1rem;
+}
+
+.ws-toast-message {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.ws-toast-close {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  padding: 0.15rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.ws-toast-close:hover {
+  color: #0f172a;
+}
+
+/* Variants */
+.ws-toast-emerald {
+  border-left-color: #10b981;
+}
+.ws-toast-emerald .ws-toast-icon {
+  color: #10b981;
+}
+
+.ws-toast-success {
+  border-left-color: #16a34a;
+}
+.ws-toast-success .ws-toast-icon {
+  color: #16a34a;
+}
+
+.ws-toast-info {
+  border-left-color: #0ea5e9;
+}
+.ws-toast-info .ws-toast-icon {
+  color: #0ea5e9;
+}
+
+.ws-toast-warning {
+  border-left-color: #f59e0b;
+}
+.ws-toast-warning .ws-toast-icon {
+  color: #f59e0b;
+}
+
+.ws-toast-danger {
+  border-left-color: #ef4444;
+}
+.ws-toast-danger .ws-toast-icon {
+  color: #ef4444;
+}
+
+.ws-toast-dark {
+  background-color: #0f172a;
+  border-color: #1e293b;
+  border-left-color: #10b981;
+}
+.ws-toast-dark .ws-toast-title {
+  color: #ffffff;
+}
+.ws-toast-dark .ws-toast-message {
+  color: #cbd5e1;
+}
+.ws-toast-dark .ws-toast-icon {
+  color: #10b981;
+}
+
+@keyframes ws-toast-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

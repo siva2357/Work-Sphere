@@ -1,0 +1,146 @@
+/* ====================================================================
+   WORK-SPHERE REUSABLE CHIP COMPONENT
+===================================================================== */
+
+:host {
+  display: inline-flex;
+}
+
+.ws-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.16s ease;
+}
+
+/* Sizes */
+.ws-chip-xs {
+  height: 24px;
+  padding: 0 0.55rem;
+  font-size: 12px;
+}
+
+.ws-chip-sm {
+  height: 28px;
+  padding: 0 0.7rem;
+  font-size: 13px;
+}
+
+.ws-chip-md {
+  height: 32px;
+  padding: 0 0.85rem;
+  font-size: 14px;
+}
+
+.ws-chip-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: -0.2rem;
+}
+
+.ws-chip-selectable {
+  cursor: pointer;
+}
+
+.ws-chip-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ws-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin-right: -0.2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.08);
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ws-chip-remove:hover {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+/* Variants */
+.ws-chip-emerald {
+  background-color: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #059669;
+}
+.ws-chip-emerald.ws-chip-selected {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.ws-chip-primary {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+.ws-chip-primary.ws-chip-selected {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.ws-chip-secondary {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+.ws-chip-secondary.ws-chip-selected {
+  background-color: #334155;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+.ws-chip-success {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.ws-chip-warning {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #d97706;
+}
+
+.ws-chip-danger {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.ws-chip-info {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+}
+
+.ws-chip-dark {
+  background-color: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+}
+
+.ws-chip-outline {
+  background-color: #ffffff !important;
+}

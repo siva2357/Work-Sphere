@@ -64,86 +64,81 @@
               <div class="row g-3">
                 <!-- Full Name -->
                 <div class="col-12 col-md-6">
-                  <label class="form-label small fw-semibold text-secondary mb-1">Full Name <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-secondary">
-                      <i class="bi bi-person"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="fullName"
-                      class="form-control border-start-0"
-                      placeholder="e.g. Priya Sharma"
-                      [(ngModel)]="contactForm.fullName"
-                      required />
-                  </div>
+                  <app-input-field
+                    label="Full Name"
+                    type="text"
+                    name="fullName"
+                    icon="bi-person"
+                    placeholder="e.g. Priya Sharma"
+                    [required]="true"
+                    [validate]="true"
+                    [(ngModel)]="contactForm.fullName">
+                  </app-input-field>
                 </div>
 
                 <!-- Corporate Email -->
                 <div class="col-12 col-md-6">
-                  <label class="form-label small fw-semibold text-secondary mb-1">Corporate Email <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-secondary">
-                      <i class="bi bi-envelope"></i>
-                    </span>
-                    <input
-                      type="email"
-                      name="workEmail"
-                      class="form-control border-start-0"
-                      placeholder="name@company.com"
-                      [(ngModel)]="contactForm.workEmail"
-                      required />
-                  </div>
+                  <app-input-field
+                    label="Corporate Email"
+                    type="email"
+                    name="workEmail"
+                    placeholder="name@company.com"
+                    [required]="true"
+                    [validate]="true"
+                    [(ngModel)]="contactForm.workEmail">
+                  </app-input-field>
                 </div>
 
                 <!-- Organization Name -->
                 <div class="col-12 col-md-6">
-                  <label class="form-label small fw-semibold text-secondary mb-1">Organization Name</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-secondary">
-                      <i class="bi bi-building"></i>
-                    </span>
-                    <input
-                      type="text"
-                      name="companyName"
-                      class="form-control border-start-0"
-                      placeholder="Acme Corporation"
-                      [(ngModel)]="contactForm.companyName" />
-                  </div>
+                  <app-input-field
+                    label="Organization Name"
+                    type="text"
+                    name="companyName"
+                    icon="bi-building"
+                    placeholder="Acme Corporation"
+                    [(ngModel)]="contactForm.companyName">
+                  </app-input-field>
                 </div>
 
-                <!-- Team Size -->
+                <!-- Team Size Dropdown -->
                 <div class="col-12 col-md-6">
-                  <label class="form-label small fw-semibold text-secondary mb-1">Workforce Size</label>
-                  <select name="teamSize" class="form-select" [(ngModel)]="contactForm.teamSize">
-                    <option value="1-50">1 – 50 Employees</option>
-                    <option value="50-250">50 – 250 Employees</option>
-                    <option value="250-1000">250 – 1,000 Employees</option>
-                    <option value="1000+">1,000+ Enterprise</option>
-                  </select>
+                  <app-input-field
+                    label="Workforce Size"
+                    type="dropdown"
+                    name="teamSize"
+                    icon="bi-people"
+                    [showEmptyOption]="false"
+                    [options]="teamSizeOptions"
+                    [(ngModel)]="contactForm.teamSize">
+                  </app-input-field>
                 </div>
 
-                <!-- Topic -->
+                <!-- Topic Dropdown -->
                 <div class="col-12">
-                  <label class="form-label small fw-semibold text-secondary mb-1">Inquiry Topic</label>
-                  <select name="topic" class="form-select" [(ngModel)]="contactForm.topic">
-                    <option value="Enterprise Demo Request">Enterprise Demo Request</option>
-                    <option value="HR & Payroll Module Inquiry">HR &amp; Payroll Module Inquiry</option>
-                    <option value="Workspace Onboarding & Migration">Workspace Onboarding &amp; CSV Migration</option>
-                    <option value="Technical & Security Support">Technical &amp; RBAC Security Support</option>
-                  </select>
+                  <app-input-field
+                    label="Inquiry Topic"
+                    type="dropdown"
+                    name="topic"
+                    icon="bi-chat-left-text"
+                    [showEmptyOption]="false"
+                    [options]="topicOptions"
+                    [(ngModel)]="contactForm.topic">
+                  </app-input-field>
                 </div>
 
-                <!-- Message -->
+                <!-- Message Textarea -->
                 <div class="col-12">
-                  <label class="form-label small fw-semibold text-secondary mb-1">How can we help your team? <span class="text-danger">*</span></label>
-                  <textarea
+                  <app-input-field
+                    label="How can we help your team?"
+                    type="textarea"
                     name="message"
-                    rows="4"
-                    class="form-control"
+                    [rows]="4"
                     placeholder="Tell us about your departments, HR workflows, or project management requirements..."
-                    [(ngModel)]="contactForm.message"
-                    required></textarea>
+                    [required]="true"
+                    [validate]="true"
+                    [(ngModel)]="contactForm.message">
+                  </app-input-field>
                 </div>
 
                 <div class="col-12 pt-2">
@@ -151,7 +146,7 @@
                     type="submit"
                     label="Submit Inquiry"
                     variant="emerald"
-                    size="lg"
+                    size="md"
                     icon="bi-send-fill"
                     [block]="true"
                     [loading]="isSubmitting"

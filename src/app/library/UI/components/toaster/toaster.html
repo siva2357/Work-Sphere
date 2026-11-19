@@ -1,0 +1,26 @@
+@if (activeToasts.length > 0) {
+  <div class="ws-toaster-container" [ngClass]="'ws-toaster-' + position" aria-live="polite">
+    @for (toast of activeToasts; track toast.id) {
+      <div class="ws-toast-card" [ngClass]="'ws-toast-' + toast.variant" role="status">
+        <div class="ws-toast-icon">
+          <i [class]="resolveIcon(toast)"></i>
+        </div>
+
+        <div class="ws-toast-body">
+          @if (toast.title) {
+            <div class="ws-toast-title">{{ toast.title }}</div>
+          }
+          <div class="ws-toast-message">{{ toast.message }}</div>
+        </div>
+
+        <button
+          type="button"
+          class="ws-toast-close"
+          aria-label="Close notification"
+          (click)="dismissToast(toast.id)">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    }
+  </div>
+}
