@@ -42,8 +42,8 @@ export const EMPLOYEE_ROUTES: Routes = [
   { path: 'requests-management', component: RequestManagement },
   { path: 'my-profile', component: MyProfile },
   { path: 'my-tasks', component: MyTasks },
-
   { path: 'task-details', component: TaskDetails },
+  { path: 'task-details/:id', component: TaskDetails },
   { path: 'my-attendance', component: MyAttendance },
   { path: 'mark-attendance', component: MarkAttendance },
   { path: 'my-leaves', component: MyLeaves },
@@ -52,5 +52,7 @@ export const EMPLOYEE_ROUTES: Routes = [
   { path: 'my-documents', component: MyDocuments },
   { path: 'my-payroll', component: MyPayroll },
   { path: 'my-requests', component: MyRequests },
-  { path: 'apply-request', component: ApplyRequest }
+  { path: 'apply-request', component: ApplyRequest },
+  { path: 'employee/:subroute', redirectTo: ':subroute', pathMatch: 'full' },
+  { path: 'employee/:subroute/:id', redirectTo: ':subroute/:id', pathMatch: 'full' }
 ];

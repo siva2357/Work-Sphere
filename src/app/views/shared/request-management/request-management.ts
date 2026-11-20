@@ -1,26 +1,84 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RequestService, ManagedRequest, ApprovalLevel } from '../../../core/services/request.service';
 import { StatCards, StatMetric } from '../../../library/shared/components/stat-cards/stat-cards';
-import { Button } from '../../../library/UI/components/button/button';
+import {
+  Badge,
+  BadgeVariant,
+  Button,
+  Chip,
+  InputDropdownOption,
+  InputField,
+  Pagination,
+  Table,
+  TableColumn,
+  Toaster,
+  ToasterService,
+} from '../../../library/UI/components';
+
+export interface RequestMgmtFilterChip {
+  key: 'search' | 'status' | 'category' | 'priority' | 'sort';
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'app-request-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, StatCards, Button],
+  imports: [
+    CommonModule,
+    FormsModule,
+    StatCards,
+    Button,
+    InputField,
+    Badge,
+    Chip,
+    Table,
+    Pagination,
+    Toaster,
+  ],
   templateUrl: './request-management.html',
   styleUrl: './request-management.css',
 })
 export class RequestManagement implements OnInit {
-  requests: ManagedRequest[] = [];
-  selectedRequest?: ManagedRequest;
+  private requestService = inject(RequestService);
+  private toaster = inject(ToasterService);
 
-  // Search & Filter State
-  searchQuery: string = '';
+  @ViewChild('sNoTpl', { static: true }) sNoTpl!: TemplateRef<any>;
+  @ViewChild('idTpl', { static: true }) idTpl!: TemplateRef<any>;
+  @ViewChild('empIdTpl', { static: true }) empIdTpl!: TemplateRef<any>;
+  @ViewChild('profileTpl', { static: true }) profileTpl!: TemplateRef<any>;
+  @ViewChild('empNameTpl', { static: true }) empNameTpl!: TemplateRef<any>;
+  @ViewChild('deptTpl', { static: true }) deptTpl!: TemplateRef<any>;
+  @ViewChild('categoryTpl', { static: true }) categoryTpl!: TemplateRef<any>;
+  @ViewChild('subjectTpl', { static: true }) subjectTpl!: TemplateRef<any>;
+  @ViewChild('submittedDateTpl', { static: true }) submittedDateTpl!: TemplateRef<any>;
+  @ViewChild('approvalStageTpl', { static: true }) approvalStageTpl!: TemplateRef<any>;
+  @ViewChild('priorityTpl', { static: true }) priorityTpl!: TemplateRef<any>;
+  @ViewChild('statusTpl', { static: true }) statusTpl!: TemplateRef<any>;
+  @ViewChild('actionsTpl', { static: true }) actionsTpl!: TemplateRef<any>;
+
+  tableColumns: TableColumn[] = [];
+
+  // Draft Filter Inputs (bound to <app-input-field>)
+  draftSearchQuery = '';
+  draftStatus: 'ALL' | 'Pending' | 'Under Review' | 'Approved' | 'Rejected' = 'ALL';
+  draftCategory = 'ALL';
+  draftPriority = 'ALL';
+  draftSort: 'submittedDateDesc' | 'submittedDateAsc' | 'priority' | 'subjectAsc' | 'nameAsc' = 'submittedDateDesc';
+
+  // Applied Filter State
+  searchQuery = '';
   selectedStatus: 'ALL' | 'Pending' | 'Under Review' | 'Approved' | 'Rejected' = 'ALL';
-  selectedCategory: string = 'ALL';
-  selectedPriority: string = 'ALL';
+  selectedCategory = 'ALL';
+  selectedPriority = 'ALL';
+  selectedSort: 'submittedDateDesc' | 'submittedDateAsc' | 'priority' | 'subjectAsc' | 'nameAsc' = 'submittedDateDesc';
+
+  // Pagination State
+  currentPage = 1;
+  pageSize = 10;
+  effectiveCurrentPage = 1;
 
   readonly categories: string[] = [
     'Hardware / Asset',
@@ -33,58 +91,185 @@ export class RequestManagement implements OnInit {
     'Expense Reimbursement',
   ];
 
-  // Manager Remarks Input
-  managerRemarks: string = '';
+  // Filter Dropdown Options
+  readonly statusFilterOptions: InputDropdownOption[] = [
+    { label: 'All Statuses', value: 'ALL' },
+    { label: 'In Review / Pending', value: 'Under Review' },
+    { label: 'Approved', value: 'Approved' },
+    { label: 'Declined', value: 'Rejected' },
+  ];
 
-  // Feedback Notification Toast
-  actionToastMessage: string = '';
-  private toastTimer: any;
+  categoryFilterOptions: InputDropdownOption[] = [
+    { label: 'All Categories', value: 'ALL' },
+  ];
 
-  constructor(private requestService: RequestService) {}
+  readonly priorityFilterOptions: InputDropdownOption[] = [
+    { label: 'All Priorities', value: 'ALL' },
+    { label: 'Urgent Priority', value: 'Urgent' },
+    { label: 'High Priority', value: 'High' },
+    { label: 'Medium Priority', value: 'Medium' },
+    { label: 'Low Priority', value: 'Low' },
+  ];
+
+  readonly sortFilterOptions: InputDropdownOption[] = [
+    { label: 'Submitted: Newest First', value: 'submittedDateDesc' },
+    { label: 'Submitted: Oldest First', value: 'submittedDateAsc' },
+    { label: 'Priority: Highest First', value: 'priority' },
+    { label: 'Subject: Alphabetical', value: 'subjectAsc' },
+    { label: 'Employee Name: A-Z', value: 'nameAsc' },
+  ];
+
+  // Cached Arrays & Metrics
+  requests: (ManagedRequest & { sNo?: number })[] = [];
+  filteredRequests: (ManagedRequest & { sNo?: number })[] = [];
+  paginatedRequests: (ManagedRequest & { sNo?: number })[] = [];
+  statCards: StatMetric[] = [];
+  activeFilterChips: RequestMgmtFilterChip[] = [];
+
+  totalCount = 0;
+  pendingReviewCount = 0;
+  approvedCount = 0;
+  rejectedCount = 0;
+
+  // Selected Request for Modal Workflow Dossier
+  selectedRequest: ManagedRequest | null = null;
+  managerRemarks = '';
+  viewingFormModal = false;
 
   ngOnInit(): void {
+    this.initCategoryOptions();
+    this.initTableColumns();
+    this.updateRequestMgmtView();
+
     this.requestService.requests$.subscribe((list) => {
-      this.requests = list || [];
-      if (!this.selectedRequest && this.requests.length > 0) {
-        this.selectedRequest = this.requests[0];
-      } else if (this.selectedRequest) {
+      this.requests = (list || []).map((r, idx) => ({
+        ...r,
+        sNo: idx + 1,
+      }));
+      this.updateRequestMgmtView();
+      if (this.selectedRequest) {
         const updated = this.requests.find((r) => r.id === this.selectedRequest?.id);
         if (updated) this.selectedRequest = updated;
       }
     });
+
     this.requestService.refreshRequests();
   }
 
-  loadRequests(): void {
-    this.requests = this.requestService.getRequests();
-    if (!this.selectedRequest && this.requests.length > 0) {
-      this.selectedRequest = this.requests[0];
-    } else if (this.selectedRequest) {
-      // Re-link updated request
-      const updated = this.requests.find((r) => r.id === this.selectedRequest?.id);
-      if (updated) this.selectedRequest = updated;
-    }
+  private initCategoryOptions(): void {
+    const opts: InputDropdownOption[] = [{ label: 'All Categories', value: 'ALL' }];
+    this.categories.forEach((cat) => {
+      opts.push({ label: cat, value: cat });
+    });
+    this.categoryFilterOptions = opts;
   }
 
-  get filteredRequests(): ManagedRequest[] {
+  private initTableColumns(): void {
+    this.tableColumns = [
+      {
+        field: 'sNo',
+        headerName: 'S.No.',
+        width: 75,
+        cellTemplate: this.sNoTpl,
+      },
+      {
+        field: 'id',
+        headerName: 'Request ID',
+        width: 135,
+        cellTemplate: this.idTpl,
+      },
+      {
+        field: 'employeeId',
+        headerName: 'Emp ID',
+        width: 110,
+        cellTemplate: this.empIdTpl,
+      },
+      {
+        field: 'profile',
+        headerName: 'Profile Image',
+        width: 120,
+        cellTemplate: this.profileTpl,
+      },
+      {
+        field: 'employeeName',
+        headerName: 'Employee Name',
+        width: 180,
+        cellTemplate: this.empNameTpl,
+      },
+      {
+        field: 'department',
+        headerName: 'Department',
+        width: 180,
+        cellTemplate: this.deptTpl,
+      },
+      {
+        field: 'category',
+        headerName: 'Category',
+        width: 160,
+        cellTemplate: this.categoryTpl,
+      },
+      {
+        field: 'subject',
+        headerName: 'Subject',
+        width: 230,
+        cellTemplate: this.subjectTpl,
+      },
+      {
+        field: 'submittedDate',
+        headerName: 'Submitted On',
+        width: 130,
+        cellTemplate: this.submittedDateTpl,
+      },
+      {
+        field: 'approvalStage',
+        headerName: 'Current Stage',
+        width: 180,
+        cellTemplate: this.approvalStageTpl,
+      },
+      {
+        field: 'priority',
+        headerName: 'Priority',
+        width: 115,
+        cellTemplate: this.priorityTpl,
+      },
+      {
+        field: 'overallStatus',
+        headerName: 'Status',
+        width: 130,
+        cellTemplate: this.statusTpl,
+      },
+      {
+        field: 'actions',
+        headerName: 'Actions',
+        width: 90,
+        cellTemplate: this.actionsTpl,
+      },
+    ];
+  }
+
+  updateRequestMgmtView(): void {
     let result = [...this.requests];
 
-    // Status Filter
+    // 1. Status Filter
     if (this.selectedStatus !== 'ALL') {
-      result = result.filter((r) => r.overallStatus === this.selectedStatus);
+      if (this.selectedStatus === 'Under Review') {
+        result = result.filter((r) => r.overallStatus === 'Under Review' || r.overallStatus === 'Pending');
+      } else {
+        result = result.filter((r) => r.overallStatus === this.selectedStatus);
+      }
     }
 
-    // Category Filter
+    // 2. Category Filter
     if (this.selectedCategory !== 'ALL') {
       result = result.filter((r) => r.category === this.selectedCategory);
     }
 
-    // Priority Filter
+    // 3. Priority Filter
     if (this.selectedPriority !== 'ALL') {
       result = result.filter((r) => r.priority === this.selectedPriority);
     }
 
-    // Search Query
+    // 4. Search Filter
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase().trim();
       result = result.filter(
@@ -98,178 +283,356 @@ export class RequestManagement implements OnInit {
       );
     }
 
-    return result;
-  }
+    // 5. Sorting
+    result.sort((a, b) => {
+      switch (this.selectedSort) {
+        case 'submittedDateDesc':
+          return (b.submittedDate || '').localeCompare(a.submittedDate || '');
+        case 'submittedDateAsc':
+          return (a.submittedDate || '').localeCompare(b.submittedDate || '');
+        case 'priority': {
+          const order: Record<string, number> = { Urgent: 4, High: 3, Medium: 2, Low: 1 };
+          return (order[b.priority] || 0) - (order[a.priority] || 0);
+        }
+        case 'subjectAsc':
+          return a.subject.localeCompare(b.subject);
+        case 'nameAsc':
+          return a.employeeName.localeCompare(b.employeeName);
+        default:
+          return 0;
+      }
+    });
 
-  // Quick select a request card
-  selectRequest(req: ManagedRequest): void {
-    this.selectedRequest = req;
-    this.managerRemarks = '';
-  }
+    this.filteredRequests = result;
 
-  // Current active level helper
-  getCurrentApprovalLevel(req?: ManagedRequest): ApprovalLevel | undefined {
-    if (!req) return undefined;
-    return req.approvalChain.find((l) => l.isCurrent);
-  }
+    // Re-index S.No
+    this.filteredRequests.forEach((r, idx) => {
+      r.sNo = idx + 1;
+    });
 
-  // Is current stage the Final HR level
-  isCurrentLevelFinalHR(req?: ManagedRequest): boolean {
-    const current = this.getCurrentApprovalLevel(req);
-    return current?.isFinalHR === true;
-  }
+    // Metric Counts
+    this.totalCount = this.requests.length;
+    this.pendingReviewCount = this.requests.filter(
+      (r) => r.overallStatus === 'Pending' || r.overallStatus === 'Under Review'
+    ).length;
+    this.approvedCount = this.requests.filter((r) => r.overallStatus === 'Approved').length;
+    this.rejectedCount = this.requests.filter((r) => r.overallStatus === 'Rejected').length;
 
-  // Timeline progress helpers
-  getTimelineProgressPercent(req?: ManagedRequest): number {
-    if (!req || req.approvalChain.length === 0) return 0;
-    if (req.overallStatus === 'Approved') return 100;
-    const approvedCount = req.approvalChain.filter((l) => l.status === 'Approved').length;
-    return Math.round((approvedCount / req.approvalChain.length) * 100);
-  }
+    // Update Stat Cards
+    this.statCards = [
+      {
+        title: 'Total Submissions',
+        value: this.totalCount,
+        subtitle: 'Multi-stage approval queue',
+        icon: 'bi-inbox-fill',
+        badgeText: 'ALL CATEGORIES',
+        badgeType: 'secondary',
+      },
+      {
+        title: 'Pending Review',
+        value: this.pendingReviewCount,
+        subtitle: 'Awaiting stage sign-off',
+        icon: 'bi-hourglass-split',
+        badgeText: 'ACTION REQUIRED',
+        badgeType: 'warning',
+      },
+      {
+        title: 'Approved Requests',
+        value: this.approvedCount,
+        subtitle: 'Cleared by hierarchy',
+        icon: 'bi-check-circle-fill',
+        badgeText: 'APPROVED',
+        badgeType: 'emerald',
+      },
+      {
+        title: 'Declined Requests',
+        value: this.rejectedCount,
+        subtitle: 'Returned with rationale',
+        icon: 'bi-x-circle-fill',
+        badgeText: 'DECLINED',
+        badgeType: 'danger',
+      },
+    ];
 
-  // Modal view states
-  viewingForm: boolean = false;
-  viewingDetailsStep?: ApprovalLevel;
+    // Build Active Filter Chips
+    this.buildFilterChips();
 
-  // Approver display helpers matching HROne workflow style
-  getCurrentApproverDisplay(req: ManagedRequest): string {
-    const current = req.approvalChain.find((l) => l.isCurrent);
-    if (current) {
-      const code = this.getApproverCode(current);
-      return `${current.approverName} (${code})`;
+    // Paginate
+    const maxPage = Math.max(1, Math.ceil(this.filteredRequests.length / this.pageSize));
+    if (this.currentPage > maxPage) {
+      this.currentPage = maxPage;
     }
-    if (req.overallStatus === 'Approved') {
-      const last = req.approvalChain[req.approvalChain.length - 1];
-      return `${last?.approverName || 'HR Operations'} (Completed)`;
+    this.effectiveCurrentPage = this.currentPage;
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.paginatedRequests = this.filteredRequests.slice(start, start + this.pageSize);
+  }
+
+  private buildFilterChips(): void {
+    const chips: RequestMgmtFilterChip[] = [];
+
+    if (this.searchQuery.trim()) {
+      chips.push({
+        key: 'search',
+        label: `Search: "${this.searchQuery.trim()}"`,
+        icon: 'bi-search',
+      });
     }
-    if (req.overallStatus === 'Rejected') {
-      const rejected = req.approvalChain.find((l) => l.status === 'Rejected');
-      return `${rejected?.approverName || 'Management'} (Declined)`;
+
+    if (this.selectedStatus !== 'ALL') {
+      chips.push({
+        key: 'status',
+        label: `Status: ${this.selectedStatus === 'Under Review' ? 'In Review' : this.selectedStatus}`,
+        icon: 'bi-check2-circle',
+      });
     }
-    return 'HR Operations';
-  }
 
-  getApproverCode(step: ApprovalLevel): string {
-    return step.approverId || `#P${11000 + step.levelNumber * 115}`;
-  }
-
-  openFormModal(): void {
-    this.viewingForm = true;
-  }
-
-  closeFormModal(): void {
-    this.viewingForm = false;
-  }
-
-  openDetailsModal(step: ApprovalLevel): void {
-    this.viewingDetailsStep = step;
-  }
-
-  closeDetailsModal(): void {
-    this.viewingDetailsStep = undefined;
-  }
-
-  // Executive Counters
-  get totalCount(): number {
-    return this.requests.length;
-  }
-
-  get pendingReviewCount(): number {
-    return this.requests.filter((r) => r.overallStatus === 'Pending' || r.overallStatus === 'Under Review').length;
-  }
-
-  get approvedCount(): number {
-    return this.requests.filter((r) => r.overallStatus === 'Approved').length;
-  }
-
-  get rejectedCount(): number {
-    return this.requests.filter((r) => r.overallStatus === 'Rejected').length;
-  }
-
-  // Direct Decision: Approve & Advance to Next Level (or Final HR Approval)
-  onApproveCurrentStage(): void {
-    if (!this.selectedRequest) return;
-
-    const result = this.requestService.approveCurrentLevel(this.selectedRequest.id, this.managerRemarks);
-    if (result.success) {
-      this.loadRequests();
-      this.managerRemarks = '';
-      this.showToast(result.message);
+    if (this.selectedCategory !== 'ALL') {
+      chips.push({
+        key: 'category',
+        label: `Category: ${this.selectedCategory}`,
+        icon: 'bi-tag',
+      });
     }
+
+    if (this.selectedPriority !== 'ALL') {
+      chips.push({
+        key: 'priority',
+        label: `Priority: ${this.selectedPriority}`,
+        icon: 'bi-flag-fill',
+      });
+    }
+
+    if (this.selectedSort !== 'submittedDateDesc') {
+      const match = this.sortFilterOptions.find((o) => o.value === this.selectedSort);
+      if (match) {
+        chips.push({
+          key: 'sort',
+          label: `Sort: ${match.label}`,
+          icon: 'bi-sort-down',
+        });
+      }
+    }
+
+    this.activeFilterChips = chips;
   }
 
-  // Direct Decision: Decline / Reject Request at Current Stage
-  onRejectCurrentStage(): void {
-    if (!this.selectedRequest) return;
-
-    const success = this.requestService.rejectCurrentLevel(this.selectedRequest.id, this.managerRemarks);
-    if (success) {
-      this.loadRequests();
-      this.managerRemarks = '';
-      this.showToast(`✗ Request ${this.selectedRequest.id} has been declined.`);
-    }
+  applyFilters(): void {
+    this.searchQuery = this.draftSearchQuery;
+    this.selectedStatus = this.draftStatus;
+    this.selectedCategory = this.draftCategory;
+    this.selectedPriority = this.draftPriority;
+    this.selectedSort = this.draftSort;
+    this.currentPage = 1;
+    this.updateRequestMgmtView();
+    this.toaster.show({
+      title: 'Filters Applied',
+      message: `Showing ${this.filteredRequests.length} matching corporate requests.`,
+      variant: 'info',
+      icon: 'bi-funnel-fill',
+    });
   }
 
   resetFilters(): void {
+    this.draftSearchQuery = '';
+    this.draftStatus = 'ALL';
+    this.draftCategory = 'ALL';
+    this.draftPriority = 'ALL';
+    this.draftSort = 'submittedDateDesc';
+
     this.searchQuery = '';
     this.selectedStatus = 'ALL';
     this.selectedCategory = 'ALL';
     this.selectedPriority = 'ALL';
-    this.loadRequests();
-    this.showToast('Request filters reset.');
+    this.selectedSort = 'submittedDateDesc';
+
+    this.currentPage = 1;
+    this.updateRequestMgmtView();
+    this.toaster.show({
+      title: 'Filters Reset',
+      message: 'All request directory filters restored to defaults.',
+      variant: 'info',
+      icon: 'bi-arrow-counterclockwise',
+    });
   }
 
-  // Style Helpers
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Approved':
-        return 'bg-emerald-subtle text-emerald border border-emerald-subtle';
-      case 'Under Review':
-        return 'bg-info-subtle text-info border border-info-subtle';
-      case 'Pending':
-        return 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
-      case 'Rejected':
-        return 'bg-danger-subtle text-danger border border-danger-subtle';
-      default:
-        return 'bg-light text-dark';
+  removeFilter(key: RequestMgmtFilterChip['key']): void {
+    switch (key) {
+      case 'search':
+        this.draftSearchQuery = '';
+        this.searchQuery = '';
+        break;
+      case 'status':
+        this.draftStatus = 'ALL';
+        this.selectedStatus = 'ALL';
+        break;
+      case 'category':
+        this.draftCategory = 'ALL';
+        this.selectedCategory = 'ALL';
+        break;
+      case 'priority':
+        this.draftPriority = 'ALL';
+        this.selectedPriority = 'ALL';
+        break;
+      case 'sort':
+        this.draftSort = 'submittedDateDesc';
+        this.selectedSort = 'submittedDateDesc';
+        break;
+    }
+    this.currentPage = 1;
+    this.updateRequestMgmtView();
+  }
+
+  setStatusTab(status: 'ALL' | 'Pending' | 'Under Review' | 'Approved' | 'Rejected'): void {
+    this.draftStatus = status;
+    this.selectedStatus = status;
+    this.currentPage = 1;
+    this.updateRequestMgmtView();
+  }
+
+  // Workflow Approver Display Helper
+  getCurrentApproverDisplay(req: ManagedRequest): string {
+    const current = req.approvalChain.find((l) => l.isCurrent);
+    if (current) {
+      return `${current.approverName} (${current.levelTitle})`;
+    }
+    if (req.overallStatus === 'Approved') {
+      return 'Completed (Final HR)';
+    }
+    if (req.overallStatus === 'Rejected') {
+      return 'Declined';
+    }
+    return 'HR Operations';
+  }
+
+  // Manager Approval & Rejection Handlers
+  approveRequest(req: ManagedRequest, remarks?: string): void {
+    const result = this.requestService.approveCurrentLevel(req.id, remarks || this.managerRemarks);
+    if (result.success) {
+      this.managerRemarks = '';
+      this.updateRequestMgmtView();
+      this.toaster.show({
+        title: result.isFinal ? 'Request Fully Approved' : 'Stage Approved',
+        message: result.message,
+        variant: 'emerald',
+        icon: 'bi-check-circle-fill',
+      });
+      if (this.selectedRequest?.id === req.id) {
+        const updated = this.requests.find((r) => r.id === req.id);
+        if (updated) this.selectedRequest = updated;
+      }
     }
   }
 
-  getPriorityClass(priority: string): string {
-    switch (priority) {
-      case 'Urgent':
-        return 'bg-danger-subtle text-danger border border-danger-subtle';
-      case 'High':
-        return 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
-      case 'Medium':
-        return 'bg-primary-subtle text-primary border border-primary-subtle';
-      case 'Low':
-        return 'bg-light text-muted border';
-      default:
-        return 'bg-light text-dark';
+  rejectRequest(req: ManagedRequest, remarks?: string): void {
+    const success = this.requestService.rejectCurrentLevel(req.id, remarks || this.managerRemarks);
+    if (success) {
+      this.managerRemarks = '';
+      this.updateRequestMgmtView();
+      this.toaster.show({
+        title: 'Request Declined',
+        message: `Request ${req.id} has been declined.`,
+        variant: 'danger',
+        icon: 'bi-x-circle-fill',
+      });
+      if (this.selectedRequest?.id === req.id) {
+        const updated = this.requests.find((r) => r.id === req.id);
+        if (updated) this.selectedRequest = updated;
+      }
     }
   }
 
-  getCategoryBadgeClass(category: string): string {
+  // Modal Review Dossier Handlers
+  openWorkflowModal(req: ManagedRequest): void {
+    this.selectedRequest = req;
+    this.managerRemarks = '';
+    this.viewingFormModal = false;
+  }
+
+  closeWorkflowModal(): void {
+    this.selectedRequest = null;
+    this.managerRemarks = '';
+    this.viewingFormModal = false;
+  }
+
+  confirmModalApprove(): void {
+    if (this.selectedRequest) {
+      this.approveRequest(this.selectedRequest, this.managerRemarks);
+    }
+  }
+
+  confirmModalReject(): void {
+    if (this.selectedRequest) {
+      this.rejectRequest(this.selectedRequest, this.managerRemarks);
+    }
+  }
+
+  // Pagination Handlers
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.effectiveCurrentPage = page;
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.paginatedRequests = this.filteredRequests.slice(start, start + this.pageSize);
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.effectiveCurrentPage = 1;
+    this.updateRequestMgmtView();
+  }
+
+  // Variant Helpers
+  getCategoryBadgeVariant(category: string): BadgeVariant {
     switch (category) {
       case 'Hardware / Asset':
-        return 'bg-primary-subtle text-primary';
+        return 'soft-primary';
       case 'Promotion Request':
-        return 'bg-emerald-subtle text-emerald';
+        return 'soft-emerald';
       case 'IT & System Access':
-        return 'bg-danger-subtle text-danger';
+        return 'soft-danger';
       case 'Appraisal & Salary Review':
-        return 'bg-warning-subtle text-warning-emphasis';
+        return 'soft-warning';
       case 'Department Transfer':
-        return 'bg-info-subtle text-info';
+        return 'soft-info';
       case 'Resignation Request':
-        return 'bg-secondary-subtle text-dark';
+        return 'soft-secondary';
       case 'Work From Home':
-        return 'bg-emerald-subtle text-emerald';
+        return 'soft-emerald';
       case 'Expense Reimbursement':
-        return 'bg-primary-subtle text-primary';
+        return 'soft-primary';
       default:
-        return 'bg-light text-dark';
+        return 'light';
+    }
+  }
+
+  getStatusBadgeVariant(status: string): BadgeVariant {
+    switch (status) {
+      case 'Approved':
+        return 'soft-emerald';
+      case 'Under Review':
+        return 'soft-info';
+      case 'Pending':
+        return 'soft-warning';
+      case 'Rejected':
+        return 'soft-danger';
+      default:
+        return 'light';
+    }
+  }
+
+  getPriorityBadgeVariant(priority: string): BadgeVariant {
+    switch (priority) {
+      case 'Urgent':
+        return 'soft-danger';
+      case 'High':
+        return 'soft-warning';
+      case 'Medium':
+        return 'soft-primary';
+      case 'Low':
+        return 'light';
+      default:
+        return 'light';
     }
   }
 
@@ -278,50 +641,5 @@ export class RequestManagement implements OnInit {
     const parts = name.trim().split(' ');
     if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return parts[0].slice(0, 2).toUpperCase();
-  }
-
-  get statCards(): StatMetric[] {
-    return [
-      {
-        title: 'Total Submissions',
-        value: this.totalCount,
-        subtitle: 'Multi-Stage Approval Queue',
-        badgeText: 'All Categories',
-        badgeType: 'emerald',
-        icon: 'bi-inbox-fill',
-      },
-      {
-        title: 'Pending Review',
-        value: this.pendingReviewCount,
-        subtitle: 'Awaiting stage sign-off',
-        badgeText: 'Action Req.',
-        badgeType: 'warning',
-        icon: 'bi-hourglass-split',
-      },
-      {
-        title: 'Approved Requests',
-        value: this.approvedCount,
-        subtitle: 'Cleared by hierarchy',
-        badgeText: 'Verified',
-        badgeType: 'success',
-        icon: 'bi-check-circle-fill',
-      },
-      {
-        title: 'Declined Requests',
-        value: this.rejectedCount,
-        subtitle: 'Returned with rationale',
-        badgeText: 'Closed',
-        badgeType: 'danger',
-        icon: 'bi-x-circle-fill',
-      },
-    ];
-  }
-
-  private showToast(msg: string): void {
-    this.actionToastMessage = msg;
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => {
-      this.actionToastMessage = '';
-    }, 4500);
   }
 }

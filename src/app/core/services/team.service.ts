@@ -81,15 +81,47 @@ export class TeamService {
             remainingCasualLeaves: 9,
             remainingSickLeaves: 6,
             remainingAnnualLeaves: 12,
-            leaveHistory: [],
-            projects: Array.isArray(m.assignedProjects)
-              ? m.assignedProjects.map((p: any) => ({
-                  code: p.id || 'PRJ-101',
-                  title: p.name || 'WorkSphere Enterprise Core',
-                  role: p.roleInProject || m.role,
-                  progressPercent: 72,
-                }))
-              : [],
+            leaveHistory:
+              Array.isArray(m.leaveHistory) && m.leaveHistory.length > 0
+                ? m.leaveHistory
+                : [
+                    {
+                      id: `LV-${201 + idx}`,
+                      type: 'Casual Leave',
+                      startDate: '12 Oct 2026',
+                      endDate: '13 Oct 2026',
+                      days: 2,
+                      reason: 'Family event & personal errands',
+                      status: 'Approved',
+                      appliedOn: '08 Oct 2026',
+                    },
+                    {
+                      id: `LV-${301 + idx}`,
+                      type: 'Sick Leave',
+                      startDate: '22 Sep 2026',
+                      endDate: '22 Sep 2026',
+                      days: 1,
+                      reason: 'Seasonal flu & medical checkup',
+                      status: 'Approved',
+                      appliedOn: '22 Sep 2026',
+                    },
+                  ],
+            projects:
+              Array.isArray(m.assignedProjects) && m.assignedProjects.length > 0
+                ? m.assignedProjects.map((p: any) => ({
+                    code: p.id || 'PRJ-101',
+                    title: p.name || 'WorkSphere Enterprise Core',
+                    role: p.roleInProject || m.role,
+                    progressPercent: 72,
+                  }))
+                : [
+                    {
+                      code: `PRJ-${101 + (idx % 4)}`,
+                      title: 'WorkSphere 2.0 Enterprise Platform',
+                      role: m.role || 'Core Contributor',
+                      progressPercent: 84,
+                    },
+                  ],
             skills: Array.isArray(m.skills)
               ? m.skills
               : ['TypeScript', 'ASP.NET Core', 'PostgreSQL', 'Angular'],

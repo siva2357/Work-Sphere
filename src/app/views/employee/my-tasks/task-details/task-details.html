@@ -6,7 +6,7 @@
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
         <!-- Back Button & Breadcrumbs -->
         <div class="d-flex align-items-center gap-3">
-            <a routerLink="/employee/my-tasks"
+            <a routerLink="/my-tasks"
                 class="btn btn-outline-secondary btn-sm rounded-3 d-inline-flex align-items-center justify-content-center shadow-xs"
                 style="width: 36px; height: 36px;"
                 title="Back to My Tasks">
@@ -14,8 +14,8 @@
             </a>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 extra-small">
-                    <li class="breadcrumb-item"><a routerLink="/employee/dashboard" class="text-muted text-decoration-none">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a routerLink="/employee/my-tasks" class="text-muted text-decoration-none">My Tasks</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/dashboard" class="text-muted text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/my-tasks" class="text-muted text-decoration-none">My Tasks</a></li>
                     <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">{{ task.id }}</li>
                 </ol>
             </nav>

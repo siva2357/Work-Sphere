@@ -8,34 +8,45 @@
       <div class="row align-items-center g-3">
 
         <!-- User Greeting Info -->
-        <div class="col-12 col-md-7 col-lg-8">
+        <div class="col-12 col-md-7 col-lg-7">
           <div class="d-flex align-items-center gap-3">
             <div class="avatar-ring flex-shrink-0">
-              <img [src]="profileImage" alt="{{ employeeName }}" class="avatar-img rounded-circle object-fit-cover shadow-sm">
+              <img [src]="profileImage" alt="{{ employeeName }}"
+                class="avatar-img rounded-circle object-fit-cover shadow-sm">
             </div>
             <div>
-              <h1 class="h4 mb-1 fw-bold text-dark">Welcome back, {{ employeeName }}!</h1>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <h1 class="h4 mb-0 fw-bold text-dark">Welcome back, {{ employeeName }}!</h1>
+                @if (employeeRole) {
+                <app-badge [label]="employeeRole" variant="soft-emerald" size="xs"></app-badge>
+                }
+              </div>
               <p class="text-muted small mb-0">
                 <i class="bi bi-calendar3 me-1 text-emerald"></i>
-                {{ currentDateTime | date:'EEEE, MMMM d, y' }} &nbsp;·&nbsp;
+                {{ currentDateTime | date:'EEEE, MMMM d, y' }} &nbsp;&middot;&nbsp;
                 <i class="bi bi-clock me-1 text-emerald"></i>
-                {{ currentDateTime | date:'hh:mm:ss a' }} &nbsp;·&nbsp;
+                {{ currentDateTime | date:'hh:mm:ss a' }} &nbsp;&middot;&nbsp;
                 <span class="text-secondary">{{ employeeDepartment }}</span>
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Login Time Info Widget (No clock out button) -->
-        <div class="col-12 col-md-5 col-lg-4 text-md-end">
-          <div class="d-inline-flex align-items-center gap-2 p-2 px-3 rounded-pill login-time-pill shadow-sm">
-            <span class="pulse-dot"></span>
-            <span class="small fw-semibold text-dark">
-              Login Time: <span class="text-emerald">{{ clockInTime }}</span>
-            </span>
-            <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small px-2 py-1">
-              Active {{ elapsedHours }}h {{ elapsedMinutes }}m
-            </span>
+        <!-- Login Time Info Widget & Quick Mark Attendance Button -->
+        <div class="col-12 col-md-5 col-lg-5 text-md-end">
+          <div class="d-inline-flex align-items-center flex-wrap justify-content-md-end gap-2">
+            <div class="d-inline-flex align-items-center gap-2 p-1.5 px-3 rounded-pill login-time-pill shadow-sm">
+              <span class="small fw-semibold text-dark">
+                Login Time: <span class="text-emerald">{{ clockInTime }}</span>
+              </span>
+              <app-badge [label]="'Active ' + elapsedHours + 'h ' + elapsedMinutes + 'm'" variant="soft-emerald"
+                size="xs" [dot]="true">
+              </app-badge>
+            </div>
+
+            <app-button label="Mark Attendance" variant="emerald" size="sm" icon="bi-fingerprint"
+              route="/mark-attendance">
+            </app-button>
           </div>
         </div>
 
@@ -48,6 +59,34 @@
        2. TOP 4 KEY STAT METRICS CARDS (Reusable Shared Component)
   ===================================================================== -->
   <app-stat-cards [cards]="statCards"></app-stat-cards>
+
+
+  <!-- ====================================================================
+       ROOT-LEVEL CELL TEMPLATES FOR RECENT REQUESTS <app-table>
+  ===================================================================== -->
+  <ng-template #reqIdTpl let-row="row">
+    <app-badge [label]="row.id" variant="light" size="xs"></app-badge>
+  </ng-template>
+
+  <ng-template #reqTypeTpl let-row="row">
+    <span class="fw-semibold text-dark">{{ row.type }}</span>
+  </ng-template>
+
+  <ng-template #reqDurationTpl let-row="row">
+    <app-badge [label]="row.duration" [variant]="getPriorityBadgeVariant(row.duration)" size="xs">
+    </app-badge>
+  </ng-template>
+
+  <ng-template #reqDateTpl let-row="row">
+    <span class="text-muted text-nowrap">
+      <i class="bi bi-calendar3 text-emerald me-1"></i>{{ row.date }}
+    </span>
+  </ng-template>
+
+  <ng-template #reqStatusTpl let-row="row">
+    <app-badge [label]="row.status" [variant]="getRequestStatusBadgeVariant(row.status)" size="xs" [dot]="true">
+    </app-badge>
+  </ng-template>
 
 
   <!-- ====================================================================
@@ -79,9 +118,8 @@
                       <span class="extra-small text-muted">Q4 Ongoing Review</span>
                     </div>
                   </div>
-                  <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2 py-1 extra-small fw-semibold">
-                    Exceeding ({{ performanceRating }}/5)
-                  </span>
+                  <app-badge [label]="'Exceeding (' + performanceRating + '/5)'" variant="soft-emerald" size="xs">
+                  </app-badge>
                 </div>
 
                 <div class="my-3">
@@ -132,9 +170,8 @@
                       <span class="extra-small text-muted">Current Sprint Tasks</span>
                     </div>
                   </div>
-                  <span class="badge bg-light text-dark border rounded-pill px-2 py-1 extra-small fw-semibold">
-                    {{ tasksCompletedCount }}/{{ tasks.length }} Done
-                  </span>
+                  <app-badge [label]="tasksCompletedCount + '/' + tasks.length + ' Done'" variant="light" size="xs">
+                  </app-badge>
                 </div>
 
                 <div class="my-3">
@@ -152,8 +189,8 @@
 
               <!-- Mini Task Checklist -->
               <div class="task-checklist pt-2 border-top border-light-subtle">
-                <div *ngFor="let task of tasks.slice(0, 2)"
-                  class="task-item-row d-flex align-items-center justify-content-between py-1"
+                @for (task of tasks.slice(0, 2); track task.id) {
+                <div class="task-item-row d-flex align-items-center justify-content-between py-1"
                   (click)="toggleTask(task)">
                   <div class="d-flex align-items-center gap-2 text-truncate">
                     <i class="bi" [class.bi-check-circle-fill]="task.completed" [class.text-emerald]="task.completed"
@@ -163,10 +200,9 @@
                       {{ task.title }}
                     </span>
                   </div>
-                  <span class="badge bg-light text-secondary rounded-pill extra-small flex-shrink-0">
-                    {{ task.dueDate }}
-                  </span>
+                  <app-badge [label]="task.dueDate" variant="light" size="xs"></app-badge>
                 </div>
+                }
               </div>
 
             </div>
@@ -177,24 +213,26 @@
 
       <!-- B. WEEKLY ATTENDANCE HOURS OVERVIEW -->
       <section class="card border-0 shadow-sm rounded-4 mb-4 weekly-hours-card">
-        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+        <div
+          class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <div class="widget-icon-box bg-emerald-subtle text-emerald">
               <i class="bi bi-bar-chart-line"></i>
             </div>
             <div>
               <h2 class="h6 mb-0 fw-bold text-dark">Weekly Working Hours</h2>
-              <span class="extra-small text-muted">Weekly Target: 40h &nbsp;·&nbsp; Logged: 38.5h</span>
+              <span class="extra-small text-muted">Weekly Target: 40h &nbsp;&middot;&nbsp; Logged: 38.5h</span>
             </div>
           </div>
-          <a routerLink="/employee/my-attendance" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0">
-            View Timesheet <i class="bi bi-arrow-right"></i>
-          </a>
+          <app-button label="View Timesheet" variant="link-emerald" size="sm" icon="bi-arrow-right"
+            iconPosition="right" route="/my-attendance">
+          </app-button>
         </div>
 
         <div class="card-body p-3 p-md-4">
           <div class="row g-2 g-md-3 text-center">
-            <div class="col" *ngFor="let day of weeklyHours">
+            @for (day of weeklyHours; track day.date) {
+            <div class="col">
               <div class="p-2 p-md-3 rounded-3 weekly-day-box" [class.day-active]="day.status === 'in-progress'">
                 <span class="d-block extra-small text-muted text-uppercase mb-1 fw-semibold">{{ day.day }}</span>
                 <span class="d-block extra-small text-secondary mb-2">{{ day.date }}</span>
@@ -206,20 +244,21 @@
                     [class.bar-in-progress]="day.status === 'in-progress'"></div>
                 </div>
 
-                <span class="d-block fw-bold text-dark small">{{ day.hours }}h</span>
-                <span class="badge rounded-pill extra-small mt-1"
-                  [ngClass]="day.status === 'completed' ? 'bg-success-subtle text-success' : 'bg-emerald-subtle text-emerald'">
-                  {{ day.status === 'completed' ? 'Done' : 'Active' }}
-                </span>
+                <span class="d-block fw-bold text-dark small mb-1">{{ day.hours }}h</span>
+                <app-badge [label]="day.status === 'completed' ? 'Done' : 'Active'"
+                  [variant]="day.status === 'completed' ? 'soft-success' : 'soft-emerald'" size="xs">
+                </app-badge>
               </div>
             </div>
+            }
           </div>
         </div>
       </section>
 
-      <!-- C. RECENT REQUESTS & STATUS TABLE -->
+      <!-- C. RECENT REQUESTS & STATUS TABLE (Reusable <app-table>) -->
       <section class="card border-0 shadow-sm rounded-4 mb-4 recent-requests-card">
-        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+        <div
+          class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-3 d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <div class="widget-icon-box bg-emerald-subtle text-emerald">
               <i class="bi bi-clock-history"></i>
@@ -229,46 +268,15 @@
               <span class="extra-small text-muted">Latest approval workflows</span>
             </div>
           </div>
-          <a routerLink="/employee/my-requests" class="btn btn-sm btn-link text-emerald text-decoration-none fw-semibold p-0">
-            View All <i class="bi bi-arrow-right"></i>
-          </a>
+          <app-button label="View All" variant="link-emerald" size="sm" icon="bi-arrow-right" iconPosition="right"
+            route="/my-requests">
+          </app-button>
         </div>
 
-        <div class="card-body p-0 pt-2">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-light extra-small text-uppercase letter-spacing-1 text-muted">
-                <tr>
-                  <th class="ps-3 ps-md-4">Request ID</th>
-                  <th>Type</th>
-                  <th>Duration / Value</th>
-                  <th>Dates</th>
-                  <th class="pe-3 pe-md-4 text-end">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let req of recentRequests">
-                  <td class="ps-3 ps-md-4 fw-semibold text-dark small">{{ req.id }}</td>
-                  <td class="small">
-                    <span class="fw-semibold text-dark">{{ req.type }}</span>
-                  </td>
-                  <td class="small text-muted">{{ req.duration }}</td>
-                  <td class="small text-muted">{{ req.date }}</td>
-                  <td class="pe-3 pe-md-4 text-end">
-                    <span class="badge rounded-pill px-2 py-1 extra-small"
-                      [ngClass]="{
-                        'bg-success-subtle text-success': req.status === 'Approved',
-                        'bg-warning-subtle text-warning': req.status === 'Pending',
-                        'bg-info-subtle text-info': req.status === 'Under Review',
-                        'bg-danger-subtle text-danger': req.status === 'Rejected'
-                      }">
-                      {{ req.status }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="card-body px-3 px-md-4 pb-3 pb-md-4 pt-0">
+          <app-table [columns]="recentRequestsColumns" [data]="recentRequests" [loading]="isLoadingRecentRequests"
+            emptyMessage="No recent requests submitted yet.">
+          </app-table>
         </div>
       </section>
 
@@ -280,7 +288,7 @@
     =================================================================== -->
     <div class="col-12 col-lg-4">
 
-      <!-- 1. QUICK ACTIONS CARD (The 5 requested actions) -->
+      <!-- 1. QUICK ACTIONS CARD -->
       <section class="card border-0 shadow-sm rounded-4 mb-4 quick-actions-card">
         <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0">
           <div class="d-flex align-items-center gap-2 mb-1">
@@ -296,8 +304,8 @@
 
         <div class="card-body p-3 p-md-4">
           <div class="d-flex flex-column gap-2">
-
-            <a *ngFor="let action of quickActions" [routerLink]="action.route"
+            @for (action of quickActions; track action.title) {
+            <a [routerLink]="action.route"
               class="quick-action-btn text-decoration-none d-flex align-items-center justify-content-between p-3 rounded-3">
               <div class="d-flex align-items-center gap-3">
                 <div class="action-icon-circle">
@@ -310,36 +318,41 @@
               </div>
               <i class="bi bi-chevron-right action-chevron"></i>
             </a>
-
+            }
           </div>
         </div>
       </section>
 
       <!-- 2. COMPANY ANNOUNCEMENTS CARD -->
       <section class="card border-0 shadow-sm rounded-4 mb-4 announcements-card">
-        <div class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
+        <div
+          class="card-header bg-transparent border-0 pt-3 pt-md-4 px-3 px-md-4 pb-0 d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <div class="widget-icon-box bg-emerald-subtle text-emerald">
               <i class="bi bi-megaphone"></i>
             </div>
             <div>
               <h2 class="h6 mb-0 fw-bold text-dark">Announcements</h2>
-              <span class="extra-small text-muted">Latest from HR & Company</span>
+              <span class="extra-small text-muted">Latest from HR &amp; Company</span>
             </div>
           </div>
         </div>
 
         <div class="card-body p-3 p-md-4">
           <div class="d-flex flex-column gap-3">
-            <div *ngFor="let item of announcements" class="announcement-item p-3 rounded-3 bg-light-subtle border">
-              <div class="d-flex align-items-center justify-content-between mb-1">
-                <span class="badge bg-emerald-subtle text-emerald rounded-pill extra-small fw-semibold">
-                  {{ item.tag }}
-                </span>
+            @for (item of announcements; track item.title) {
+            <div class="announcement-item p-3 rounded-3 bg-light-subtle border">
+              <div class="d-flex align-items-center justify-content-between mb-1.5">
+                <app-badge [label]="item.tag" variant="soft-emerald" size="xs"></app-badge>
                 <span class="extra-small text-muted">{{ item.date }}</span>
               </div>
               <h3 class="h6 fw-semibold text-dark mb-0 small">{{ item.title }}</h3>
             </div>
+            } @empty {
+            <div class="text-center py-3 text-muted extra-small">
+              No active company announcements at this time.
+            </div>
+            }
           </div>
         </div>
       </section>
@@ -360,8 +373,8 @@
 
         <div class="card-body p-3 p-md-4">
           <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
-            <li *ngFor="let holiday of upcomingHolidays"
-              class="d-flex align-items-center justify-content-between p-2 rounded-2 hover-bg-subtle">
+            @for (holiday of upcomingHolidays; track holiday.name) {
+            <li class="d-flex align-items-center justify-content-between p-2 rounded-2 hover-bg-subtle">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-calendar-check text-emerald"></i>
                 <div>
@@ -369,10 +382,9 @@
                   <span class="extra-small text-muted">{{ holiday.day }}</span>
                 </div>
               </div>
-              <span class="badge bg-light text-dark border rounded-pill extra-small">
-                {{ holiday.date }}
-              </span>
+              <app-badge [label]="holiday.date" variant="light" size="xs"></app-badge>
             </li>
+            }
           </ul>
         </div>
       </section>

@@ -40,4 +40,15 @@ export class Table<T extends Record<string, any>> {
 
   readonly columnModeEnum = ColumnMode;
 
+  get tableMinWidth(): number {
+    if (!this.columns || this.columns.length === 0) {
+      return 900;
+    }
+    const total = this.columns.reduce(
+      (sum, col) => sum + (col.width || col.minWidth || 150),
+      0
+    );
+    return Math.max(850, total);
+  }
+
 }

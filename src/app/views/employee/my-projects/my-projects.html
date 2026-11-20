@@ -1,15 +1,28 @@
 <div class="my-projects-container container-fluid py-4 px-3 px-md-4">
 
+    <!-- Global Toaster -->
+    <app-toaster position="top-right"></app-toaster>
+
     <!-- ====================================================================
-       1. PAGE HEADER (Clean Header: Title & Description Only)
+       1. PAGE HEADER
   ===================================================================== -->
-    <header class="mb-4">
+    <header
+        class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="h5 fw-bold text-dark mb-0">My Projects</h1>
+                <app-badge [label]="totalProjectsCount + ' Assigned'" variant="soft-emerald" size="xs"></app-badge>
+            </div>
+            <p class="text-muted extra-small mb-0 mt-1">
+                Overview of software engineering, cloud architecture, and infrastructure projects assigned to you.
+            </p>
+        </div>
 
-
-        <h1 class="h5 fw-bold text-dark mb-0">My Projects</h1>
-        <p class="text-muted extra-small mb-0 mt-1">
-            Overview of software engineering, cloud architecture, and infrastructure projects assigned to you.
-        </p>
+        <div class="d-flex align-items-center gap-2 flex-nowrap ms-md-auto">
+            <app-button label="Refresh" variant="outline-secondary" size="sm" icon="bi-arrow-clockwise"
+                [loading]="isLoadingProjects" (clicked)="loadProjects()">
+            </app-button>
+        </div>
     </header>
 
 
@@ -17,39 +30,25 @@
        2. GREEN AGILE MANAGEMENT TOOL BANNER (Redirect to External Source)
   ===================================================================== -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 agile-banner">
-        <div class="card-body p-3 p-md-3.5 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+        <div
+            class="card-body p-3 p-md-3.5 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
                 <div class="agile-icon-box bg-white text-emerald shadow-xs rounded-3 flex-shrink-0">
                     <i class="bi bi-kanban-fill fs-4"></i>
                 </div>
                 <div>
-                    <h2 class="h6 fw-bold text-dark mb-1">Agile Project Management & Sprint Boards</h2>
+                    <h2 class="h6 fw-bold text-dark mb-1">Agile Project Management &amp; Sprint Boards</h2>
                     <p class="text-secondary extra-small mb-0">
-                        Complete project management, sprint board workflows, and delivery reports are redirected to our external agile development tool.
+                        Complete project management, sprint board workflows, and delivery reports are synchronized with
+                        our external agile development tool.
                     </p>
                 </div>
             </div>
 
-            <a [href]="AGILE_TOOL_URL" target="_blank" rel="noopener noreferrer"
-                class="btn btn-emerald text-white btn-sm rounded-3 px-3.5 py-2 fw-semibold d-inline-flex align-items-center gap-2 text-nowrap flex-shrink-0 shadow-sm">
-                <i class="bi bi-kanban"></i>
-                <span>Agile Development Tool</span>
-                <i class="bi bi-box-arrow-up-right extra-small"></i>
-            </a>
+            <app-button label="Agile Development Tool" variant="emerald" size="sm" icon="bi-kanban"
+                (clicked)="openAgileTool()">
+            </app-button>
         </div>
-    </div>
-
-
-    <!-- ====================================================================
-       2. NOTIFICATION TOAST ALERT
-  ===================================================================== -->
-    <div *ngIf="toastMessage"
-        class="alert alert-success alert-dismissible fade show mb-4 py-2 px-3 extra-small rounded-3 d-flex align-items-center justify-content-between shadow-sm">
-        <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-check-circle-fill text-success fs-6"></i>
-            <span>{{ toastMessage }}</span>
-        </div>
-        <button type="button" class="btn-close btn-close-sm" (click)="toastMessage = ''"></button>
     </div>
 
 
@@ -60,162 +59,285 @@
 
 
     <!-- ====================================================================
-       4. MAIN PROJECTS TABLE CARD
+       ROOT-LEVEL CELL TEMPLATES FOR REUSABLE <app-table>
   ===================================================================== -->
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden projects-card">
+    <ng-template #projectCodeTpl let-row="row">
+        <app-badge [label]="row.code" variant="light" size="xs"></app-badge>
+    </ng-template>
 
-        <!-- Filter Bar Header -->
-        <div
-            class="card-header bg-white border-bottom p-3 p-md-3.5 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center justify-content-between gap-3">
+    <ng-template #projectTitleTpl let-row="row">
+        <span class="fw-bold text-dark project-title-text">
+            {{ row.title }}
+        </span>
+    </ng-template>
 
-            <!-- Search Box -->
-            <div class="search-box flex-grow-1" style="max-width: 420px;">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0 text-muted ps-3">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" class="form-control bg-light border-start-0 ps-2"
-                        placeholder="Search project title, ID, description, or stack..." [(ngModel)]="searchQuery">
-                    <button *ngIf="searchQuery" class="btn btn-light border-start-0 text-muted" type="button"
-                        (click)="searchQuery = ''">
-                        <i class="bi bi-x-circle"></i>
+    <ng-template #projectDescTpl let-row="row">
+        <span class="text-secondary text-start">{{ row.description }}</span>
+    </ng-template>
+
+    <ng-template #projectRoleTpl let-row="row">
+        <app-badge [label]="row.role" variant="soft-emerald" size="xs"></app-badge>
+    </ng-template>
+
+    <ng-template #startDateTpl let-row="row">
+        <span class="text-dark text-nowrap">
+            <i class="bi bi-calendar-plus text-muted me-1"></i>{{ row.startDate }}
+        </span>
+    </ng-template>
+
+    <ng-template #endDateTpl let-row="row">
+        <span class="fw-semibold text-dark text-nowrap">
+            <i class="bi bi-calendar-check text-emerald me-1"></i>{{ row.endDate }}
+        </span>
+    </ng-template>
+
+    <ng-template #statusTpl let-row="row">
+        <app-badge [label]="row.status" [variant]="getStatusBadgeVariant(row.status)" size="xs" [dot]="true">
+        </app-badge>
+    </ng-template>
+
+    <ng-template #actionsTpl let-row="row">
+        <div class="dropdown">
+            <button class="btn btn-sm btn-link text-secondary p-1 rounded-2 border-0 shadow-none" type="button"
+                data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false"
+                (click)="$event.stopPropagation()" title="Project Actions">
+                <i class="bi bi-three-dots-vertical fs-6"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1 extra-small">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark" type="button"
+                        (click)="openAgileTool(row)">
+                        <i class="bi bi-box-arrow-up-right text-emerald"></i>
+                        <span>Open in Agile Tool</span>
+                    </button>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark" routerLink="/my-tasks">
+                        <i class="bi bi-list-check text-primary"></i>
+                        <span>View My Project Tasks</span>
+                    </a>
+                </li>
+                <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-secondary" type="button"
+                        (click)="copyProjectCode(row)">
+                        <i class="bi bi-clipboard"></i>
+                        <span>Copy Project ID ({{ row.code }})</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </ng-template>
+
+
+    <!-- ====================================================================
+       4. FILTER TOOLBAR CARD (Reusable <app-input-field>, Apply/Reset & Chips)
+  ===================================================================== -->
+    <section class="card border-0 shadow-sm rounded-4 mb-3 projects-card">
+        <div class="card-body p-3 p-md-4">
+
+            <!-- Top Row: Title & Status Quick Pill Tabs -->
+            <div
+                class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="agile-icon-box bg-emerald-subtle text-emerald rounded-3 flex-shrink-0"
+                        style="width: 36px; height: 36px;">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="h6 fw-bold text-dark mb-0">Assigned Projects Directory</h2>
+                        <span class="extra-small text-muted">Active engineering initiatives and delivery
+                            timelines</span>
+                    </div>
+                </div>
+
+                <!-- Status Filter Tabs -->
+                <div class="d-flex align-items-center gap-1.5 flex-wrap status-filter-group">
+                    <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'All'"
+                        (click)="setStatusFilter('All')">
+                        All ({{ totalProjectsCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm status-pill"
+                        [class.active]="selectedStatus === 'In Progress'" (click)="setStatusFilter('In Progress')">
+                        In Progress ({{ inProgressCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'Planning'"
+                        (click)="setStatusFilter('Planning')">
+                        Planning ({{ planningCount }})
+                    </button>
+                    <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'Completed'"
+                        (click)="setStatusFilter('Completed')">
+                        Completed ({{ completedCount }})
                     </button>
                 </div>
             </div>
 
-            <!-- Status Filter Tabs -->
-            <div class="d-flex align-items-center gap-1.5 flex-wrap status-filter-group">
-                <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'All'"
-                    (click)="setStatusFilter('All')">
-                    All ({{ totalProjectsCount }})
-                </button>
-                <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'In Progress'"
-                    (click)="setStatusFilter('In Progress')">
-                    In Progress ({{ inProgressCount }})
-                </button>
-                <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'Planning'"
-                    (click)="setStatusFilter('Planning')">
-                    Planning ({{ planningCount }})
-                </button>
-                <button type="button" class="btn btn-sm status-pill" [class.active]="selectedStatus === 'Completed'"
-                    (click)="setStatusFilter('Completed')">
-                    Completed ({{ completedCount }})
-                </button>
+            <!-- Filter Inputs Row -->
+            <div class="row g-2 align-items-center pt-3 border-top">
+                <!-- Search Input -->
+                <div class="col-12 col-md-5 col-xl-5">
+                    <app-input-field type="search" name="projectSearch"
+                        placeholder="Search project title, ID, description, or role..." [clearable]="true"
+                        [(ngModel)]="draftSearchQuery">
+                    </app-input-field>
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="col-6 col-md-3 col-xl-2">
+                    <app-input-field type="dropdown" name="projectStatusFilter" icon="bi-check2-circle"
+                        [showEmptyOption]="false" [options]="statusFilterOptions" [(ngModel)]="draftStatus">
+                    </app-input-field>
+                </div>
+
+                <!-- Category Dropdown -->
+                <div class="col-6 col-md-4 col-xl-3">
+                    <app-input-field type="dropdown" name="projectCategoryFilter" icon="bi-layers"
+                        [showEmptyOption]="false" [options]="categoryFilterOptions" [(ngModel)]="draftCategory">
+                    </app-input-field>
+                </div>
+
+                <!-- Apply & Reset Buttons -->
+                <div class="col-12 col-xl-2 d-flex align-items-center justify-content-end gap-2">
+                    <app-button label="Apply" variant="emerald" size="sm" icon="bi-funnel-fill"
+                        (clicked)="applyFilters()">
+                    </app-button>
+                    <app-button label="Reset" variant="outline-secondary" size="sm" icon="bi-arrow-counterclockwise"
+                        (clicked)="resetFilters()">
+                    </app-button>
+                </div>
             </div>
-        </div>
 
-        <!-- Table Responsive Container -->
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 projects-table">
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-center ps-3" style="width: 60px;">S.No</th>
-                        <th scope="col" class="text-center" style="min-width: 130px;">Project ID</th>
-                        <th scope="col" style="min-width: 250px;">Project Title</th>
-                        <th scope="col" style="min-width: 320px;">Project Description</th>
-                        <th scope="col" style="min-width: 140px;">Start Date</th>
-                        <th scope="col" style="min-width: 140px;">End Date</th>
-                        <th scope="col" class="text-center" style="min-width: 120px;">Status</th>
-                        <th scope="col" class="text-center pe-3" style="min-width: 140px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let project of filteredProjects; let i = index" class="project-row">
-
-                        <!-- 1. S.No -->
-                        <td class="text-center ps-3 text-muted fw-semibold">
-                            {{ i + 1 }}
-                        </td>
-
-                        <!-- 2. Project ID -->
-                        <td class="text-center">
-                            <span class="badge bg-light text-dark font-monospace border px-2 py-1 extra-small">
-                                {{ project.code }}
-                            </span>
-                        </td>
-
-                        <!-- 3. Project Title -->
-                        <td>
-                            <span class="fw-bold text-dark project-title-text">
-                                {{ project.title }}
-                            </span>
-                        </td>
-
-                        <!-- 4. Project Description -->
-                        <td>
-                            <p class="project-desc-clamp text-secondary mb-0" [title]="project.description">
-                                {{ project.description }}
-                            </p>
-                        </td>
-
-                        <!-- 5. Start Date -->
-                        <td>
-                            <div class="d-inline-flex align-items-center gap-2 text-dark">
-                                <i class="bi bi-calendar-plus text-muted"></i>
-                                <span>{{ project.startDate }}</span>
-                            </div>
-                        </td>
-
-                        <!-- 6. End Date -->
-                        <td>
-                            <div class="d-inline-flex align-items-center gap-2 text-dark">
-                                <i class="bi bi-calendar-check text-emerald"></i>
-                                <span>{{ project.endDate }}</span>
-                            </div>
-                        </td>
-
-                        <!-- 7. Status -->
-                        <td class="text-center">
-                            <span class="badge status-badge rounded-pill px-3 py-1.5" [ngClass]="getStatusClass(project.status)">
-                                {{ project.status }}
-                            </span>
-                        </td>
-
-                        <!-- 8. Actions (Redirects to External Agile Tool) -->
-                        <td class="text-center pe-3 text-nowrap">
-                            <a [href]="project.externalToolUrl" target="_blank" rel="noopener noreferrer"
-                                class="btn btn-sm btn-outline-emerald rounded-3 px-3 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-2 text-nowrap shadow-xs"
-                                title="Open in Agile Tool">
-                                <span>View Project</span>
-                                <i class="bi bi-box-arrow-up-right"></i>
-                            </a>
-                        </td>
-
-                    </tr>
-
-                    <!-- Empty State -->
-                    <tr *ngIf="filteredProjects.length === 0">
-                        <td colspan="8" class="text-center py-5">
-                            <div class="empty-state-box py-3">
-                                <i class="bi bi-folder-x fs-1 text-muted d-block mb-2"></i>
-                                <h3 class="h6 fw-bold text-dark mb-1">No Projects Found</h3>
-                                <p class="text-muted extra-small mb-3">
-                                    No IT projects match your search query or selected status filter.
-                                </p>
-                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 px-3 py-1.5"
-                                    (click)="resetFilters()">
-                                    <i class="bi bi-arrow-clockwise me-1"></i> Clear Filters
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Table Footer Summary -->
-        <div
-            class="card-footer bg-white border-top p-3 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-            <span class="text-muted extra-small">
-                Showing <strong class="text-dark">{{ filteredProjects.length }}</strong> of <strong class="text-dark">{{
-                    totalProjectsCount }}</strong> assigned IT projects
-            </span>
-            <div class="extra-small text-muted d-flex align-items-center gap-2">
-                <i class="bi bi-shield-check text-emerald"></i>
-                <span>All project sprint artifacts synchronize with the external IT Agile Management tool.</span>
+            <!-- Active Filter Chips -->
+            @if (activeFilterChips.length > 0) {
+            <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mt-3 border-top border-light-subtle">
+                <span class="extra-small fw-semibold text-muted me-1">
+                    <i class="bi bi-sliders me-1 text-emerald"></i>Active Filters:
+                </span>
+                @for (chip of activeFilterChips; track chip.key) {
+                <app-chip [label]="chip.label" [value]="chip.key" [icon]="chip.icon" variant="emerald" size="sm"
+                    [removable]="true" (removed)="removeFilterChip(chip.key)">
+                </app-chip>
+                }
             </div>
-        </div>
+            }
 
+        </div>
+    </section>
+
+
+    <!-- ====================================================================
+       5. LARGE SCREENS: REUSABLE <app-table> (d-none d-lg-block)
+  ===================================================================== -->
+    <div class="d-none d-lg-block mb-3">
+        <app-table [columns]="tableColumns" [data]="paginatedProjects" [loading]="isLoadingProjects"
+            emptyMessage="No IT projects match your current search or filter criteria.">
+        </app-table>
     </div>
+
+
+    <!-- ====================================================================
+       6. MEDIUM & SMALL SCREENS: RESPONSIVE PROJECT CARDS (d-block d-lg-none)
+  ===================================================================== -->
+    <div class="d-block d-lg-none mb-3">
+        @if (paginatedProjects.length > 0) {
+        <div class="row g-3">
+            @for (project of paginatedProjects; track project.code) {
+            <div class="col-12 col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 projects-card">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <app-badge [label]="project.code" variant="light" size="xs"></app-badge>
+                            <app-badge [label]="project.status" [variant]="getStatusBadgeVariant(project.status)"
+                                size="xs" [dot]="true"></app-badge>
+                        </div>
+
+                        <!-- Three-Dot Actions Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-link text-secondary p-1 rounded-2 border-0 shadow-none"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical fs-6"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1 extra-small">
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark"
+                                        type="button" (click)="openAgileTool(project)">
+                                        <i class="bi bi-box-arrow-up-right text-emerald"></i>
+                                        <span>Open in Agile Tool</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark"
+                                        routerLink="/my-tasks">
+                                        <i class="bi bi-list-check text-primary"></i>
+                                        <span>View My Project Tasks</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-secondary"
+                                        type="button" (click)="copyProjectCode(project)">
+                                        <i class="bi bi-clipboard"></i>
+                                        <span>Copy Project ID ({{ project.code }})</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="h6 fw-bold text-dark mb-1">{{ project.title }}</h3>
+                    <span class="extra-small text-emerald fw-semibold d-block mb-2">
+                        {{ project.category }} &middot; {{ project.role }}
+                    </span>
+                    <p class="project-desc-clamp text-secondary mb-3">{{ project.description }}</p>
+
+                    <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between extra-small">
+                        <div>
+                            <span class="text-muted d-block">Start Date</span>
+                            <span class="fw-semibold text-dark">
+                                <i class="bi bi-calendar-plus text-muted me-1"></i>{{ project.startDate }}
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted d-block">End Date</span>
+                            <span class="fw-semibold text-dark">
+                                <i class="bi bi-calendar-check text-emerald me-1"></i>{{ project.endDate }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        } @else {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="py-2">
+                <i class="bi bi-folder-x fs-1 text-muted d-block mb-2"></i>
+                <h3 class="h6 fw-bold text-dark mb-1">No Projects Found</h3>
+                <p class="text-muted extra-small mb-3">
+                    No IT projects match your search query or selected filters.
+                </p>
+                <div class="d-flex justify-content-center">
+                    <app-button label="Clear All Filters" variant="outline-emerald" size="sm"
+                        icon="bi-arrow-counterclockwise" (clicked)="resetFilters()">
+                    </app-button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+
+    <!-- ====================================================================
+       7. SHARED PAGINATION (<app-pagination>)
+  ===================================================================== -->
+    @if (filteredProjects.length > 0) {
+    <section class="card border-0 shadow-sm rounded-4 p-3">
+        <app-pagination [currentPage]="effectiveCurrentPage" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 15, 25]"
+            [totalItems]="filteredProjects.length" [showFirstLast]="true" (pageChange)="onPageChange($event)"
+            (pageSizeChange)="onPageSizeChange($event)">
+        </app-pagination>
+    </section>
+    }
 
 </div>

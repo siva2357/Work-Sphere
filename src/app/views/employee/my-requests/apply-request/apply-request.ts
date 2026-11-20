@@ -88,7 +88,7 @@ export class ApplyRequest {
         this.isSubmitting = false;
         this.isSuccess = true;
         setTimeout(() => {
-          this.router.navigate(['/employee/my-requests']);
+          this.router.navigate(['/my-requests']);
         }, 1200);
       },
       error: (err) => {

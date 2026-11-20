@@ -22,7 +22,7 @@ export class MarkAttendance implements OnInit, OnDestroy {
     private router: Router,
     private attendanceService: AttendanceService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   // Clock & Timer
   currentDateTime = new Date();
@@ -76,35 +76,44 @@ export class MarkAttendance implements OnInit, OnDestroy {
 
   private loadTodayAttendance(): void {
     this.attendanceService.fetchMyAttendance$().subscribe({
-      next: (logs) => {
-        const list = logs || [];
+      next: (res: any) => {
+        const list = Array.isArray(res?.logs) ? res.logs : Array.isArray(res) ? res : [];
         if (list.length > 0) {
           const latest = list[0];
-          this.isClockedIn = !!latest.punchIn && (!latest.punchOut || latest.punchOut === '--');
-          this.clockInTime = latest.punchIn || '--';
-          this.elapsedDuration = latest.workHours || '--';
+          const punchIn = latest.loginTime || latest.punchIn || '--:--';
+          const punchOut = latest.logoutTime || latest.punchOut || '--:--';
+          const workHours = latest.hoursPresent || latest.workHours || '--';
+          const workLocation = latest.loginLocation || latest.workLocation || 'Corporate Tech Hub';
+
+          const hasValidPunchIn = !!punchIn && punchIn !== '--' && punchIn !== '--:--';
+          const hasValidPunchOut = !!punchOut && punchOut !== '--' && punchOut !== '--:--';
+
+          this.isClockedIn = hasValidPunchIn && !hasValidPunchOut;
+          this.clockInTime = hasValidPunchIn ? punchIn : '--';
+          this.elapsedDuration = workHours;
+
           const punches: BiometricPunchLog[] = [];
-          if (latest.punchIn && latest.punchIn !== '--') {
+          if (hasValidPunchIn) {
             punches.push({
               id: `PCH-IN-${latest.id?.substring(0, 4) || '101'}`,
               type: 'PUNCH_IN',
-              time: latest.punchIn,
-              date: latest.date,
+              time: punchIn,
+              date: latest.date || 'Today',
               confidence: 99.4,
-              location: latest.workLocation || 'Corporate Tech Hub',
+              location: workLocation,
               coordinates: this.coordinates,
               verificationMethod: 'Face Recognition',
               status: 'Verified'
             });
           }
-          if (latest.punchOut && latest.punchOut !== '--') {
+          if (hasValidPunchOut) {
             punches.unshift({
               id: `PCH-OUT-${latest.id?.substring(0, 4) || '102'}`,
               type: 'PUNCH_OUT',
-              time: latest.punchOut,
-              date: latest.date,
+              time: punchOut,
+              date: latest.date || 'Today',
               confidence: 99.1,
-              location: latest.workLocation || 'Corporate Tech Hub',
+              location: latest.logoutLocation || workLocation,
               coordinates: this.coordinates,
               verificationMethod: 'Face Recognition',
               status: 'Verified'
@@ -113,7 +122,7 @@ export class MarkAttendance implements OnInit, OnDestroy {
           this.todayPunches = punches;
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -148,7 +157,7 @@ export class MarkAttendance implements OnInit, OnDestroy {
         setTimeout(() => {
           if (this.videoPlayer && this.videoPlayer.nativeElement && this.mediaStream) {
             this.videoPlayer.nativeElement.srcObject = this.mediaStream;
-            this.videoPlayer.nativeElement.play().catch(() => {});
+            this.videoPlayer.nativeElement.play().catch(() => { });
           }
         }, 100);
       } else {
@@ -219,7 +228,7 @@ export class MarkAttendance implements OnInit, OnDestroy {
 
       // After face capture, redirect to /employee/my-attendance after 1.5 seconds
       setTimeout(() => {
-        this.router.navigate(['/employee/my-attendance']);
+        this.router.navigate(['/my-attendance']);
       }, 1500);
     }, 1900);
   }
@@ -230,8 +239,8 @@ export class MarkAttendance implements OnInit, OnDestroy {
     const locationStr = this.workMode === 'office' ? 'Corporate Tech Hub (Floor 4)' : 'Remote (WFH)';
 
     this.attendanceService.markAttendance$(punchType === 'PUNCH_IN' ? 'PunchIn' : 'PunchOut', locationStr).subscribe({
-      next: () => {},
-      error: () => {}
+      next: () => { },
+      error: () => { }
     });
 
     const newPunch: BiometricPunchLog = {

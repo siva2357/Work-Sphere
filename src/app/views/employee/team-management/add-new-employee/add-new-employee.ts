@@ -369,7 +369,7 @@ export class AddNewEmployee implements OnInit {
 
       // Auto redirect to team management roster
       setTimeout(() => {
-        this.router.navigate(['/employee/team-management']);
+        this.router.navigate(['/team-management']);
       }, 900);
     }, 550);
   }

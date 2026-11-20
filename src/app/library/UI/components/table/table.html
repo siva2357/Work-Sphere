@@ -1,12 +1,12 @@
 <div class="table-component-wrapper position-relative">
 
-    <ngx-datatable class="bootstrap" [rows]="data" [columnMode]="columnModeEnum.force" [headerHeight]="50"
+    <ngx-datatable class="bootstrap" [style.min-width.px]="tableMinWidth" [rows]="data" [columnMode]="columnModeEnum.force" [headerHeight]="50"
         [footerHeight]="0" [rowHeight]="'auto'" [limit]="data.length || 10" [messages]="{ emptyMessage: emptyMessage }">
 
         @for (column of columns; track column.field) {
 
         <ngx-datatable-column [name]="column.headerName" [prop]="column.field" [width]="$any(column.width)"
-            [minWidth]="$any(column.minWidth)" [maxWidth]="$any(column.maxWidth)" [flexGrow]="$any(column.flexGrow)">
+            [minWidth]="$any(column.minWidth || column.width)" [maxWidth]="$any(column.maxWidth)" [flexGrow]="$any(column.flexGrow)">
 
             <ng-template ngx-datatable-cell-template let-row="row" let-value="value" let-rowIndex="rowIndex">
 

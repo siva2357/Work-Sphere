@@ -319,7 +319,7 @@ export class ApplyLeave implements OnInit {
         this.isSubmitting = false;
         this.isSuccess = true;
         setTimeout(() => {
-          this.router.navigate(['/employee/my-leaves']);
+          this.router.navigate(['/my-leaves']);
         }, 1200);
       },
       error: (err) => {
