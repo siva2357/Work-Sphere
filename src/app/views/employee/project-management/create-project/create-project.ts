@@ -112,15 +112,27 @@ export class CreateProject implements OnInit {
     this.categories = this.projectService.availableCategories;
     this.teamMembers = this.projectService.teamMembersList;
 
+    // Fallback team members if service list is loading or empty
+    if (!this.teamMembers || this.teamMembers.length === 0) {
+      this.teamMembers = [
+        { id: 'EMP-0135', name: 'Priya Patel', role: 'Lead Architect & Senior Engineer', department: 'Core Web Platform', avatarColor: '#10b981' },
+        { id: 'EMP-0112', name: 'David Chen', role: 'Database & Infrastructure Lead', department: 'Data & Cloud Platform', avatarColor: '#0ea5e9' },
+        { id: 'EMP-0128', name: 'Alex Rivera', role: 'Lead UI/UX Designer', department: 'Product Design', avatarColor: '#8b5cf6' },
+        { id: 'EMP-0142', name: 'Rohan Sharma', role: 'Full Stack Java Engineer', department: 'Platform Services', avatarColor: '#f59e0b' },
+        { id: 'EMP-0164', name: 'Vikram Malhotra', role: 'Mobile Applications Developer', department: 'Mobile Engineering', avatarColor: '#6366f1' },
+        { id: 'EMP-0171', name: 'Sneha Reddy', role: 'SecOps Specialist', department: 'Cybersecurity & IAM', avatarColor: '#14b8a6' },
+      ];
+    }
+
     // Populate Reusable Dropdown Options
     this.departmentOptions = this.departments.map((d) => ({ label: d, value: d }));
     this.categoryOptions = this.categories.map((c) => ({ label: c, value: c }));
     this.leadOptions = this.teamMembers.map((m) => ({
-      label: `${m.name} (${m.id}) • ${m.role}`,
+      label: `${m.name} (${m.id}) - ${m.role}`,
       value: m.id,
     }));
 
-    // Set defaults
+    // Pre-select first team lead
     if (this.teamMembers.length > 0) {
       this.selectedLeadId = this.teamMembers[0].id;
       this.selectedTeamMemberIds = [this.teamMembers[0].id, this.teamMembers[1]?.id || ''];

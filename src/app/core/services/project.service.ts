@@ -27,7 +27,17 @@ export class ProjectService {
     'Design System & UX',
   ];
 
-  teamMembersList: ProjectMember[] = [];
+  private readonly defaultTeamMembers: ProjectMember[] = [
+    { id: 'EMP-0135', name: 'Priya Patel', role: 'Lead Architect & Senior Engineer', department: 'Core Web Platform', avatarColor: '#10b981' },
+    { id: 'EMP-0112', name: 'David Chen', role: 'Database & Infrastructure Lead', department: 'Data & Cloud Platform', avatarColor: '#0ea5e9' },
+    { id: 'EMP-0128', name: 'Alex Rivera', role: 'Lead UI/UX Designer', department: 'Product Design', avatarColor: '#8b5cf6' },
+    { id: 'EMP-0142', name: 'Rohan Sharma', role: 'Full Stack Java Engineer', department: 'Platform Services', avatarColor: '#f59e0b' },
+    { id: 'EMP-0164', name: 'Vikram Malhotra', role: 'Mobile Applications Developer', department: 'Mobile Engineering', avatarColor: '#6366f1' },
+    { id: 'EMP-0171', name: 'Sneha Reddy', role: 'SecOps Specialist', department: 'Cybersecurity & IAM', avatarColor: '#14b8a6' },
+    { id: 'EMP-0150', name: 'Neha Sharma', role: 'QA Automation Lead', department: 'Quality Assurance', avatarColor: '#ec4899' },
+  ];
+
+  teamMembersList: ProjectMember[] = [...this.defaultTeamMembers];
   private projects: ManagedProject[] = [];
   private readonly projectsSubject = new BehaviorSubject<ManagedProject[]>([]);
   readonly projects$ = this.projectsSubject.asObservable();
