@@ -92,8 +92,10 @@ export interface TaskDetailModel {
   id: string;
   title: string;
   project: string;
+  category?: string;
   description: string;
   fullDescription: string;
+  assignee?: TeamMember;
   assignedBy: {
     name: string;
     employeeId: string;

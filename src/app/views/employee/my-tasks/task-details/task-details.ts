@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
-import { TaskService } from '../../../../core/services/task.service';
+import { TaskService, ManagedTask } from '../../../../core/services/task.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import {
   DetailedSubtask,
@@ -14,7 +13,13 @@ import {
   DetailedComment,
   TaskDetailModel
 } from '../../../../core/models/task-project-team.interface';
-import { API_ENDPOINTS } from '../../../../core/constants/api.constants';
+import {
+  Badge,
+  BadgeVariant,
+  Button,
+  Toaster,
+  ToasterService
+} from '../../../../library/UI/components';
 
 export type {
   DetailedSubtask,
@@ -27,14 +32,23 @@ export type {
 @Component({
   selector: 'app-task-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, Badge, Button, Toaster],
   templateUrl: './task-details.html',
   styleUrl: './task-details.css',
 })
 export class TaskDetails implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private taskService = inject(TaskService);
+  private authService = inject(AuthService);
+  private toaster = inject(ToasterService);
+
   task: TaskDetailModel | null = null;
   taskId: string = '';
   private sub!: Subscription;
+
+  // New subtask addition by manager
+  newSubtaskTitle: string = '';
 
   // Comment state
   newCommentText: string = '';
@@ -43,21 +57,9 @@ export class TaskDetails implements OnInit, OnDestroy {
   selectedFileName: string = '';
   selectedFileSize: string = '';
   deliverableNote: string = '';
-  isUploading: boolean = false;
 
   // Effort logging
   hoursToLog: number = 2;
-
-  // Toast alert
-  toastMessage: string = '';
-  private toastTimer: any;
-
-  constructor(
-    private route: ActivatedRoute,
-    private http: HttpClient,
-    private taskService: TaskService,
-    private authService: AuthService
-  ) { }
 
   ngOnInit(): void {
     this.sub = this.route.paramMap.subscribe((params) => {
@@ -70,53 +72,131 @@ export class TaskDetails implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
-    if (this.toastTimer) {
-      clearTimeout(this.toastTimer);
-    }
   }
 
   loadTask(id: string | null): void {
-    this.http.get<any[]>(API_ENDPOINTS.TASKS.BASE).subscribe({
-      next: (rows) => {
-        const list = rows || [];
-        const found = id ? list.find((t) => t.id === id) : list[0];
-        const target = found || list[0];
+    const list = this.taskService.getTasks();
+    let found = id ? this.taskService.getTaskById(id) : list[0];
+
+    if (!found && list.length > 0) {
+      found = list[0];
+    }
+
+    if (found) {
+      this.applyManagedTask(found);
+      return;
+    }
+
+    // Fallback: subscribe to tasks$ in case tasks are currently fetching
+    const sub = this.taskService.tasks$.subscribe((tasks) => {
+      if (tasks && tasks.length > 0) {
+        const target = id ? (tasks.find((t) => t.id === id) || tasks[0]) : tasks[0];
         if (target) {
-          this.taskId = target.id;
-          this.task = {
-            id: target.id,
-            title: target.title || 'Task Detail',
-            project: target.project || 'WorkSphere Enterprise',
-            description: target.description || '',
-            fullDescription: target.fullDescription || target.description || '',
-            assignedBy: {
-              name: target.assignedByName || target.assignedBy?.name || 'Department Lead',
-              employeeId: target.assignedById || target.assignedBy?.employeeId || 'EMP-100',
-              role: target.assignedByRole || target.assignedBy?.role || 'Manager',
-              department: target.department || target.assignedBy?.department || 'Engineering',
-              email: target.assignedByEmail || target.assignedBy?.email || ''
-            },
-            assignedDate: target.assignedDate || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-            dueDate: target.dueDate || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-            status: (target.status || 'Pending') as TaskDetailModel['status'],
-            priority: (target.priority || 'Medium') as TaskDetailModel['priority'],
-            estimatedHours: Number(target.estimatedHours ?? 8),
-            loggedHours: Number(target.loggedHours ?? 0),
-            progressPercent: Number(target.progressPercent ?? (target.status === 'Completed' ? 100 : target.status === 'In Progress' ? 50 : 0)),
-            subtasks: Array.isArray(target.subtasks) ? target.subtasks : [],
-            attachments: Array.isArray(target.attachments) ? target.attachments : [],
-            submittedDocuments: Array.isArray(target.submittedDocuments) ? target.submittedDocuments : [],
-            comments: Array.isArray(target.comments) ? target.comments : []
-          };
+          this.applyManagedTask(target);
         }
-      },
-      error: () => {
-        this.task = null;
+        sub.unsubscribe();
       }
     });
   }
 
-  // Update Status by Employee
+  private applyManagedTask(target: ManagedTask): void {
+    this.taskId = target.id;
+    this.task = {
+      id: target.id,
+      title: target.title || 'Task Specification',
+      project: target.project || 'WorkSphere Enterprise Core',
+      category: target.category || 'Platform Engineering',
+      description: target.description || '',
+      fullDescription:
+        target.description +
+        '. Review all acceptance criteria, verify automated pipeline runs, and submit code deliverables for managerial approval.',
+      assignee: {
+        id: target.assignee?.id || 'EMP-0142',
+        name: target.assignee?.name || 'Rohan Sharma',
+        role: target.assignee?.role || 'Full Stack Java Engineer',
+        department: target.assignee?.department || 'Platform Services',
+        email: target.assignee?.email || 'rohan.sharma@worksphere.io',
+        avatarColor: target.assignee?.avatarColor || '#10b981',
+      },
+      assignedBy: {
+        name: target.assignedBy?.name || 'Sarah Jenkins',
+        employeeId: target.assignedBy?.employeeId || 'EMP-0104',
+        role: target.assignedBy?.role || 'Engineering Lead & Project Manager',
+        department: 'Engineering Leadership',
+        email: 'sarah.jenkins@worksphere.io',
+      },
+      assignedDate: target.assignedDate || '2026-10-18',
+      dueDate: target.dueDate || '2026-10-30',
+      status: target.status || 'Pending',
+      priority: target.priority || 'Medium',
+      estimatedHours: Number(target.estimatedHours || 16),
+      loggedHours: Number(target.loggedHours || 0),
+      progressPercent: Number(
+        target.progressPercent ??
+          (target.status === 'Completed' ? 100 : target.status === 'In Progress' ? 50 : 0)
+      ),
+      subtasks: Array.isArray(target.subtasks) && target.subtasks.length > 0
+        ? target.subtasks.map((st, idx) => ({
+            id: idx + 1,
+            title: typeof st === 'string' ? st : (st as any).title,
+            completed:
+              target.status === 'Completed' ||
+              (target.progressPercent >= (idx + 1) * 33),
+          }))
+        : [
+            { id: 1, title: 'Architecture and requirement breakdown', completed: true },
+            { id: 2, title: 'Implementation and automated unit testing', completed: target.status === 'Completed' },
+            { id: 3, title: 'Code review and deliverable submission', completed: target.status === 'Completed' },
+          ],
+      attachments: [
+        {
+          name: `${target.id}_architecture_spec.pdf`,
+          size: '1.8 MB',
+          type: 'pdf',
+          icon: 'bi-file-earmark-pdf-fill text-danger',
+        },
+        {
+          name: 'api_contract_schema.json',
+          size: '340 KB',
+          type: 'json',
+          icon: 'bi-file-earmark-code-fill text-primary',
+        },
+      ],
+      submittedDocuments: [
+        {
+          id: 1,
+          name: `${target.id}_pull_request_verification.md`,
+          size: '56 KB',
+          uploadedDate: '24 Oct 2026, 11:30 AM',
+          uploadedBy: target.assignee?.name || 'Assignee',
+          status: target.status === 'Completed' ? 'Accepted' : 'Under Review',
+          note: 'PR merge checklist and initial stress testing results attached for manager review.',
+        },
+      ],
+      comments: [
+        {
+          id: 1,
+          author: target.assignedBy?.name || 'Sarah Jenkins',
+          role: 'Manager / Team Lead',
+          date: '20 Oct 2026, 09:15 AM',
+          message:
+            'Please ensure the test suite covers failure edge cases and p99 response timings before opening the final PR.',
+          isManager: true,
+        },
+        {
+          id: 2,
+          author: target.assignee?.name || 'Rohan Sharma',
+          role: target.assignee?.role || 'Assignee',
+          date: '22 Oct 2026, 02:40 PM',
+          message:
+            'Benchmarked the initial batch and verified latency contracts. Code is on track for delivery ahead of the due date.',
+          isManager: false,
+        },
+      ],
+    };
+  }
+
+  // Update Status
   updateStatus(newStatus: 'Pending' | 'In Progress' | 'Completed'): void {
     if (!this.task) return;
     this.task.status = newStatus;
@@ -127,13 +207,18 @@ export class TaskDetails implements OnInit, OnDestroy {
       this.task.progressPercent = 0;
       this.task.subtasks.forEach((s) => (s.completed = false));
     } else if (newStatus === 'In Progress' && this.task.progressPercent === 0) {
-      this.task.progressPercent = 25;
+      this.task.progressPercent = 35;
     }
     this.taskService.updateTaskStatus(this.task.id, newStatus);
-    this.showToast(`Task status updated to "${newStatus}"`);
+    this.toaster.show({
+      title: 'Status Updated',
+      message: `Task status changed to "${newStatus}"`,
+      variant: 'success',
+      icon: 'bi-check-circle-fill',
+    });
   }
 
-  // Employee can only check off existing assigned subtasks
+  // Check off existing assigned subtasks
   toggleSubtask(subtaskId: number): void {
     if (!this.task) return;
     const item = this.task.subtasks.find((s) => s.id === subtaskId);
@@ -143,11 +228,59 @@ export class TaskDetails implements OnInit, OnDestroy {
       this.task.progressPercent = Math.round((done / this.task.subtasks.length) * 100);
       if (this.task.progressPercent === 100) {
         this.task.status = 'Completed';
+        this.taskService.updateTaskStatus(this.task.id, 'Completed');
       } else if (this.task.progressPercent > 0 && this.task.status === 'Pending') {
         this.task.status = 'In Progress';
+        this.taskService.updateTaskStatus(this.task.id, 'In Progress');
       }
-      this.showToast(`Checklist item status updated.`);
+      this.toaster.show({
+        title: 'Checklist Updated',
+        message: `Action item "${item.title}" status updated.`,
+        variant: 'info',
+        icon: 'bi-check2-square',
+      });
     }
+  }
+
+  // Add new subtask (Manager capability)
+  addSubtask(): void {
+    if (!this.task || !this.newSubtaskTitle.trim()) return;
+    const newId = this.task.subtasks.length > 0
+      ? Math.max(...this.task.subtasks.map((s) => s.id)) + 1
+      : 1;
+
+    this.task.subtasks.push({
+      id: newId,
+      title: this.newSubtaskTitle.trim(),
+      completed: false,
+    });
+
+    const done = this.task.subtasks.filter((s) => s.completed).length;
+    this.task.progressPercent = Math.round((done / this.task.subtasks.length) * 100);
+    this.newSubtaskTitle = '';
+
+    this.toaster.show({
+      title: 'Subtask Added',
+      message: 'New deliverable item assigned to the checklist.',
+      variant: 'success',
+      icon: 'bi-plus-circle',
+    });
+  }
+
+  // Remove a subtask
+  deleteSubtask(subtaskId: number): void {
+    if (!this.task) return;
+    this.task.subtasks = this.task.subtasks.filter((s) => s.id !== subtaskId);
+    if (this.task.subtasks.length > 0) {
+      const done = this.task.subtasks.filter((s) => s.completed).length;
+      this.task.progressPercent = Math.round((done / this.task.subtasks.length) * 100);
+    }
+    this.toaster.show({
+      title: 'Item Removed',
+      message: 'Checklist item removed.',
+      variant: 'warning',
+      icon: 'bi-trash',
+    });
   }
 
   // File Selection Handler for Document Submission
@@ -164,22 +297,29 @@ export class TaskDetails implements OnInit, OnDestroy {
   submitDocument(): void {
     if (!this.task) return;
     if (!this.selectedFileName) {
-      this.showToast('Please select a file to upload first.');
+      this.toaster.show({
+        title: 'File Required',
+        message: 'Please choose a deliverable file first.',
+        variant: 'warning',
+        icon: 'bi-exclamation-triangle',
+      });
       return;
     }
 
     const now = new Date();
-    const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) +
-      ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const formattedDate =
+      now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) +
+      ', ' +
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     const newDoc: SubmittedDocument = {
       id: Date.now(),
       name: this.selectedFileName,
       size: this.selectedFileSize || '1.2 MB',
       uploadedDate: formattedDate,
-      uploadedBy: 'John Doe (You)',
+      uploadedBy: this.authService.currentUser?.fullName || 'Manager',
       status: 'Submitted',
-      note: this.deliverableNote.trim() || 'Work deliverable uploaded for manager review.'
+      note: this.deliverableNote.trim() || 'Work deliverable uploaded for evaluation.',
     };
 
     if (!this.task.submittedDocuments) {
@@ -187,22 +327,48 @@ export class TaskDetails implements OnInit, OnDestroy {
     }
     this.task.submittedDocuments.unshift(newDoc);
 
-    // If status was Pending, automatically move to In Progress or Completed
     if (this.task.status === 'Pending') {
       this.task.status = 'In Progress';
+      this.taskService.updateTaskStatus(this.task.id, 'In Progress');
     }
 
     this.selectedFileName = '';
     this.selectedFileSize = '';
     this.deliverableNote = '';
-    this.showToast('Deliverable document submitted successfully!');
+
+    this.toaster.show({
+      title: 'Deliverable Uploaded',
+      message: 'Deliverable document submitted successfully.',
+      variant: 'success',
+      icon: 'bi-cloud-check',
+    });
+  }
+
+  // Update Deliverable Status (Manager approval)
+  updateDocumentStatus(docId: number, newStatus: 'Submitted' | 'Under Review' | 'Accepted'): void {
+    if (!this.task || !this.task.submittedDocuments) return;
+    const doc = this.task.submittedDocuments.find((d) => d.id === docId);
+    if (doc) {
+      doc.status = newStatus;
+      this.toaster.show({
+        title: 'Deliverable Reviewed',
+        message: `Deliverable marked as "${newStatus}".`,
+        variant: newStatus === 'Accepted' ? 'success' : 'info',
+        icon: 'bi-shield-check',
+      });
+    }
   }
 
   // Remove a submitted document
   removeSubmittedDocument(docId: number): void {
     if (!this.task || !this.task.submittedDocuments) return;
     this.task.submittedDocuments = this.task.submittedDocuments.filter((d) => d.id !== docId);
-    this.showToast('Submitted document removed.');
+    this.toaster.show({
+      title: 'Document Removed',
+      message: 'Submitted document removed.',
+      variant: 'warning',
+      icon: 'bi-trash',
+    });
   }
 
   // Post Discussion / Progress Comment
@@ -210,30 +376,49 @@ export class TaskDetails implements OnInit, OnDestroy {
     if (!this.task || !this.newCommentText.trim()) return;
     const comment: DetailedComment = {
       id: Date.now(),
-      author: 'John Doe',
-      role: 'Full Stack Engineer (You)',
+      author: this.authService.currentUser?.fullName || 'Sarah Jenkins',
+      role: this.authService.currentUser?.designationTitle || 'Engineering Lead & Project Manager',
       date: 'Just now',
       message: this.newCommentText.trim(),
-      isManager: false
+      isManager: true,
     };
     this.task.comments.push(comment);
     this.newCommentText = '';
-    this.showToast('Your comment has been posted.');
+    this.toaster.show({
+      title: 'Comment Posted',
+      message: 'Progress update added to the collaboration thread.',
+      variant: 'success',
+      icon: 'bi-chat-dots-fill',
+    });
   }
 
   // Log Effort Hours
   logWorkHours(): void {
     if (!this.task || this.hoursToLog <= 0) return;
     this.task.loggedHours = +(this.task.loggedHours + this.hoursToLog).toFixed(1);
-    this.showToast(`Logged ${this.hoursToLog}h of effort on this task.`);
+    this.toaster.show({
+      title: 'Effort Logged',
+      message: `Logged +${this.hoursToLog}h on this task. Total: ${this.task.loggedHours}h`,
+      variant: 'success',
+      icon: 'bi-stopwatch-fill',
+    });
   }
 
-  showToast(message: string): void {
-    this.toastMessage = message;
-    if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.toastTimer = setTimeout(() => {
-      this.toastMessage = '';
-    }, 3500);
+  // Delete Task
+  deleteTask(): void {
+    if (!this.task) return;
+    if (confirm(`Are you sure you want to delete task "${this.task.id}: ${this.task.title}"?`)) {
+      this.taskService.deleteTask(this.task.id);
+      this.toaster.show({
+        title: 'Task Deleted',
+        message: `Task ${this.task.id} has been deleted. Returning to Directory...`,
+        variant: 'danger',
+        icon: 'bi-trash',
+      });
+      setTimeout(() => {
+        this.router.navigate(['/employee/task-management']);
+      }, 1000);
+    }
   }
 
   get completedSubtasksCount(): number {
@@ -244,31 +429,40 @@ export class TaskDetails implements OnInit, OnDestroy {
     return this.task?.subtasks.length || 0;
   }
 
-  getPriorityClass(priority: string): string {
-    switch (priority) {
-      case 'Urgent':
-        return 'bg-danger-subtle text-danger border border-danger-subtle';
-      case 'High':
-        return 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
-      case 'Medium':
-        return 'bg-primary-subtle text-primary border border-primary-subtle';
-      case 'Low':
-        return 'bg-light text-secondary border border-light-subtle';
+  getInitials(name?: string): string {
+    if (!name) return 'WS';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  getStatusBadgeVariant(status?: string): BadgeVariant {
+    switch (status) {
+      case 'Completed':
+        return 'soft-emerald';
+      case 'In Progress':
+        return 'soft-info';
+      case 'Pending':
+        return 'soft-warning';
       default:
-        return 'bg-light text-dark';
+        return 'light';
     }
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Completed':
-        return 'bg-emerald-subtle text-emerald border border-emerald-subtle';
-      case 'In Progress':
-        return 'bg-info-subtle text-info-emphasis border border-info-subtle';
-      case 'Pending':
-        return 'bg-warning-subtle text-warning border border-warning-subtle';
+  getPriorityBadgeVariant(priority?: string): BadgeVariant {
+    switch (priority) {
+      case 'Urgent':
+        return 'soft-danger';
+      case 'High':
+        return 'soft-warning';
+      case 'Medium':
+        return 'soft-info';
+      case 'Low':
+        return 'light';
       default:
-        return 'bg-light text-dark';
+        return 'light';
     }
   }
 }

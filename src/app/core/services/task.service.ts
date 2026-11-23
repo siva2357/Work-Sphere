@@ -358,6 +358,10 @@ export class TaskService {
     return [...this.tasks];
   }
 
+  getTaskById(id: string): ManagedTask | undefined {
+    return this.tasks.find((t) => t.id === id) || this.defaultTasks.find((t) => t.id === id);
+  }
+
   addTask(taskData: {
     title: string;
     project: string;

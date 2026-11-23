@@ -60,7 +60,7 @@
         (blur)="onBlur($event)"
         (focus)="onFocus($event)">
         @if (showEmptyOption) {
-          <option value="">{{ placeholder || emptyOptionLabel }}</option>
+          <option [ngValue]="''">{{ placeholder || emptyOptionLabel }}</option>
         }
         @for (opt of normalizedOptions; track opt.value) {
           <option [ngValue]="opt.value" [disabled]="opt.disabled">

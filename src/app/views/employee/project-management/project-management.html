@@ -59,29 +59,31 @@
   </ng-template>
 
   <ng-template #titleTpl let-row="row">
-    <span class="fw-bold text-dark font-outfit project-title-btn cursor-pointer" (click)="openAgileTool(row.externalToolUrl)" title="Click to open agile workspace">
+    <span class="fw-bold text-dark font-outfit project-title-btn cursor-pointer text-truncate d-block" [title]="row.title" (click)="openAgileTool(row.externalToolUrl)">
       {{ row.title }}
     </span>
   </ng-template>
 
   <ng-template #departmentTpl let-row="row">
-    <span class="text-dark">{{ row.department }}</span>
+    <span class="text-dark fw-medium text-truncate d-block" [title]="row.department">{{ row.department }}</span>
   </ng-template>
 
   <ng-template #categoryTpl let-row="row">
-    <app-badge [label]="row.category" variant="soft-emerald" size="xs"></app-badge>
+    <div class="text-truncate" [title]="row.category">
+      <app-badge [label]="row.category" variant="soft-emerald" size="xs"></app-badge>
+    </div>
   </ng-template>
 
   <ng-template #leadProfileTpl let-row="row">
-    <div class="d-inline-flex align-items-center justify-content-center">
-      <div class="project-avatar-circle flex-shrink-0" [style.background-color]="row.lead?.avatarColor">
+    <div class="d-flex align-items-center justify-content-center w-100">
+      <div class="project-avatar-circle flex-shrink-0" [style.background-color]="row.lead?.avatarColor" [title]="row.lead?.name">
         {{ getInitials(row.lead?.name) }}
       </div>
     </div>
   </ng-template>
 
   <ng-template #leadNameTpl let-row="row">
-    <span class="fw-bold text-dark font-outfit">{{ row.lead?.name }}</span>
+    <span class="fw-bold text-dark font-outfit text-truncate d-block" [title]="row.lead?.name">{{ row.lead?.name }}</span>
   </ng-template>
 
   <ng-template #teamTpl let-row="row">
@@ -89,21 +91,21 @@
   </ng-template>
 
   <ng-template #timelineTpl let-row="row">
-    <div class="d-flex align-items-center gap-1.5 text-nowrap font-monospace extra-small">
-      <i class="bi bi-calendar3 text-emerald"></i>
+    <div class="d-flex align-items-center gap-2 text-nowrap font-monospace extra-small">
+      <i class="bi bi-calendar3 text-emerald flex-shrink-0"></i>
       <span class="text-dark fw-semibold">{{ row.endDate }}</span>
       <span class="text-muted">({{ row.duration }})</span>
     </div>
   </ng-template>
 
   <ng-template #progressTpl let-row="row">
-    <div class="d-flex align-items-center gap-2 text-nowrap">
+    <div class="d-flex align-items-center gap-2.5 text-nowrap">
       <app-badge
         [label]="row.progressPercent + '%'"
         [variant]="row.progressPercent >= 80 ? 'soft-emerald' : row.progressPercent >= 40 ? 'soft-primary' : 'soft-warning'"
         size="xs">
       </app-badge>
-      <span class="extra-small text-muted font-monospace">{{ row.budget }}</span>
+      <span class="extra-small text-muted font-monospace fw-medium">{{ row.budget }}</span>
     </div>
   </ng-template>
 

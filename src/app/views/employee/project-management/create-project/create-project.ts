@@ -1,16 +1,32 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProjectService, ProjectMember } from '../../../../core/services/project.service';
 import { MethodologyOption } from '../../../../core/models/task-project-team.interface';
+import {
+  Alert,
+  Badge,
+  Button,
+  Chip,
+  InputField,
+  InputDropdownOption,
+} from '../../../../library/UI/components';
 
 export type { MethodologyOption } from '../../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-create-project',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Alert,
+    Badge,
+    Button,
+    Chip,
+    InputField,
+  ],
   templateUrl: './create-project.html',
   styleUrl: './create-project.css',
 })
@@ -75,6 +91,11 @@ export class CreateProject implements OnInit {
   categories: string[] = [];
   teamMembers: ProjectMember[] = [];
 
+  // Reusable Dropdown Options
+  departmentOptions: InputDropdownOption[] = [];
+  categoryOptions: InputDropdownOption[] = [];
+  leadOptions: InputDropdownOption[] = [];
+
   // 6. Submission State
   isSubmitting: boolean = false;
   isSuccess: boolean = false;
@@ -90,6 +111,14 @@ export class CreateProject implements OnInit {
     this.departments = this.projectService.availableDepartments;
     this.categories = this.projectService.availableCategories;
     this.teamMembers = this.projectService.teamMembersList;
+
+    // Populate Reusable Dropdown Options
+    this.departmentOptions = this.departments.map((d) => ({ label: d, value: d }));
+    this.categoryOptions = this.categories.map((c) => ({ label: c, value: c }));
+    this.leadOptions = this.teamMembers.map((m) => ({
+      label: `${m.name} (${m.id}) • ${m.role}`,
+      value: m.id,
+    }));
 
     // Set defaults
     if (this.teamMembers.length > 0) {

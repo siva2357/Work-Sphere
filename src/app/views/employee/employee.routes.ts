@@ -42,7 +42,6 @@ export const EMPLOYEE_ROUTES: Routes = [
   { path: 'requests-management', component: RequestManagement },
   { path: 'my-profile', component: MyProfile },
   { path: 'my-tasks', component: MyTasks },
-  { path: 'task-details', component: TaskDetails },
   { path: 'task-details/:id', component: TaskDetails },
   { path: 'my-attendance', component: MyAttendance },
   { path: 'mark-attendance', component: MarkAttendance },

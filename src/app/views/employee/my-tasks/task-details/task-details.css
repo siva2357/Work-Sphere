@@ -81,11 +81,35 @@
   font-size: 1rem;
 }
 
+.font-outfit {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.assignee-avatar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.hover-danger:hover {
+  color: #ef4444 !important;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
 /* ====================================================================
    2. CARDS & WIDGETS
 ===================================================================== */
 .hero-task-card,
 .section-card,
+.assignee-card,
 .manager-card,
 .timeline-card,
 .effort-card {

@@ -1,16 +1,32 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TaskService, TeamMember } from '../../../../core/services/task.service';
 import { TicketTypeOption, AttachmentItem } from '../../../../core/models/task-project-team.interface';
+import {
+  Alert,
+  Badge,
+  Button,
+  Chip,
+  InputField,
+  InputDropdownOption,
+} from '../../../../library/UI/components';
 
 export type { TicketTypeOption, AttachmentItem } from '../../../../core/models/task-project-team.interface';
 
 @Component({
   selector: 'app-create-task',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Alert,
+    Badge,
+    Button,
+    Chip,
+    InputField,
+  ],
   templateUrl: './create-task.html',
   styleUrl: './create-task.css',
 })
@@ -112,6 +128,11 @@ export class CreateTask implements OnInit {
     'IT & Support',
   ];
 
+  // Reusable Dropdown Options
+  projectOptions: InputDropdownOption[] = [];
+  categoryDropdownOptions: InputDropdownOption[] = [];
+  assigneeOptions: InputDropdownOption[] = [];
+
   // 7. Submission State
   isSubmitting: boolean = false;
   isSuccess: boolean = false;
@@ -126,6 +147,14 @@ export class CreateTask implements OnInit {
   ngOnInit(): void {
     this.teamMembers = this.taskService.teamMembers;
     this.availableProjects = this.taskService.availableProjects;
+
+    // Populate Reusable Dropdown Options
+    this.projectOptions = this.availableProjects.map((p) => ({ label: p, value: p }));
+    this.categoryDropdownOptions = this.categories.map((c) => ({ label: c, value: c }));
+    this.assigneeOptions = this.teamMembers.map((m) => ({
+      label: `${m.name} (${m.id}) • ${m.role} • ${m.department}`,
+      value: m.id,
+    }));
 
     // Set sensible defaults
     if (this.teamMembers.length > 0) {
