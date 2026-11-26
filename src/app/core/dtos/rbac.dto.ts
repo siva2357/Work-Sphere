@@ -13,7 +13,9 @@ export interface DepartmentHierarchyItem {
   name: string;
   description?: string;
   headEmployeeId?: string;
+  headEmployeeName?: string;
   isActive: boolean;
+  employeeCount?: number;
   subDepartments: SubDepartmentItem[];
 }
 
@@ -21,6 +23,7 @@ export interface CreateDepartmentDto {
   name: string;
   code: string;
   description?: string;
+  headEmployeeId?: string | null;
   parentDepartmentId?: string | null;
 }
 
@@ -59,6 +62,12 @@ export interface UpdateDesignationDto {
   typicalReportingTo?: string;
   defaultRoleCode?: string;
   responsibilities?: string;
+}
+
+export interface UpdateOrganizationalLevelDto {
+  code: string;
+  name: string;
+  description?: string;
 }
 
 export interface OrganizationalLevelHierarchyItem {

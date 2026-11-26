@@ -7,7 +7,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Payroll', path: '/payroll-management', icon: 'bi bi-cash-stack', roles: ['hr'], module: 'Payroll' },
   { label: 'Requests Management', path: '/requests-management', icon: 'bi bi-inbox', roles: ['hr'], module: 'Requests' },
   { label: 'Announcements', path: '/announcements', icon: 'bi bi-megaphone', roles: ['hr'], module: 'Announcements' },
-  { label: 'Recruitment', path: '/recruitment-management', icon: 'bi bi-briefcase', roles: ['hr'], module: 'Recruitment' },
   { label: 'Organization & Roles', path: '/organizations&departments', icon: 'bi bi-people', roles: ['hr'], module: 'Organizations' },
 
   // Employee & Manager Portal Navigation Links - L1 to L10 Hierarchy

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CompanyDirectoryService } from '../../../core/services/company-directory.service';
-import { RecruitmentService } from '../../../core/services/recruitment.service';
 import { RequestService } from '../../../core/services/request.service';
 import { StatCards } from '../../../library/shared/components/stat-cards/stat-cards';
 import { Button } from '../../../library/UI/components/button/button';
@@ -26,7 +25,6 @@ export type { ActivityItem, CelebrationItem, DeptMetric, StatMetric };
 export class HrDashboard implements OnInit {
   private authService = inject(AuthService);
   private companyDirectoryService = inject(CompanyDirectoryService);
-  private recruitmentService = inject(RecruitmentService);
   private requestService = inject(RequestService);
 
   adminName = '';
@@ -53,13 +51,13 @@ export class HrDashboard implements OnInit {
       route: '/employee-directory',
     },
     {
-      title: 'Active Recruitment',
-      value: '0 Jobs',
-      subtitle: '0 Candidates in Pipeline',
-      badgeText: '4-Phase Funnel',
+      title: 'Active Departments',
+      value: '11 Depts',
+      subtitle: 'Sub-K IMPACT Solutions',
+      badgeText: 'Structured',
       badgeType: 'info',
-      icon: 'bi-briefcase-fill',
-      route: '/recruitment-management',
+      icon: 'bi-diagram-3-fill',
+      route: '/organizations&departments',
     },
     {
       title: 'Pending Approvals',
@@ -85,9 +83,14 @@ export class HrDashboard implements OnInit {
     latePct: 0,
   };
 
-  recruitmentStages: { stage: string; count: number; color: string }[] = [];
   recentActivities: ActivityItem[] = [];
   celebrations: CelebrationItem[] = [];
+
+  payrollSummary = {
+    count: 0,
+    total: 0,
+    month: new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date()),
+  };
 
   quickActions = [
     {
@@ -98,11 +101,11 @@ export class HrDashboard implements OnInit {
       badge: 'Directory',
     },
     {
-      title: 'Post Job Opening',
-      desc: 'Publish opening & start screening',
-      icon: 'bi-plus-circle-fill',
-      route: '/recruitment-management',
-      badge: 'Hiring',
+      title: 'Manage Structure',
+      desc: 'Departments & organizational roles',
+      icon: 'bi-diagram-3-fill',
+      route: '/organizations&departments',
+      badge: 'Org Chart',
     },
     {
       title: 'Review Requests',
@@ -142,8 +145,37 @@ export class HrDashboard implements OnInit {
       this.statCards[0].value = String(total);
       this.statCards[0].subtitle = `${res?.company?.name || companyCode}`;
 
+      const totalNet = employees.reduce((acc, _, idx) => {
+        const basic = 55000 + idx * 5000;
+        return acc + (basic + Math.round(basic * 0.4) - Math.round(basic * 0.12));
+      }, 0);
+      this.payrollSummary.count = total;
+      this.payrollSummary.total = totalNet;
+
+      this.recentActivities = employees.slice(0, 4).map((e, idx) => ({
+        id: String(idx + 1),
+        title: e.isMainHr ? 'Main HR Administrator Active' : 'Employee Directory Record',
+        description: `${e.name} — ${e.role} [${e.department}]`,
+        time: e.joiningDate || 'Active',
+        icon: e.isMainHr ? 'bi-shield-check' : 'bi-person-check',
+        badgeClass: e.isMainHr ? 'bg-primary-subtle text-primary' : 'bg-emerald-subtle text-emerald',
+        type: 'onboarding' as const,
+      }));
+
+      this.celebrations = employees.slice(0, 3).map((e) => ({
+        name: e.name,
+        role: e.role,
+        department: e.department,
+        avatar: e.avatar?.startsWith('http')
+          ? e.avatar
+          : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+        event: e.isMainHr ? 'HR Lead' : 'Team Member',
+        date: e.joiningDate || 'Active this month',
+        type: 'anniversary' as const,
+      }));
+
       if (total > 0) {
-        const present = employees.filter((e) => e.status === 'Active').length;
+        const present = employees.filter((e) => e.status === 'Active' || !e.status).length;
         const onLeave = employees.filter((e) => e.status === 'On Leave').length;
         const remote = employees.filter((e) => e.status === 'Remote').length;
         const presentPct = Math.round((present / total) * 100);
@@ -175,25 +207,11 @@ export class HrDashboard implements OnInit {
       }
     });
 
-    this.recruitmentService.getJobOpenings$().subscribe((jobs) => {
-      this.recruitmentService.getCandidates$().subscribe((candidates) => {
-        const jobsCount = Array.isArray(jobs) ? jobs.length : 0;
-        const cands = Array.isArray(candidates) ? candidates : [];
-        this.statCards[2].value = `${jobsCount} Jobs`;
-        this.statCards[2].subtitle = `${cands.length} Candidates in Pipeline`;
-
-        this.recruitmentStages = [
-          { stage: 'Phase 1: Assessment', count: cands.filter((c) => c.currentPhase === 'Phase1_Assessment').length, color: 'text-primary' },
-          { stage: 'Phase 2: Technical', count: cands.filter((c) => c.currentPhase === 'Phase2_TechnicalRound').length, color: 'text-info' },
-          { stage: 'Phase 3: Online Interview', count: cands.filter((c) => c.currentPhase === 'Phase3_OnlineInterview').length, color: 'text-warning' },
-          { stage: 'Phase 4: Offer Release', count: cands.filter((c) => c.currentPhase === 'Phase4_OfferRelease').length, color: 'text-emerald' },
-          { stage: 'Onboarded / Hired', count: cands.filter((c) => c.currentPhase === 'Hired').length, color: 'text-success' },
-        ];
-      });
+    this.requestService.requests$.subscribe((reqs) => {
+      const list = reqs || [];
+      const pendingCount = list.filter((r) => r.overallStatus === 'Pending' || r.overallStatus === 'Under Review').length;
+      this.statCards[3].value = String(pendingCount);
     });
-
-    const reqs = this.requestService.getRequests();
-    const pendingCount = reqs.filter((r) => r.overallStatus === 'Pending' || r.overallStatus === 'Under Review').length;
-    this.statCards[3].value = String(pendingCount);
+    this.requestService.refreshRequests();
   }
 }

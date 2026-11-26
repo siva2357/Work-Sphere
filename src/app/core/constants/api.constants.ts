@@ -23,6 +23,10 @@ export const API_ENDPOINTS = {
     EMPLOYEE_DIRECTORY: `${API_BASE_URL}/api/employee-directory`,
     CREATE_EMPLOYEE_BY_MAIN_HR: (companyCode: string = 'CMP-001') =>
       `${API_BASE_URL}/api/companies/${companyCode}/directory/employees`,
+    UPDATE_EMPLOYEE: (companyCode: string = 'CMP-001', id: string) =>
+      `${API_BASE_URL}/api/companies/${companyCode}/directory/employees/${id}`,
+    DELETE_EMPLOYEE: (companyCode: string = 'CMP-001', id: string) =>
+      `${API_BASE_URL}/api/companies/${companyCode}/directory/employees/${id}`,
     BULK_IMPORT: (companyCode: string = 'CMP-001') =>
       `${API_BASE_URL}/api/companies/${companyCode}/directory/bulk-import`,
     IMPORT_CSV: (companyCode: string = 'CMP-001') =>
@@ -46,17 +50,6 @@ export const API_ENDPOINTS = {
     APPROVAL_WORKFLOWS: `${API_BASE_URL}/api/rbac/approval-workflows`,
   },
 
-  // 4. 4-Phase Recruitment & Onboarding Funnel (/api/recruitment)
-  RECRUITMENT: {
-    WORKFLOW_OVERVIEW: `${API_BASE_URL}/api/recruitment/workflow-overview`,
-    JOBS: `${API_BASE_URL}/api/recruitment/jobs`,
-    EXTERNAL_APPLY: `${API_BASE_URL}/api/recruitment/external/apply`,
-    CANDIDATES: `${API_BASE_URL}/api/recruitment/candidates`,
-    EVALUATE_PHASE: (candidateId: string) =>
-      `${API_BASE_URL}/api/recruitment/candidates/${candidateId}/evaluate-phase`,
-    ONBOARD_CANDIDATE: (candidateId: string) =>
-      `${API_BASE_URL}/api/recruitment/candidates/${candidateId}/onboard`,
-  },
 
   // 5. Unified Request Management Linked to Multi-Stage Approval Chains (/api/requests)
   REQUESTS: {

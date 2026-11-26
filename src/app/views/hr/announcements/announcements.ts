@@ -75,6 +75,10 @@ export class Announcements implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadAnnouncements();
+  }
+
+  loadAnnouncements(): void {
     const empCode = this.authService.getCurrentEmployeeCode();
     const user = this.authService.currentUser;
     this.workspaceService.getMyDocuments$(empCode, 'Policy').subscribe((res: any) => {
@@ -133,27 +137,18 @@ export class Announcements implements OnInit {
 
   submitAnnouncement(): void {
     if (!this.newAnnouncement.title || !this.newAnnouncement.content) return;
-    const user = this.authService.currentUser;
-    const item: AnnouncementItem = {
-      id: `ANN-${100 + this.announcements.length + 1}`,
-      title: this.newAnnouncement.title,
-      content: this.newAnnouncement.content,
-      category: this.newAnnouncement.category,
-      priority: this.newAnnouncement.priority,
-      targetAudience: this.newAnnouncement.targetAudience,
-      authorName: user?.fullName || 'HR Admin',
-      authorRole: user?.designationTitle || 'HR Operations',
-      authorAvatar:
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-      date: 'Just now',
-      isPinned: this.newAnnouncement.isPinned,
-      viewsCount: 1,
-    };
-    if (item.isPinned) {
-      this.announcements.unshift(item);
-    } else {
-      this.announcements.push(item);
-    }
-    this.closeCreate();
+    this.workspaceService
+      .createDocument$({
+        title: this.newAnnouncement.title,
+        category: 'Policy',
+        categoryLabel: this.newAnnouncement.category || 'Company Policy',
+        description: this.newAnnouncement.content,
+        badge: this.newAnnouncement.priority === 'Urgent' ? 'Urgent' : 'General',
+        badgeType: this.newAnnouncement.priority === 'Urgent' ? 'warning' : 'emerald',
+      })
+      .subscribe(() => {
+        this.closeCreate();
+        this.loadAnnouncements();
+      });
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map } from 'rxjs';
-import { API_ENDPOINTS } from '../constants/api.constants';
+import { API_BASE_URL, API_ENDPOINTS } from '../constants/api.constants';
 import { RolePermissionItemDto } from '../dtos/auth.dto';
 import {
   CreateDepartmentDto,
@@ -51,6 +51,10 @@ export class RbacService {
 
   getLevelsAndDesignations$(): Observable<OrganizationalLevelHierarchyItem[]> {
     return this.http.get<OrganizationalLevelHierarchyItem[]>(API_ENDPOINTS.RBAC.LEVELS);
+  }
+
+  updateOrganizationalLevel$(id: string, dto: { code: string; name: string; description?: string }): Observable<any> {
+    return this.http.put<any>(`${API_BASE_URL}/api/rbac/levels/${id}`, dto);
   }
 
   getDesignations$(): Observable<DesignationItem[]> {
@@ -140,5 +144,12 @@ export class RbacService {
 
   getEmployeesHierarchy$(): Observable<EmployeeHierarchyItem[]> {
     return this.http.get<EmployeeHierarchyItem[]>(API_ENDPOINTS.RBAC.EMPLOYEES);
+  }
+
+  getEligibleDepartmentHeads$(currentDeptId?: string): Observable<any[]> {
+    const url = currentDeptId
+      ? `${API_BASE_URL}/api/rbac/eligible-department-heads?currentDeptId=${currentDeptId}`
+      : `${API_BASE_URL}/api/rbac/eligible-department-heads`;
+    return this.http.get<any[]>(url);
   }
 }

@@ -20,243 +20,10 @@ export class TaskService {
   private readonly tasksSubject = new BehaviorSubject<ManagedTask[]>([]);
   readonly tasks$ = this.tasksSubject.asObservable();
 
-  private readonly defaultTasks: ManagedTask[] = [
-    {
-      sNo: 1,
-      id: 'TSK-2001',
-      title: 'Implement OAuth2 Social Authentication & Session Invalidation',
-      project: 'WorkSphere Enterprise Core v2.4',
-      description: 'Integrate Google and Microsoft 365 OAuth2 single sign-on flows with secure session invalidation and token refresh mechanism.',
-      assignee: {
-        id: 'EMP-0135',
-        name: 'Priya Patel',
-        role: 'Senior Angular Frontend Engineer',
-        department: 'Core Web Platform',
-        email: 'priya.patel@worksphere.io',
-        avatarColor: '#10b981',
-      },
-      assignedBy: {
-        name: 'Sarah Jenkins',
-        employeeId: 'EMP-0104',
-        role: 'Engineering Lead & Project Manager',
-      },
-      assignedDate: '2026-10-18',
-      dueDate: '2026-10-28',
-      status: 'In Progress',
-      priority: 'High',
-      estimatedHours: 28,
-      loggedHours: 18.5,
-      progressPercent: 65,
-      category: 'Frontend Engineering',
-      subtasks: ['Setup Google Developer Console', 'Implement PKCE flow', 'Token storage audit'],
-    },
-    {
-      sNo: 2,
-      id: 'TSK-2002',
-      title: 'Optimize PostgreSQL Database Connection Pooling & Latency',
-      project: 'WorkSphere HR Suite',
-      description: 'Tune connection pooling parameters and add compound indexes for multi-tenant employee records query optimization.',
-      assignee: {
-        id: 'EMP-0112',
-        name: 'David Chen',
-        role: 'Database & Infrastructure Lead',
-        department: 'Data Platform',
-        email: 'david.chen@worksphere.io',
-        avatarColor: '#0ea5e9',
-      },
-      assignedBy: {
-        name: 'Sarah Jenkins',
-        employeeId: 'EMP-0104',
-        role: 'Engineering Lead & Project Manager',
-      },
-      assignedDate: '2026-10-15',
-      dueDate: '2026-10-25',
-      status: 'In Progress',
-      priority: 'Urgent',
-      estimatedHours: 35,
-      loggedHours: 24,
-      progressPercent: 70,
-      category: 'Database & Infrastructure',
-      subtasks: ['PgBouncer pool configuration', 'Slow query log analysis', 'Benchmark p99 latency'],
-    },
-    {
-      sNo: 3,
-      id: 'TSK-2003',
-      title: 'Design Mobile App Dark Mode Interface & Design System Tokens',
-      project: 'Employee Self-Service Mobile Application',
-      description: 'Create high-fidelity Figma components, semantic color tokens, and accessibility contrast compliant dark theme specifications.',
-      assignee: {
-        id: 'EMP-0128',
-        name: 'Alex Rivera',
-        role: 'Lead UI/UX Designer',
-        department: 'Product Design',
-        email: 'alex.rivera@worksphere.io',
-        avatarColor: '#8b5cf6',
-      },
-      assignedBy: {
-        name: 'Sarah Jenkins',
-        employeeId: 'EMP-0104',
-        role: 'Engineering Lead & Project Manager',
-      },
-      assignedDate: '2026-10-10',
-      dueDate: '2026-10-22',
-      status: 'Completed',
-      priority: 'Medium',
-      estimatedHours: 20,
-      loggedHours: 20,
-      progressPercent: 100,
-      category: 'Product Design',
-      subtasks: ['Contrast compliance audit', 'Figma color tokens library', 'Design handoff review'],
-    },
-    {
-      sNo: 4,
-      id: 'TSK-2004',
-      title: 'Automate End-to-End Cypress Integration Test Workflows',
-      project: 'Payroll Automation Engine',
-      description: 'Implement automated test suites covering payroll calculation runs, payslip generation, and tax deduction compliance.',
-      assignee: {
-        id: 'EMP-0150',
-        name: 'Neha Sharma',
-        role: 'QA Automation Lead',
-        department: 'Quality Assurance',
-        email: 'neha.sharma@worksphere.io',
-        avatarColor: '#ec4899',
-      },
-      assignedBy: {
-        name: 'David Chen',
-        employeeId: 'EMP-0112',
-        role: 'Infrastructure Lead',
-      },
-      assignedDate: '2026-10-20',
-      dueDate: '2026-11-02',
-      status: 'Pending',
-      priority: 'High',
-      estimatedHours: 24,
-      loggedHours: 0,
-      progressPercent: 0,
-      category: 'Quality Assurance',
-      subtasks: ['Test suite architecture', 'Mock payroll API fixtures', 'CI GitHub Actions pipeline'],
-    },
-    {
-      sNo: 5,
-      id: 'TSK-2005',
-      title: 'Implement Multi-Level Dynamic Request Approval Hierarchy',
-      project: 'WorkSphere Compliance & Audit Engine',
-      description: 'Support configurable multi-stage approval chains from Level 1 Team Lead up to Final HR sign-off with audit trail.',
-      assignee: {
-        id: 'EMP-0142',
-        name: 'Rohan Sharma',
-        role: 'Full Stack Java Engineer',
-        department: 'Platform Services',
-        email: 'rohan.sharma@worksphere.io',
-        avatarColor: '#f59e0b',
-      },
-      assignedBy: {
-        name: 'Sarah Jenkins',
-        employeeId: 'EMP-0104',
-        role: 'Engineering Lead & Project Manager',
-      },
-      assignedDate: '2026-10-16',
-      dueDate: '2026-10-30',
-      status: 'In Progress',
-      priority: 'Urgent',
-      estimatedHours: 32,
-      loggedHours: 16,
-      progressPercent: 50,
-      category: 'Backend Platform',
-      subtasks: ['State machine design', 'Approval chain entity schema', 'Audit log event triggers'],
-    },
-    {
-      sNo: 6,
-      id: 'TSK-2006',
-      title: 'Deploy Kubernetes Helm Charts & Auto-scaling Ingress Pods',
-      project: 'Cloud Infrastructure & Kubernetes',
-      description: 'Author production Helm charts with resource requests/limits, Horizontal Pod Autoscaling (HPA), and TLS termination.',
-      assignee: {
-        id: 'EMP-0171',
-        name: 'Sneha Reddy',
-        role: 'Cloud & SecOps Specialist',
-        department: 'Cybersecurity & IAM',
-        email: 'sneha.reddy@worksphere.io',
-        avatarColor: '#14b8a6',
-      },
-      assignedBy: {
-        name: 'David Chen',
-        employeeId: 'EMP-0112',
-        role: 'Infrastructure Lead',
-      },
-      assignedDate: '2026-10-19',
-      dueDate: '2026-11-05',
-      status: 'Pending',
-      priority: 'Medium',
-      estimatedHours: 18,
-      loggedHours: 2,
-      progressPercent: 10,
-      category: 'DevOps & Cloud',
-      subtasks: ['Author Helm values schema', 'Configure HPA metric targets', 'Staging deployment rollout'],
-    },
-    {
-      sNo: 7,
-      id: 'TSK-2007',
-      title: 'Offline Data Sync & Background Geofencing for Mobile App',
-      project: 'Employee Self-Service Mobile Application',
-      description: 'Implement offline punch-in storage with SQLite and background GPS geofence validation for automated presence marking.',
-      assignee: {
-        id: 'EMP-0164',
-        name: 'Vikram Malhotra',
-        role: 'Mobile Applications Developer',
-        department: 'Mobile Engineering',
-        email: 'vikram.malhotra@worksphere.io',
-        avatarColor: '#6366f1',
-      },
-      assignedBy: {
-        name: 'Sarah Jenkins',
-        employeeId: 'EMP-0104',
-        role: 'Engineering Lead & Project Manager',
-      },
-      assignedDate: '2026-10-17',
-      dueDate: '2026-10-29',
-      status: 'In Progress',
-      priority: 'High',
-      estimatedHours: 22,
-      loggedHours: 14,
-      progressPercent: 60,
-      category: 'Mobile Engineering',
-      subtasks: ['Local auth plugin integration', 'Offline SQLite storage', 'Sync conflict resolver'],
-    },
-    {
-      sNo: 8,
-      id: 'TSK-2008',
-      title: 'Audit & Patch Dependencies for Annual SOC2 Security Compliance',
-      project: 'WorkSphere Enterprise Core v2.4',
-      description: 'Run npm audit, replace vulnerable transitive packages, and verify cryptographic signing on all internal build artifacts.',
-      assignee: {
-        id: 'EMP-0171',
-        name: 'Sneha Reddy',
-        role: 'Cloud & SecOps Specialist',
-        department: 'Cybersecurity & IAM',
-        email: 'sneha.reddy@worksphere.io',
-        avatarColor: '#14b8a6',
-      },
-      assignedBy: {
-        name: 'David Chen',
-        employeeId: 'EMP-0112',
-        role: 'Infrastructure Lead',
-      },
-      assignedDate: '2026-10-12',
-      dueDate: '2026-10-19',
-      status: 'Completed',
-      priority: 'Low',
-      estimatedHours: 10,
-      loggedHours: 9.5,
-      progressPercent: 100,
-      category: 'Security & Compliance',
-      subtasks: ['Run vulnerability scanner', 'Update lodash and moment.js', 'Generate audit report'],
-    },
-  ];
+  private readonly defaultTasks: ManagedTask[] = [];
 
   constructor() {
-    this.tasks = [...this.defaultTasks];
+    this.tasks = [];
     this.availableProjects = [
       'WorkSphere Enterprise Core v2.4',
       'WorkSphere HR Suite',
@@ -348,7 +115,7 @@ export class TaskService {
             subtasks: Array.isArray(t.subtasks) ? t.subtasks : [],
           }));
         } else {
-          this.tasks = [...this.defaultTasks];
+          this.tasks = [];
         }
         this.tasksSubject.next([...this.tasks]);
       });
@@ -359,7 +126,7 @@ export class TaskService {
   }
 
   getTaskById(id: string): ManagedTask | undefined {
-    return this.tasks.find((t) => t.id === id) || this.defaultTasks.find((t) => t.id === id);
+    return this.tasks.find((t) => t.id === id);
   }
 
   addTask(taskData: {

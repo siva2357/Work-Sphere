@@ -357,19 +357,7 @@
 
                 <div class="col-12 col-md-6">
                   <app-input-field
-                    label="Sub-Department / Division"
-                    type="dropdown"
-                    name="empSubDept"
-                    [showEmptyOption]="true"
-                    [emptyOptionLabel]="'-- Main Department (' + newEmployee.department + ') --'"
-                    [options]="subDepartmentFormOptions"
-                    [(ngModel)]="newEmployee.subDepartment">
-                  </app-input-field>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Organizational Level"
+                    label="Organizational Level (L1 - L10)"
                     type="dropdown"
                     name="empLevel"
                     [required]="true"
@@ -382,20 +370,17 @@
 
                 <div class="col-12 col-md-6">
                   <app-input-field
-                    label="Designation"
-                    type="dropdown"
-                    name="empRole"
-                    [required]="true"
-                    [showEmptyOption]="false"
-                    [options]="designationFormOptions"
-                    [(ngModel)]="newEmployee.role"
-                    (valueChange)="onDesignationChange($event)">
+                    label="Job Title (Position Title)"
+                    type="text"
+                    name="empJobTitle"
+                    placeholder="e.g. Senior Software Engineer / Lead QA Specialist"
+                    [(ngModel)]="newEmployee.jobTitle">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <app-input-field
-                    label="System Access Role"
+                    label="System Access Role (23 RBAC Roles)"
                     type="dropdown"
                     name="empSystemRole"
                     [required]="true"
@@ -417,15 +402,6 @@
                 </div>
 
                 <div class="col-12">
-                  @if (selectedDesignationInfo?.typicalReportingTo) {
-                    <div class="d-flex justify-content-end mb-1">
-                      <app-badge
-                        [label]="'Typical Reporting Line: ' + selectedDesignationInfo?.typicalReportingTo"
-                        variant="soft-emerald"
-                        size="xs">
-                      </app-badge>
-                    </div>
-                  }
                   <app-input-field
                     [label]="'Reporting Manager (Filtered by Seniority < ' + newEmployee.levelCode + ' & Department)'"
                     type="dropdown"

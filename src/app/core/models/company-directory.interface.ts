@@ -29,6 +29,8 @@ export interface CreateDirectoryEmployeePayload {
   initialPassword?: string;
   phone?: string;
   departmentCode: string;
+  levelCode?: string;
+  jobTitle?: string;
   designationCode?: string;
   roleCode?: string;
   employmentType: 'Full-time' | 'Contract' | 'Intern';
@@ -40,6 +42,8 @@ export interface EmployeeRecord {
   id: string;
   name: string;
   role: string;
+  jobTitle?: string;
+  level?: string;
   department: string;
   email: string;
   phone: string;

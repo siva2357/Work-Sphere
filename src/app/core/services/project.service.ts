@@ -27,197 +27,17 @@ export class ProjectService {
     'Design System & UX',
   ];
 
-  private readonly defaultTeamMembers: ProjectMember[] = [
-    { id: 'EMP-0135', name: 'Priya Patel', role: 'Lead Architect & Senior Engineer', department: 'Core Web Platform', avatarColor: '#10b981' },
-    { id: 'EMP-0112', name: 'David Chen', role: 'Database & Infrastructure Lead', department: 'Data & Cloud Platform', avatarColor: '#0ea5e9' },
-    { id: 'EMP-0128', name: 'Alex Rivera', role: 'Lead UI/UX Designer', department: 'Product Design', avatarColor: '#8b5cf6' },
-    { id: 'EMP-0142', name: 'Rohan Sharma', role: 'Full Stack Java Engineer', department: 'Platform Services', avatarColor: '#f59e0b' },
-    { id: 'EMP-0164', name: 'Vikram Malhotra', role: 'Mobile Applications Developer', department: 'Mobile Engineering', avatarColor: '#6366f1' },
-    { id: 'EMP-0171', name: 'Sneha Reddy', role: 'SecOps Specialist', department: 'Cybersecurity & IAM', avatarColor: '#14b8a6' },
-    { id: 'EMP-0150', name: 'Neha Sharma', role: 'QA Automation Lead', department: 'Quality Assurance', avatarColor: '#ec4899' },
-  ];
+  private readonly defaultTeamMembers: ProjectMember[] = [];
 
-  teamMembersList: ProjectMember[] = [...this.defaultTeamMembers];
+  teamMembersList: ProjectMember[] = [];
   private projects: ManagedProject[] = [];
   private readonly projectsSubject = new BehaviorSubject<ManagedProject[]>([]);
   readonly projects$ = this.projectsSubject.asObservable();
 
-  private readonly defaultProjects: ManagedProject[] = [
-    {
-      id: 1,
-      code: 'PRJ-IT-101',
-      title: 'WorkSphere Enterprise Core v2.4',
-      department: 'Information Technology',
-      category: 'Core Web Platform',
-      description: 'Revamping enterprise HRM core architecture with Angular standalone components, OAuth2 social SSO authentication, real-time activity sync, and microservices gateway integration.',
-      startDate: '2026-01-15',
-      endDate: '2026-11-30',
-      duration: '10.5 Months',
-      status: 'In Progress',
-      priority: 'High',
-      lead: {
-        id: 'EMP-0135',
-        name: 'Priya Patel',
-        role: 'Lead Architect & Senior Engineer',
-        department: 'Core Web Platform',
-        avatarColor: '#10b981',
-      },
-      teamMembers: [
-        { id: 'EMP-0128', name: 'Alex Rivera', role: 'UI/UX Lead', department: 'Design', avatarColor: '#8b5cf6' },
-        { id: 'EMP-0142', name: 'Rohan Sharma', role: 'Full Stack Java', department: 'Backend', avatarColor: '#f59e0b' },
-        { id: 'EMP-0150', name: 'Neha Sharma', role: 'QA Lead', department: 'QA', avatarColor: '#ec4899' },
-      ],
-      progressPercent: 65,
-      budget: '$120,000',
-      methodology: 'Agile Scrum',
-      milestones: ['Architecture RFC signed', 'Database multi-tenant migration', 'Sprint 8 demo ready'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-    {
-      id: 2,
-      code: 'PRJ-IT-102',
-      title: 'Cloud Kubernetes Orchestration & Zero-Trust Mesh',
-      department: 'Data & Cloud Platform',
-      category: 'Cloud & DevOps',
-      description: 'Multi-region AWS EKS Kubernetes cluster provisioning with Istio service mesh, mTLS enforcement, and automated horizontal pod autoscaling.',
-      startDate: '2026-03-01',
-      endDate: '2026-10-31',
-      duration: '8.0 Months',
-      status: 'In Progress',
-      priority: 'Urgent',
-      lead: {
-        id: 'EMP-0112',
-        name: 'David Chen',
-        role: 'Database & Infrastructure Lead',
-        department: 'Data Platform',
-        avatarColor: '#0ea5e9',
-      },
-      teamMembers: [
-        { id: 'EMP-0171', name: 'Sneha Reddy', role: 'SecOps Specialist', department: 'Security', avatarColor: '#14b8a6' },
-      ],
-      progressPercent: 45,
-      budget: '$85,000',
-      methodology: 'Kanban',
-      milestones: ['EKS Control Plane provisioned', 'Istio mTLS verified', 'Load testing complete'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-    {
-      id: 3,
-      code: 'PRJ-IT-103',
-      title: 'AI Talent Screening & Recruitment Pipeline',
-      department: 'Human Resources Tech',
-      category: 'Data Platform & AI',
-      description: 'Intelligent resume parsing, automated interview scheduling bot, interviewer feedback aggregation, and candidate onboarding dashboard.',
-      startDate: '2026-04-01',
-      endDate: '2026-12-15',
-      duration: '8.5 Months',
-      status: 'Planning',
-      priority: 'Medium',
-      lead: {
-        id: 'EMP-0128',
-        name: 'Alex Rivera',
-        role: 'Lead UI/UX Designer',
-        department: 'Product Design',
-        avatarColor: '#8b5cf6',
-      },
-      teamMembers: [
-        { id: 'EMP-0150', name: 'Neha Sharma', role: 'QA Automation', department: 'QA', avatarColor: '#ec4899' },
-        { id: 'EMP-0135', name: 'Priya Patel', role: 'Frontend Lead', department: 'Core', avatarColor: '#10b981' },
-      ],
-      progressPercent: 15,
-      budget: '$50,000',
-      methodology: 'Agile Scrum',
-      milestones: ['Candidate journey map', 'Resume parser webhook PoC', 'Interviewer grading modal'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-    {
-      id: 4,
-      code: 'PRJ-IT-104',
-      title: 'WorkSphere Mobile Self-Service Portal',
-      department: 'Product Engineering',
-      category: 'Mobile Engineering',
-      description: 'Native Android and iOS workforce self-service experience with geolocation punch-in, instant leave requests, and digital ID card wallet.',
-      startDate: '2026-02-10',
-      endDate: '2026-11-20',
-      duration: '9.3 Months',
-      status: 'In Progress',
-      priority: 'High',
-      lead: {
-        id: 'EMP-0164',
-        name: 'Vikram Malhotra',
-        role: 'Mobile Applications Developer',
-        department: 'Mobile Engineering',
-        avatarColor: '#6366f1',
-      },
-      teamMembers: [
-        { id: 'EMP-0128', name: 'Alex Rivera', role: 'Mobile UI/UX', department: 'Design', avatarColor: '#8b5cf6' },
-      ],
-      progressPercent: 80,
-      budget: '$95,000',
-      methodology: 'Agile Scrum',
-      milestones: ['Biometric auth module', 'Offline sync engine', 'App Store submission prep'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-    {
-      id: 5,
-      code: 'PRJ-IT-105',
-      title: 'Unified Single Sign-On & OAuth2 Identity Gateway',
-      department: 'Cybersecurity & IAM',
-      category: 'Cybersecurity & IAM',
-      description: 'Zero-trust enterprise IAM layer enforcing passwordless FIDO2 authentication, role-based access control, and audit trail ledger.',
-      startDate: '2026-01-05',
-      endDate: '2026-08-31',
-      duration: '7.8 Months',
-      status: 'Completed',
-      priority: 'High',
-      lead: {
-        id: 'EMP-0171',
-        name: 'Sneha Reddy',
-        role: 'Cloud & SecOps Specialist',
-        department: 'Cybersecurity & IAM',
-        avatarColor: '#14b8a6',
-      },
-      teamMembers: [
-        { id: 'EMP-0112', name: 'David Chen', role: 'Database Lead', department: 'Data', avatarColor: '#0ea5e9' },
-      ],
-      progressPercent: 100,
-      budget: '$65,000',
-      methodology: 'Milestone',
-      milestones: ['SAML 2.0 integration', 'FIDO2 WebAuthn keys', 'External penetration test clean'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-    {
-      id: 6,
-      code: 'PRJ-IT-106',
-      title: 'Automated Payroll Compliance & Tax Deduction Engine',
-      department: 'Finance & Payroll Ops',
-      category: 'Enterprise Automation',
-      description: 'Automated monthly salary calculation, PF and tax deductions, automatic payslip PDF rendering, and direct bank disbursement dispatch.',
-      startDate: '2026-05-01',
-      endDate: '2026-11-25',
-      duration: '6.8 Months',
-      status: 'In Progress',
-      priority: 'Urgent',
-      lead: {
-        id: 'EMP-0142',
-        name: 'Rohan Sharma',
-        role: 'Full Stack Java Engineer',
-        department: 'Platform Services',
-        avatarColor: '#f59e0b',
-      },
-      teamMembers: [
-        { id: 'EMP-0150', name: 'Neha Sharma', role: 'QA Automation', department: 'QA', avatarColor: '#ec4899' },
-      ],
-      progressPercent: 90,
-      budget: '$75,000',
-      methodology: 'Agile Scrum',
-      milestones: ['Statutory tax rules calculator', 'Payslip PDF renderer', 'Dry run payroll cycle'],
-      externalToolUrl: 'https://habit-tracker-lake-zeta.vercel.app/login',
-    },
-  ];
+  private readonly defaultProjects: ManagedProject[] = [];
 
   constructor() {
-    this.projects = [...this.defaultProjects];
+    this.projects = [];
     this.availableDepartments = [
       'Information Technology',
       'Product Engineering',
@@ -317,7 +137,7 @@ export class ProjectService {
               p.externalToolUrl || 'https://habit-tracker-lake-zeta.vercel.app/login',
           }));
         } else {
-          this.projects = [...this.defaultProjects];
+          this.projects = [];
         }
         this.projectsSubject.next([...this.projects]);
       });

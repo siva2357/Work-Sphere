@@ -27,6 +27,13 @@ export class WorkspaceService {
   }
 
   /**
+   * Issues a new personal or company-wide document/announcement (POST /api/documents).
+   */
+  createDocument$(payload: any): Observable<any> {
+    return this.http.post<any>(API_ENDPOINTS.WORKSPACE.DOCUMENTS, payload);
+  }
+
+  /**
    * Fetches an employee's compensation profile, YTD summary, and monthly payroll slips
    * from GET /api/payroll/my/{employeeCode}.
    */

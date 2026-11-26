@@ -107,6 +107,33 @@ export class CompanyDirectoryService {
   }
 
   /**
+   * Main HR Action: Updates an existing employee inside the Company's Employee Directory
+   * (PUT /api/companies/{companyCode}/directory/employees/{id}).
+   */
+  updateEmployeeByMainHr$(
+    id: string,
+    payload: any,
+    companyCode?: string
+  ): Observable<any> {
+    const targetCompany = companyCode || this.authService.getCurrentCompanyCode();
+    return this.http.put<any>(
+      API_ENDPOINTS.COMPANIES.UPDATE_EMPLOYEE(targetCompany, id),
+      payload
+    );
+  }
+
+  /**
+   * Main HR Action: Deactivates an employee inside the Company's Employee Directory
+   * (DELETE /api/companies/{companyCode}/directory/employees/{id}).
+   */
+  deleteEmployeeByMainHr$(id: string, companyCode?: string): Observable<any> {
+    const targetCompany = companyCode || this.authService.getCurrentCompanyCode();
+    return this.http.delete<any>(
+      API_ENDPOINTS.COMPANIES.DELETE_EMPLOYEE(targetCompany, id)
+    );
+  }
+
+  /**
    * Main HR Action: Bulk imports multiple employee records into the Company's Employee Directory
    * (POST /api/companies/{companyCode}/directory/bulk-import).
    */

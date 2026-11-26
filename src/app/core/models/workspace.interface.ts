@@ -61,7 +61,7 @@ export interface DeptMetric {
 
 export interface ActivityItem {
   id: string;
-  type: 'onboarding' | 'leave' | 'payroll' | 'recruitment' | 'announcement';
+  type: 'onboarding' | 'leave' | 'payroll' | 'announcement';
   title: string;
   description: string;
   time: string;

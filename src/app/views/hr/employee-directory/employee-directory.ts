@@ -134,11 +134,12 @@ export class EmployeeDirectory implements OnInit {
     name: '',
     email: '',
     phone: '',
-    department: 'ENG',
+    department: 'IT',
     subDepartment: '',
     levelCode: 'L8',
-    role: 'DESIG_DEV',
-    systemRole: 'EMP_DEVELOPER',
+    jobTitle: '',
+    role: 'EMP_EMPLOYEE',
+    systemRole: 'EMP_EMPLOYEE',
     type: 'Full-time' as 'Full-time' | 'Contract' | 'Intern',
     status: 'Active' as 'Active' | 'Remote' | 'On Leave',
     location: 'Bangalore, India',
@@ -641,9 +642,7 @@ export class EmployeeDirectory implements OnInit {
   openAddEmployee(): void {
     this.isEditMode = false;
     this.editingEmployeeId = null;
-    const defaultDept = this.departmentsList[0]?.code || 'ENG';
-    const defaultDesig =
-      this.designationsList.find((d) => d.code === 'DESIG_DEV') || this.designationsList[0];
+    const defaultDept = this.departmentsList[0]?.code || 'IT';
 
     this.newEmployee = {
       name: '',
@@ -651,9 +650,10 @@ export class EmployeeDirectory implements OnInit {
       phone: '',
       department: defaultDept,
       subDepartment: '',
-      levelCode: defaultDesig?.levelCode || 'L8',
-      role: defaultDesig?.code || 'DESIG_DEV',
-      systemRole: defaultDesig?.defaultRoleCode || 'EMP_DEVELOPER',
+      levelCode: 'L8',
+      jobTitle: '',
+      role: 'EMP_EMPLOYEE',
+      systemRole: 'EMP_EMPLOYEE',
       type: 'Full-time',
       status: 'Active',
       location: 'Bangalore, India',
@@ -717,7 +717,8 @@ export class EmployeeDirectory implements OnInit {
       department: matchedParentCode,
       subDepartment: matchedSubCode,
       levelCode: matchedDesig?.levelCode || parsedLvl.code || 'L8',
-      role: matchedDesig?.code || 'DESIG_DEV',
+      jobTitle: emp.jobTitle || emp.role || '',
+      role: matchedDesig?.code || 'EMP_EMPLOYEE',
       systemRole: matchedDesig?.defaultRoleCode || 'EMP_DEVELOPER',
       type: emp.type || 'Full-time',
       status: emp.status || 'Active',
@@ -752,30 +753,29 @@ export class EmployeeDirectory implements OnInit {
     const displayDeptName = matchedSub?.name || matchedDept?.name || targetDeptCode;
 
     if (this.isEditMode && this.editingEmployeeId) {
-      const matchedDesig = this.designationsList.find((d) => d.code === this.newEmployee.role);
-      const roleDisplay = matchedDesig
-        ? `${matchedDesig.title} (${matchedDesig.levelCode})`
-        : this.selectedEmployee?.role || this.newEmployee.role;
-
-      this.employees = this.employees.map((emp) =>
-        emp.id === this.editingEmployeeId
-          ? {
-            ...emp,
-            name: this.newEmployee.name,
+      this.companyDirectoryService
+        .updateEmployeeByMainHr$(
+          this.editingEmployeeId,
+          {
+            fullName: this.newEmployee.name,
             email: this.newEmployee.email,
             phone: this.newEmployee.phone,
-            department: displayDeptName,
-            role: roleDisplay,
-            type: this.newEmployee.type,
-            status: this.newEmployee.status,
-            location: this.newEmployee.location,
-            manager: this.newEmployee.manager || emp.manager,
-            joiningDate: this.newEmployee.joiningDate || emp.joiningDate,
-          }
-          : emp
-      );
-      this.updateDirectoryView();
-      this.closeAddEmployee();
+            departmentCode: targetDeptCode,
+            levelCode: this.newEmployee.levelCode,
+            jobTitle: this.newEmployee.jobTitle,
+            designationCode: this.newEmployee.jobTitle,
+            roleCode: this.newEmployee.systemRole,
+            employmentType: this.newEmployee.type,
+            workStatus: this.newEmployee.status,
+            workLocation: this.newEmployee.location,
+            managerEmployeeCode: this.newEmployee.manager,
+          },
+          this.activeCompanyCode
+        )
+        .subscribe(() => {
+          this.closeAddEmployee();
+          this.loadDirectoryFromBackend(this.activeCompanyCode);
+        });
       return;
     }
 
@@ -786,8 +786,10 @@ export class EmployeeDirectory implements OnInit {
           email: this.newEmployee.email,
           phone: this.newEmployee.phone,
           departmentCode: targetDeptCode,
-          designationCode: this.newEmployee.role || 'DESIG_DEV',
-          roleCode: this.newEmployee.systemRole || 'EMP_DEVELOPER',
+          levelCode: this.newEmployee.levelCode,
+          jobTitle: this.newEmployee.jobTitle,
+          designationCode: this.newEmployee.jobTitle,
+          roleCode: this.newEmployee.systemRole || 'EMP_EMPLOYEE',
           employmentType: this.newEmployee.type,
           workLocation: this.newEmployee.location,
           managerEmployeeCode: this.newEmployee.manager,
@@ -824,7 +826,8 @@ export class EmployeeDirectory implements OnInit {
   downloadTemplateCsv(): void {
     const templateContent = [
       SAMPLE_EMPLOYEES_CSV_HEADER,
-      '"Example User","user@worksphere.com","ENG","DESIG_DEV","EMP_DEVELOPER","Full-time","Bangalore, India","+91 98450 12345","Welcome@12345","HR-001"'
+      '"Sasidhar N. Thumuluri","sasidhar.thumuluri@subk.co.in","EXEC","Managing Director & Chief Executive Officer","EMP_SUPER_ADMIN","Full-time","Hyderabad HQ, India","+91 98450 11001","Sasidhar@123","HR-001"',
+      '"Tanvi Agarwal","tanvi.agarwal@subk.co.in","IT","Director of Engineering & Digital Banking","EMP_DEPT_MANAGER","Full-time","Hyderabad HQ, India","+91 98450 11002","Tanvi@123","HR-001"'
     ].join('\r\n');
 
     const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
