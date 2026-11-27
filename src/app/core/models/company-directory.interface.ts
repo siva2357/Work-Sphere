@@ -23,6 +23,7 @@ export interface DirectoryEmployeeRecord {
 }
 
 export interface CreateDirectoryEmployeePayload {
+  employeeCode?: string;
   createdByHrEmailOrCode?: string;
   fullName: string;
   email: string;

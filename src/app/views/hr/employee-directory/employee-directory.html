@@ -15,15 +15,9 @@
             <div>
               <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                 <h1 class="h4 mb-0 fw-bold text-dark">Employee Directory</h1>
-                <app-badge
-                  [label]="employees.length + ' Staff Members'"
-                  variant="soft-emerald"
-                  size="xs">
+                <app-badge [label]="employees.length + ' Staff Members'" variant="soft-emerald" size="xs">
                 </app-badge>
-                <app-badge
-                  [label]="activeCompanyCode"
-                  variant="light"
-                  size="xs">
+                <app-badge [label]="activeCompanyCode" variant="light" size="xs">
                 </app-badge>
               </div>
               <p class="text-muted small mb-0">
@@ -61,53 +55,31 @@
       <div class="row align-items-center g-2.5">
         <!-- Search Input -->
         <div class="col-12 col-lg-4">
-          <app-input-field
-            type="search"
-            name="directorySearch"
-            placeholder="Search by name, ID, role, email, or manager..."
-            [clearable]="true"
+          <app-input-field type="search" name="directorySearch"
+            placeholder="Search by name, ID, role, email, or manager..." [clearable]="true"
             [(ngModel)]="draftSearchTerm">
           </app-input-field>
         </div>
 
         <!-- Department Filter Dropdown -->
         <div class="col-12 col-sm-6 col-lg-3">
-          <app-input-field
-            type="dropdown"
-            name="departmentFilter"
-            icon="bi-diagram-3"
-            [showEmptyOption]="false"
-            [options]="departmentFilterOptions"
-            [(ngModel)]="draftDepartment">
+          <app-input-field type="dropdown" name="departmentFilter" icon="bi-diagram-3" [showEmptyOption]="false"
+            [options]="departmentFilterOptions" [(ngModel)]="draftDepartment">
           </app-input-field>
         </div>
 
         <!-- Status Filter Dropdown -->
         <div class="col-12 col-sm-6 col-lg-2">
-          <app-input-field
-            type="dropdown"
-            name="statusFilter"
-            icon="bi-funnel"
-            [showEmptyOption]="false"
-            [options]="statusFilterOptions"
-            [(ngModel)]="draftStatus">
+          <app-input-field type="dropdown" name="statusFilter" icon="bi-funnel" [showEmptyOption]="false"
+            [options]="statusFilterOptions" [(ngModel)]="draftStatus">
           </app-input-field>
         </div>
 
         <!-- Apply & Reset Filter Action Buttons -->
         <div class="col-12 col-lg-3 d-flex align-items-center justify-content-lg-end gap-2">
-          <app-button
-            label="Apply"
-            variant="emerald"
-            size="sm"
-            icon="bi-funnel-fill"
-            (clicked)="applyFilters()">
+          <app-button label="Apply" variant="emerald" size="sm" icon="bi-funnel-fill" (clicked)="applyFilters()">
           </app-button>
-          <app-button
-            label="Reset"
-            variant="outline-secondary"
-            size="sm"
-            icon="bi-arrow-counterclockwise"
+          <app-button label="Reset" variant="outline-secondary" size="sm" icon="bi-arrow-counterclockwise"
             (clicked)="resetFilters()">
           </app-button>
         </div>
@@ -115,22 +87,16 @@
 
       <!-- Active Filter Chips Row -->
       @if (activeFilterChips.length > 0) {
-        <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mt-3 border-top border-light-subtle">
-          <span class="extra-small fw-semibold text-muted me-1">
-            <i class="bi bi-sliders me-1 text-emerald"></i>Active Filters:
-          </span>
-          @for (chip of activeFilterChips; track chip.key) {
-            <app-chip
-              [label]="chip.label"
-              [value]="chip.key"
-              [icon]="chip.icon"
-              variant="emerald"
-              size="sm"
-              [removable]="true"
-              (removed)="removeFilterChip(chip.key)">
-            </app-chip>
-          }
-        </div>
+      <div class="d-flex align-items-center flex-wrap gap-2 pt-3 mt-3 border-top border-light-subtle">
+        <span class="extra-small fw-semibold text-muted me-1">
+          <i class="bi bi-sliders me-1 text-emerald"></i>Active Filters:
+        </span>
+        @for (chip of activeFilterChips; track chip.key) {
+        <app-chip [label]="chip.label" [value]="chip.key" [icon]="chip.icon" variant="emerald" size="sm"
+          [removable]="true" (removed)="removeFilterChip(chip.key)">
+        </app-chip>
+        }
+      </div>
       }
     </div>
   </section>
@@ -141,40 +107,24 @@
   ===================================================================== -->
   <ng-template #profileImgTpl let-row="row">
     <div class="d-flex align-items-center justify-content-center">
-      <img
-        [src]="row.avatar"
-        [alt]="row.name"
-        class="rounded-circle object-fit-cover border shadow-2xs"
-        width="38"
+      <img [src]="row.avatar" [alt]="row.name" class="rounded-circle object-fit-cover border shadow-2xs" width="38"
         height="38">
     </div>
   </ng-template>
 
   <ng-template #deptTpl let-row="row">
-    <app-badge
-      [label]="row.department"
-      variant="light"
-      size="xs">
+    <app-badge [label]="row.department" variant="light" size="xs">
     </app-badge>
   </ng-template>
 
   <ng-template #statusTpl let-row="row">
-    <app-badge
-      [label]="row.status"
-      [variant]="getStatusBadgeVariant(row.status)"
-      size="xs"
-      [dot]="true">
+    <app-badge [label]="row.status" [variant]="getStatusBadgeVariant(row.status)" size="xs" [dot]="true">
     </app-badge>
   </ng-template>
 
   <ng-template #actionsTpl let-row="row">
     <div class="dropdown">
-      <button
-        type="button"
-        class="btn-link"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-        title="Actions">
+      <button type="button" class="btn-link" data-bs-toggle="dropdown" aria-expanded="false" title="Actions">
         <i class="bi bi-three-dots-vertical"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -199,10 +149,7 @@
        4A. LARGE SCREENS (lg and up): REUSABLE <app-table> (Horizontal Free Scroll)
   ===================================================================== -->
   <div class="d-none d-lg-block mb-3">
-    <app-table
-      [columns]="tableColumns"
-      [data]="paginatedEmployees"
-      [loading]="isLoadingDirectory"
+    <app-table [columns]="tableColumns" [data]="paginatedEmployees" [loading]="isLoadingDirectory"
       emptyMessage="No employees match the current filter criteria.">
     </app-table>
   </div>
@@ -212,10 +159,7 @@
        4B. MEDIUM & SMALL SCREENS (below lg): REUSABLE <app-employee-card>
   ===================================================================== -->
   <div class="d-block d-lg-none mb-3">
-    <app-employee-card
-      [employees]="paginatedEmployees"
-      colClass="col-12 col-md-6"
-      (viewProfile)="viewProfile($event)">
+    <app-employee-card [employees]="paginatedEmployees" colClass="col-12 col-md-6" (viewProfile)="viewProfile($event)">
     </app-employee-card>
   </div>
 
@@ -225,13 +169,8 @@
   ===================================================================== -->
   @if (filteredEmployees.length > 0) {
   <section class="card border-0 shadow-sm rounded-4 p-3 p-md-3.5">
-    <app-pagination
-      [currentPage]="effectiveCurrentPage"
-      [pageSize]="pageSize"
-      [totalItems]="filteredEmployees.length"
-      [showFirstLast]="true"
-      (pageChange)="onPageChange($event)"
-      (pageSizeChange)="onPageSizeChange($event)">
+    <app-pagination [currentPage]="effectiveCurrentPage" [pageSize]="pageSize" [totalItems]="filteredEmployees.length"
+      [showFirstLast]="true" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
     </app-pagination>
   </section>
   }
@@ -256,10 +195,7 @@
                   {{ isEditMode ? 'Edit Employee Profile' : 'Add New Employee' }}
                 </h2>
                 @if (isEditMode && editingEmployeeId) {
-                <app-badge
-                  [label]="editingEmployeeId"
-                  variant="soft-emerald"
-                  size="xs">
+                <app-badge [label]="editingEmployeeId" variant="soft-emerald" size="xs">
                 </app-badge>
                 }
               </div>
@@ -284,50 +220,27 @@
               </div>
               <div class="row g-3">
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Full Name"
-                    type="text"
-                    name="empName"
-                    icon="bi-person"
-                    placeholder="e.g. Johnathan Doe"
-                    [required]="true"
-                    [validate]="true"
-                    [(ngModel)]="newEmployee.name">
+                  <app-input-field label="Full Name" type="text" name="empName" icon="bi-person"
+                    placeholder="e.g. Johnathan Doe" [required]="true" [validate]="true" [(ngModel)]="newEmployee.name">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Work Email"
-                    type="email"
-                    name="empEmail"
-                    placeholder="e.g. j.doe@worksphere.io"
-                    [required]="true"
-                    [validate]="true"
+                  <app-input-field label="Work Email" type="email" name="empEmail"
+                    placeholder="e.g. j.doe@worksphere.io" [required]="true" [validate]="true"
                     [(ngModel)]="newEmployee.email">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Phone Number"
-                    type="tel"
-                    name="empPhone"
-                    placeholder="+91 98450 12345"
-                    [validate]="true"
-                    [(ngModel)]="newEmployee.phone">
+                  <app-input-field label="Phone Number" type="tel" name="empPhone" placeholder="+91 98450 12345"
+                    [validate]="true" [(ngModel)]="newEmployee.phone">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Work Location"
-                    type="dropdown"
-                    name="empLocation"
-                    icon="bi-geo-alt"
-                    [showEmptyOption]="false"
-                    [options]="workLocationsList"
-                    [(ngModel)]="newEmployee.location">
+                  <app-input-field label="Work Location" type="dropdown" name="empLocation" icon="bi-geo-alt"
+                    [showEmptyOption]="false" [options]="workLocationsList" [(ngModel)]="newEmployee.location">
                   </app-input-field>
                 </div>
               </div>
@@ -343,73 +256,43 @@
               </div>
               <div class="row g-3">
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Department"
-                    type="dropdown"
-                    name="empDept"
-                    [required]="true"
-                    [showEmptyOption]="false"
-                    [options]="departmentFormOptions"
-                    [(ngModel)]="newEmployee.department"
+                  <app-input-field label="Department" type="dropdown" name="empDept" [required]="true"
+                    [showEmptyOption]="false" [options]="departmentFormOptions" [(ngModel)]="newEmployee.department"
                     (valueChange)="onDepartmentChange($event)">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Organizational Level (L1 - L10)"
-                    type="dropdown"
-                    name="empLevel"
-                    [required]="true"
-                    [showEmptyOption]="false"
-                    [options]="levelFormOptions"
-                    [(ngModel)]="newEmployee.levelCode"
-                    (valueChange)="onLevelChange($event)">
+                  <app-input-field label="Organizational Level (L1 - L10)" type="dropdown" name="empLevel"
+                    [required]="true" [showEmptyOption]="false" [options]="levelFormOptions"
+                    [(ngModel)]="newEmployee.levelCode" (valueChange)="onLevelChange($event)">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Job Title (Position Title)"
-                    type="text"
-                    name="empJobTitle"
-                    placeholder="e.g. Senior Software Engineer / Lead QA Specialist"
-                    [(ngModel)]="newEmployee.jobTitle">
+                  <app-input-field label="Job Title (Position Title)" type="text" name="empJobTitle"
+                    placeholder="e.g. Senior Software Engineer / Lead QA Specialist" [(ngModel)]="newEmployee.jobTitle">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="System Access Role (23 RBAC Roles)"
-                    type="dropdown"
-                    name="empSystemRole"
-                    [required]="true"
-                    [showEmptyOption]="false"
-                    [options]="roleFormOptions"
+                  <app-input-field label="System Access Role (23 RBAC Roles)" type="dropdown" name="empSystemRole"
+                    [required]="true" [showEmptyOption]="false" [options]="roleFormOptions"
                     [(ngModel)]="newEmployee.systemRole">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Employment Type"
-                    type="dropdown"
-                    name="empType"
-                    [showEmptyOption]="false"
-                    [options]="employmentTypeOptions"
-                    [(ngModel)]="newEmployee.type">
+                  <app-input-field label="Employment Type" type="dropdown" name="empType" [showEmptyOption]="false"
+                    [options]="employmentTypeOptions" [(ngModel)]="newEmployee.type">
                   </app-input-field>
                 </div>
 
                 <div class="col-12">
                   <app-input-field
                     [label]="'Reporting Manager (Filtered by Seniority < ' + newEmployee.levelCode + ' & Department)'"
-                    type="dropdown"
-                    name="empManager"
-                    [required]="true"
-                    [showEmptyOption]="false"
-                    [options]="reportingManagerOptions"
-                    [(ngModel)]="newEmployee.manager">
+                    type="dropdown" name="empManager" [required]="true" [showEmptyOption]="false"
+                    [options]="reportingManagerOptions" [(ngModel)]="newEmployee.manager">
                   </app-input-field>
                 </div>
               </div>
@@ -419,21 +302,13 @@
             <div class="p-3 rounded-3 bg-light-subtle border">
               <div class="row g-3">
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Current Work Status"
-                    type="dropdown"
-                    name="empStatus"
-                    [showEmptyOption]="false"
-                    [options]="workStatusOptions"
-                    [(ngModel)]="newEmployee.status">
+                  <app-input-field label="Current Work Status" type="dropdown" name="empStatus"
+                    [showEmptyOption]="false" [options]="workStatusOptions" [(ngModel)]="newEmployee.status">
                   </app-input-field>
                 </div>
 
                 <div class="col-12 col-md-6">
-                  <app-input-field
-                    label="Joining Date"
-                    type="date"
-                    name="empJoinDate"
+                  <app-input-field label="Joining Date" type="date" name="empJoinDate"
                     [(ngModel)]="newEmployee.joiningDate">
                   </app-input-field>
                 </div>
@@ -472,15 +347,9 @@
             <div>
               <div class="d-flex align-items-center gap-2 flex-wrap">
                 <h2 class="h6 mb-0 fw-bold text-dark">Employee Executive Dossier</h2>
-                <app-badge
-                  [label]="selectedEmployee.id"
-                  variant="emerald"
-                  size="xs">
+                <app-badge [label]="selectedEmployee.id" variant="emerald" size="xs">
                 </app-badge>
-                <app-badge
-                  [label]="activeCompanyCode"
-                  variant="light"
-                  size="xs">
+                <app-badge [label]="activeCompanyCode" variant="light" size="xs">
                 </app-badge>
               </div>
               <span class="extra-small text-muted">
@@ -507,11 +376,8 @@
                           class="rounded-circle object-fit-cover shadow-sm" width="104" height="104">
                       </div>
                       <div class="position-absolute bottom-0 end-0">
-                        <app-badge
-                          [label]="selectedEmployee.status"
-                          [variant]="getStatusBadgeVariant(selectedEmployee.status)"
-                          size="xs"
-                          [dot]="true">
+                        <app-badge [label]="selectedEmployee.status"
+                          [variant]="getStatusBadgeVariant(selectedEmployee.status)" size="xs" [dot]="true">
                         </app-badge>
                       </div>
                     </div>
@@ -520,16 +386,10 @@
                     <p class="small text-emerald fw-semibold mb-2">{{ selectedEmployee.role }}</p>
 
                     <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mb-4">
-                      <app-badge
-                        [label]="selectedEmployee.department"
-                        variant="soft-emerald"
-                        size="xs"
+                      <app-badge [label]="selectedEmployee.department" variant="soft-emerald" size="xs"
                         icon="bi-building">
                       </app-badge>
-                      <app-badge
-                        [label]="selectedEmployee.type || 'Full-time'"
-                        variant="light"
-                        size="xs">
+                      <app-badge [label]="selectedEmployee.type || 'Full-time'" variant="light" size="xs">
                       </app-badge>
                     </div>
 
@@ -575,10 +435,7 @@
                       <i class="bi bi-diagram-3-fill text-emerald"></i>
                       <h4 class="h6 fw-bold text-dark mb-0">Organizational Placement & Hierarchy</h4>
                     </div>
-                    <app-badge
-                      label="Verified Record"
-                      variant="soft-emerald"
-                      size="xs">
+                    <app-badge label="Verified Record" variant="soft-emerald" size="xs">
                     </app-badge>
                   </div>
                   <div class="card-body p-4">
@@ -640,10 +497,7 @@
                       <i class="bi bi-shield-lock-fill text-emerald"></i>
                       <h4 class="h6 fw-bold text-dark mb-0">Workspace & RBAC Governance</h4>
                     </div>
-                    <app-badge
-                      [label]="activeCompanyName || activeCompanyCode"
-                      variant="light"
-                      size="xs">
+                    <app-badge [label]="activeCompanyName || activeCompanyCode" variant="light" size="xs">
                     </app-badge>
                   </div>
                   <div class="card-body p-4">
@@ -722,10 +576,7 @@
             <div>
               <div class="d-flex align-items-center gap-2">
                 <h2 class="h6 mb-0 fw-bold text-dark">Bulk Import Employees (CSV)</h2>
-                <app-badge
-                  [label]="activeCompanyCode"
-                  variant="soft-primary"
-                  size="xs">
+                <app-badge [label]="activeCompanyCode" variant="soft-primary" size="xs">
                 </app-badge>
               </div>
               <span class="extra-small text-muted">Upload CSV or load sample dataset with RBAC role codes to populate
@@ -738,19 +589,13 @@
         <div class="modal-body p-4">
           <!-- Success Alert -->
           @if (importSuccessMsg) {
-          <app-alert
-            variant="emerald"
-            [message]="importSuccessMsg"
-            customClass="mb-3">
+          <app-alert variant="emerald" [message]="importSuccessMsg" customClass="mb-3">
           </app-alert>
           }
 
           <!-- Error Alert -->
           @if (importErrors.length > 0) {
-          <app-alert
-            variant="danger"
-            title="Validation / Import Notice:"
-            customClass="mb-3">
+          <app-alert variant="danger" title="Validation / Import Notice:" customClass="mb-3">
             <ul class="mb-0 ps-3 extra-small mt-1">
               @for (err of importErrors; track err) {
               <li>{{ err }}</li>
@@ -794,11 +639,7 @@
             <p class="text-muted extra-small mb-0">Supports standard UTF-8 encoded .csv files</p>
             @if (importFileName) {
             <div class="mt-2">
-              <app-badge
-                [label]="importFileName"
-                variant="primary"
-                size="sm"
-                icon="bi-file-earmark-check">
+              <app-badge [label]="importFileName" variant="primary" size="sm" icon="bi-file-earmark-check">
               </app-badge>
             </div>
             }
@@ -811,10 +652,7 @@
               <span class="small fw-bold text-dark">
                 Preview Rows Ready to Import ({{ parsedImportEmployees.length }} Records)
               </span>
-              <app-badge
-                label="Validated"
-                variant="soft-success"
-                size="xs">
+              <app-badge label="Validated" variant="soft-success" size="xs">
               </app-badge>
             </div>
 
@@ -823,9 +661,11 @@
                 <thead class="table-light text-muted sticky-top">
                   <tr>
                     <th>#</th>
+                    <th>Emp ID</th>
                     <th>Full Name</th>
                     <th>Email</th>
                     <th>Dept</th>
+                    <th>Level</th>
                     <th>Designation</th>
                     <th>System Role</th>
                     <th>Type</th>
@@ -836,12 +676,16 @@
                   @for (emp of parsedImportEmployees.slice(0, 15); track emp.email; let i = $index) {
                   <tr>
                     <td class="text-muted">{{ i + 1 }}</td>
+                    <td class="fw-bold text-dark">{{ emp.employeeCode || '-' }}</td>
                     <td class="fw-semibold text-dark">{{ emp.fullName }}</td>
                     <td>{{ emp.email }}</td>
                     <td>
                       <app-badge [label]="emp.departmentCode" variant="light" size="xs"></app-badge>
                     </td>
-                    <td class="text-dark">{{ emp.designationCode }}</td>
+                    <td>
+                      <app-badge [label]="emp.levelCode || 'L8'" variant="soft-warning" size="xs"></app-badge>
+                    </td>
+                    <td class="text-dark">{{ emp.jobTitle || emp.designationCode }}</td>
                     <td>
                       <app-badge [label]="emp.roleCode" variant="soft-primary" size="xs"></app-badge>
                     </td>

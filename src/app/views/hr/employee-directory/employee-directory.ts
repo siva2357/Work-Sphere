@@ -826,8 +826,10 @@ export class EmployeeDirectory implements OnInit {
   downloadTemplateCsv(): void {
     const templateContent = [
       SAMPLE_EMPLOYEES_CSV_HEADER,
-      '"Sasidhar N. Thumuluri","sasidhar.thumuluri@subk.co.in","EXEC","Managing Director & Chief Executive Officer","EMP_SUPER_ADMIN","Full-time","Hyderabad HQ, India","+91 98450 11001","Sasidhar@123","HR-001"',
-      '"Tanvi Agarwal","tanvi.agarwal@subk.co.in","IT","Director of Engineering & Digital Banking","EMP_DEPT_MANAGER","Full-time","Hyderabad HQ, India","+91 98450 11002","Tanvi@123","HR-001"'
+      '"SUBK-IT-001","Murali Mohan Reddy","murali.mohan.reddy@subk.co.in","IT","L2","Director of Technology & CTO","EMP_ORG_ADMIN","Full-time","Hyderabad HQ, India","+91 98490 20001","Murali@123","HR-001"',
+      '"SUBK-IT-002","Tanvi Agarwal","tanvi.agarwal@subk.co.in","IT","L3","Head of IT & Software Engineering","EMP_DEPT_MANAGER","Full-time","Hyderabad HQ, India","+91 98490 20002","Tanvi@123","SUBK-IT-001"',
+      '"SUBK-HR-001","Nandita Deshpande","nandita.deshpande@subk.co.in","HR","L3","Head of People & Human Resources","EMP_DEPT_MANAGER","Full-time","Hyderabad HQ, India","+91 98490 30001","Nandita@123","HR-001"',
+      '"SUBK-HR-002","Sunita Mukherjee","sunita.mukherjee@subk.co.in","HR","L5","HR Payroll & Compensation Manager","EMP_PAYROLL_ADMIN","Full-time","Hyderabad HQ, India","+91 98490 30002","Sunita@123","SUBK-HR-001"'
     ].join('\r\n');
 
     const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
@@ -842,13 +844,16 @@ export class EmployeeDirectory implements OnInit {
   }
 
   loadSample100Employees(): void {
-    this.importFileName = 'sample_100_employees.csv (Built-in 105 Records)';
+    this.importFileName = 'sample_100_employees.csv (IT & HR Department Hierarchy)';
     this.importErrors = [];
     this.importSuccessMsg = '';
     this.parsedImportEmployees = SAMPLE_105_EMPLOYEES.map((e) => ({
+      employeeCode: e.employeeCode,
       fullName: e.fullName,
       email: e.email,
       departmentCode: e.departmentCode,
+      levelCode: e.levelCode,
+      jobTitle: e.designationCode,
       designationCode: e.designationCode,
       roleCode: e.roleCode,
       employmentType: e.employmentType,
@@ -917,9 +922,12 @@ export class EmployeeDirectory implements OnInit {
     const headerCols = this.parseCsvLine(lines[0])
       .map((h) => h.trim().toLowerCase().replace(/[\s_-]/g, ''));
 
+    const idxCode = headerCols.findIndex((h) => h === 'employeecode' || h === 'empcode' || h === 'code' || h === 'id' || h === 'employeeid');
     const idxName = headerCols.findIndex((h) => h === 'fullname' || h === 'name');
     const idxEmail = headerCols.findIndex((h) => h === 'email' || h === 'workemail');
     const idxDept = headerCols.findIndex((h) => h === 'departmentcode' || h === 'department' || h === 'dept');
+    const idxLevel = headerCols.findIndex((h) => h === 'levelcode' || h === 'level' || h === 'orglevel');
+    const idxJobTitle = headerCols.findIndex((h) => h === 'jobtitle' || h === 'title' || h === 'position');
     const idxDesig = headerCols.findIndex((h) => h === 'designationcode' || h === 'designation' || h === 'role');
     const idxRole = headerCols.findIndex((h) => h === 'rolecode' || h === 'systemrole' || h === 'systemrolecode');
     const idxType = headerCols.findIndex((h) => h === 'employmenttype' || h === 'type');
@@ -931,7 +939,7 @@ export class EmployeeDirectory implements OnInit {
     if (idxName === -1 || idxEmail === -1) {
       this.importErrors = [
         'Invalid CSV headers. The file must contain at least "FullName" and "Email" columns.',
-        'Expected headers: FullName, Email, DepartmentCode, DesignationCode, RoleCode, EmploymentType, WorkLocation, Phone, InitialPassword, ManagerEmployeeCode'
+        'Expected headers: EmployeeCode, FullName, Email, DepartmentCode, LevelCode, JobTitle, RoleCode, EmploymentType, WorkLocation, Phone, InitialPassword, ManagerEmployeeCode'
       ];
       return;
     }
@@ -951,16 +959,23 @@ export class EmployeeDirectory implements OnInit {
         continue;
       }
 
+      const title = idxJobTitle >= 0 && cols[idxJobTitle]
+        ? cols[idxJobTitle].trim()
+        : (idxDesig >= 0 && cols[idxDesig] ? cols[idxDesig].trim() : 'Software Engineer');
+
       parsed.push({
+        employeeCode: idxCode >= 0 && cols[idxCode] ? cols[idxCode].trim() : undefined,
         fullName: name,
         email: email,
-        departmentCode: idxDept >= 0 && cols[idxDept] ? cols[idxDept].trim() : 'ENG',
-        designationCode: idxDesig >= 0 && cols[idxDesig] ? cols[idxDesig].trim() : 'DESIG_DEV',
-        roleCode: idxRole >= 0 && cols[idxRole] ? cols[idxRole].trim() : 'EMP_DEVELOPER',
+        departmentCode: idxDept >= 0 && cols[idxDept] ? cols[idxDept].trim() : 'IT',
+        levelCode: idxLevel >= 0 && cols[idxLevel] ? cols[idxLevel].trim() : undefined,
+        jobTitle: title,
+        designationCode: title,
+        roleCode: idxRole >= 0 && cols[idxRole] ? cols[idxRole].trim() : 'EMP_EMPLOYEE',
         employmentType: idxType >= 0 && cols[idxType] ? (cols[idxType].trim() as any) : 'Full-time',
-        workLocation: idxLoc >= 0 && cols[idxLoc] ? cols[idxLoc].trim() : 'Bangalore, India',
+        workLocation: idxLoc >= 0 && cols[idxLoc] ? cols[idxLoc].trim() : 'Hyderabad HQ, India',
         phone: idxPhone >= 0 && cols[idxPhone] ? cols[idxPhone].trim() : '+91 98450 55667',
-        initialPassword: idxPassword >= 0 && cols[idxPassword] ? cols[idxPassword].trim() : 'Welcome@12345',
+        initialPassword: idxPassword >= 0 && cols[idxPassword] ? cols[idxPassword].trim() : 'Welcome@123',
         managerEmployeeCode: idxManager >= 0 && cols[idxManager] ? cols[idxManager].trim() : '',
       });
     }

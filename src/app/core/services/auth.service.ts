@@ -209,12 +209,32 @@ export class AuthService {
     const user = this.currentUserSubject.value;
     if (!user) return true;
 
+    if (user.isMainHr) return true;
+
     const level = (user.levelCode || user.organizationalLevel || '').toUpperCase();
     if (['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'H1', 'H2', 'H3', 'H4'].includes(level)) {
       return true;
     }
 
-    return user.permissions.some(
+    const roles = (user.roles || []).map((r) => r.toUpperCase());
+    if (
+      roles.some((r) =>
+        [
+          'EMP_SUPER_ADMIN',
+          'EMP_ORG_ADMIN',
+          'EMP_DEPT_MANAGER',
+          'EMP_PROJECT_MANAGER',
+          'EMP_TEAM_LEAD',
+          'EMP_HR_ADMIN',
+          'EMP_FINANCE_MANAGER',
+          'EMP_TASK_MANAGER',
+        ].includes(r)
+      )
+    ) {
+      return true;
+    }
+
+    return (user.permissions || []).some(
       (p) =>
         ['Tasks', 'Projects', 'Teams', 'Attendance', 'Leave'].includes(p.module) &&
         ['Team', 'Project', 'Department', 'Organization'].includes(p.highestScope)

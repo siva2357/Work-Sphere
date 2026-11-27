@@ -1,7 +1,9 @@
 <aside class="modern-sidebar" [class.open]="isOpen">
     <div class="sidebar-nav">
+        @for (sec of navSections; track sec.title) {
         <div class="nav-section">
-            @for (link of navLinks; track link.path) {
+            <div class="nav-section-title">{{ sec.title }}</div>
+            @for (link of sec.links; track link.path) {
             <a [routerLink]="link.path" routerLinkActive="active" class="nav-item" (click)="closeOnMobile()"
                 (mouseenter)="showTooltip($event, link.label)" (mouseleave)="hideTooltip()">
                 <i class="nav-icon" [ngClass]="link.icon"></i>
@@ -9,7 +11,32 @@
             </a>
             }
         </div>
+        }
     </div>
+
+    <!-- Role & Level Identity Footer in Sidebar -->
+    @if (currentUser) {
+    <div class="sidebar-footer" (mouseenter)="showTooltip($event, userTooltipText)" (mouseleave)="hideTooltip()">
+        <div class="user-badge-card" [class.collapsed]="!isOpen">
+            <div class="d-flex align-items-center gap-2">
+                <div class="user-avatar-pill" [title]="userLevelCode">
+                    {{ userLevelCode }}
+                </div>
+                @if (isOpen) {
+                <div class="user-info-text overflow-hidden">
+                    <div class="fw-bold text-dark text-truncate" style="font-size: 13px;">
+                        {{ currentUser.fullName }}
+                    </div>
+                    <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                        <span class="badge-emp-code" *ngIf="userEmployeeCode">{{ userEmployeeCode }}</span>
+                        <span class="badge-role-code">{{ userRoleCode }}</span>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
 
     @if (tooltipText) {
     <div class="custom-tooltip" [style.top.px]="tooltipTop">
