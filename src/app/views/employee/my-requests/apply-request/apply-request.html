@@ -1,14 +1,17 @@
 <div class="apply-request-container container-fluid py-4 px-3 px-md-4">
 
   <!-- ====================================================================
-       1. PAGE HEADER & BACK NAVIGATION
+       1. PAGE HEADER & BACK NAVIGATION USING REUSABLE BUTTON
   ===================================================================== -->
   <header class="d-flex align-items-center gap-3 mb-4">
-    <a routerLink="/my-requests"
-      class="btn btn-light rounded-circle shadow-sm p-2 d-flex align-items-center justify-content-center back-nav-btn"
+    <app-button
+      icon="bi bi-arrow-left"
+      variant="light"
+      size="sm"
+      [iconOnly]="true"
+      route="/my-requests"
       title="Back to My Requests">
-      <i class="bi bi-arrow-left fs-5 text-dark"></i>
-    </a>
+    </app-button>
     <div>
       <h1 class="h4 fw-bold text-dark mb-0">Raise a Request</h1>
       <p class="text-muted extra-small mb-0 mt-0.5">
@@ -51,161 +54,157 @@
             <!-- 1. Category & Priority (2 columns) -->
             <div class="row g-3">
 
-              <!-- Request Category -->
+              <!-- Request Category using Reusable InputField Dropdown with Backend Seeded Options -->
               <div class="col-12 col-md-7">
-                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                  Request Category <span class="text-danger">*</span>
-                </label>
-                <select class="form-select rounded-3 py-2" [(ngModel)]="category" name="category" required>
-                  <option value="" disabled selected>-- Select Request Category --</option>
-                  <option *ngFor="let cat of categories" [value]="cat">
-                    {{ cat }}
-                  </option>
-                </select>
+                <app-input-field
+                  label="Request Category"
+                  type="dropdown"
+                  [options]="categoryOptions"
+                  [emptyOptionLabel]="isLoadingCategories ? 'Loading categories from server...' : '-- Select Request Category --'"
+                  [required]="true"
+                  [(ngModel)]="category"
+                  name="category">
+                </app-input-field>
               </div>
 
-              <!-- Priority -->
+              <!-- Priority Pills using Reusable Chip Component -->
               <div class="col-12 col-md-5">
                 <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
                   Priority Level <span class="text-danger">*</span>
                 </label>
-                <div class="d-flex align-items-center gap-1.5 priority-pills-group">
-                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
-                    [class.active-low]="priority === 'Low'"
-                    (click)="priority = 'Low'">
-                    Low
-                  </button>
-                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
-                    [class.active-medium]="priority === 'Medium'"
-                    (click)="priority = 'Medium'">
-                    Medium
-                  </button>
-                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
-                    [class.active-high]="priority === 'High'"
-                    (click)="priority = 'High'">
-                    High
-                  </button>
-                  <button type="button" class="btn btn-sm flex-fill rounded-3 priority-pill"
-                    [class.active-urgent]="priority === 'Urgent'"
-                    (click)="priority = 'Urgent'">
-                    Urgent
-                  </button>
+                <div class="d-flex align-items-center gap-1.5 mt-1 flex-wrap">
+                  <app-chip
+                    label="Low"
+                    variant="success"
+                    size="sm"
+                    [selectable]="true"
+                    [selected]="priority === 'Low'"
+                    (clicked)="setPriority('Low')">
+                  </app-chip>
+                  <app-chip
+                    label="Medium"
+                    variant="info"
+                    size="sm"
+                    [selectable]="true"
+                    [selected]="priority === 'Medium'"
+                    (clicked)="setPriority('Medium')">
+                  </app-chip>
+                  <app-chip
+                    label="High"
+                    variant="warning"
+                    size="sm"
+                    [selectable]="true"
+                    [selected]="priority === 'High'"
+                    (clicked)="setPriority('High')">
+                  </app-chip>
+                  <app-chip
+                    label="Urgent"
+                    variant="danger"
+                    size="sm"
+                    [selectable]="true"
+                    [selected]="priority === 'Urgent'"
+                    (clicked)="setPriority('Urgent')">
+                  </app-chip>
                 </div>
               </div>
 
             </div>
 
-            <!-- 2. Subject Title -->
+            <!-- 2. Subject Title using Reusable InputField -->
             <div>
-              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                Subject / Summary <span class="text-danger">*</span>
-              </label>
-              <input type="text" class="form-control rounded-3 py-2"
+              <app-input-field
+                label="Subject / Summary"
+                type="text"
                 placeholder="e.g., MacBook Pro M3 Upgrade for Mobile Builds, Production Cloud Access, etc."
-                [(ngModel)]="subject" name="subject" required>
+                [required]="true"
+                [(ngModel)]="subject"
+                name="subject">
+              </app-input-field>
             </div>
 
-            <!-- 3. Required By Date & Office Location (2 columns) -->
-            <div class="row g-3">
-              <div class="col-12 col-md-6">
-                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                  Required By Date (Optional)
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3">
-                    <i class="bi bi-calendar-event"></i>
-                  </span>
-                  <input type="date" class="form-control border-start-0 rounded-end-3 py-2"
-                    [(ngModel)]="requiredDate" name="requiredDate">
+            <!-- 3. Proposed Last Working Day (Required ONLY for Resignation Request) -->
+            @if (category === 'Resignation Request') {
+              <div>
+                <app-input-field
+                  label="Proposed Last Working Day"
+                  type="date"
+                  icon="bi bi-calendar-event"
+                  [required]="true"
+                  [(ngModel)]="requiredDate"
+                  name="requiredDate">
+                </app-input-field>
+                <div class="extra-small text-muted mt-1">
+                  Please specify your proposed last working day for notice period and exit processing.
                 </div>
               </div>
-
-              <div class="col-12 col-md-6">
-                <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                  Office / Delivery Location
-                </label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light text-muted border-end-0 rounded-start-3">
-                    <i class="bi bi-geo-alt"></i>
-                  </span>
-                  <input type="text" class="form-control border-start-0 rounded-end-3 py-2"
-                    [(ngModel)]="location" name="location">
-                </div>
+            } @else if (category) {
+              <!-- Optional Office Location for non-resignation requests -->
+              <div>
+                <app-input-field
+                  label="Office / Delivery Location"
+                  type="text"
+                  icon="bi bi-geo-alt"
+                  [(ngModel)]="location"
+                  name="location">
+                </app-input-field>
               </div>
-            </div>
+            }
 
-            <!-- 4. Detailed Description & Justification -->
+            <!-- 4. Detailed Description using Reusable InputField Textarea -->
             <div>
-              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                Description & Business Justification <span class="text-danger">*</span>
-              </label>
-              <textarea class="form-control rounded-3 p-3 request-textarea" rows="5"
+              <app-input-field
+                label="Description & Business Justification"
+                type="textarea"
+                [rows]="5"
                 placeholder="Please describe why this request is needed, project dependencies, ticket references, or relevant timelines..."
-                [(ngModel)]="description" name="description" required></textarea>
+                [required]="true"
+                [(ngModel)]="description"
+                name="description">
+              </app-input-field>
             </div>
 
-            <!-- 5. Attachment Upload (Optional) -->
-            <div>
-              <label class="form-label extra-small fw-semibold text-dark text-uppercase letter-spacing-1 mb-1.5">
-                Supporting Document / Quotation (Optional)
-              </label>
-              <div class="attachment-drop-box p-3 rounded-3 border border-dashed text-center">
-                <input type="file" id="requestFile" class="d-none" (change)="onFileSelected($event)">
-                <label for="requestFile" class="cursor-pointer mb-0 w-100">
-                  <i class="bi bi-cloud-arrow-up fs-3 text-emerald d-block mb-1"></i>
-                  <span class="small fw-semibold text-dark d-block">
-                    {{ selectedFileName ? selectedFileName : 'Click to attach PDF, image, or document' }}
-                  </span>
-                  <span class="extra-small text-muted">
-                    {{ selectedFileName ? 'Click to change file' : 'Maximum file size: 10MB (PDF, PNG, JPG, DOCX)' }}
-                  </span>
-                </label>
-                <div *ngIf="selectedFileName" class="mt-2">
-                  <button type="button" class="btn btn-sm btn-outline-danger py-0.5 px-2 rounded-pill extra-small"
-                    (click)="removeFile()">
-                    <i class="bi bi-trash me-1"></i>Remove Attachment
-                  </button>
-                </div>
-              </div>
-            </div>
+            <!-- Reusable Alert for Error Banner -->
+            @if (errorMessage) {
+              <app-alert
+                variant="danger"
+                [showIcon]="true"
+                [message]="errorMessage"
+                [visible]="!!errorMessage"
+                [dismissible]="true"
+                (dismissed)="errorMessage = ''">
+              </app-alert>
+            }
 
-            <!-- Error Banner -->
-            <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 extra-small rounded-3 mb-0 d-flex align-items-center gap-2">
-              <i class="bi bi-exclamation-circle-fill fs-6 flex-shrink-0"></i>
-              <span>{{ errorMessage }}</span>
-            </div>
+            <!-- Reusable Alert for Success Banner -->
+            @if (isSuccess) {
+              <app-alert
+                variant="emerald"
+                [showIcon]="true"
+                message="Your request has been submitted successfully! Redirecting to My Requests..."
+                [visible]="isSuccess">
+              </app-alert>
+            }
 
-            <!-- Success Banner -->
-            <div *ngIf="isSuccess" class="alert alert-success py-2 px-3 extra-small rounded-3 mb-0 d-flex align-items-center gap-2">
-              <i class="bi bi-check-circle-fill text-success fs-6 flex-shrink-0"></i>
-              <span>Your request has been submitted successfully! Redirecting to My Requests...</span>
-            </div>
-
-            <!-- Submit Button & Action Bar -->
+            <!-- Reusable Button Controls & Action Bar -->
             <div class="d-flex align-items-center justify-content-end gap-2 pt-2 border-top mt-2">
-              <a routerLink="/my-requests"
-                class="btn btn-outline-secondary px-3 py-2 rounded-3 text-nowrap fw-semibold extra-small">
-                Cancel
-              </a>
-              <button type="submit"
-                class="btn btn-emerald px-4 py-2 rounded-3 shadow-sm d-inline-flex align-items-center justify-content-center text-white fw-semibold"
-                [disabled]="isSubmitting || isSuccess">
+              <app-button
+                label="Cancel"
+                variant="outline-secondary"
+                size="md"
+                route="/my-requests">
+              </app-button>
 
-                <ng-container *ngIf="!isSubmitting && !isSuccess">
-                  <i class="bi bi-send fs-6 me-2"></i>
-                  <span>Submit Request</span>
-                </ng-container>
-
-                <ng-container *ngIf="isSubmitting">
-                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  <span>Submitting...</span>
-                </ng-container>
-
-                <ng-container *ngIf="isSuccess">
-                  <i class="bi bi-check2-circle fs-5 me-2"></i>
-                  <span>Submitted!</span>
-                </ng-container>
-              </button>
+              <app-button
+                label="Submit Request"
+                variant="emerald"
+                size="md"
+                type="submit"
+                icon="bi bi-send"
+                [loading]="isSubmitting"
+                loadingText="Submitting..."
+                [disabled]="isSubmitting || isSuccess"
+                (clicked)="submitRequest()">
+              </app-button>
             </div>
 
           </form>
@@ -219,18 +218,22 @@
     <div class="col-12 col-lg-4">
       <div class="d-flex flex-column gap-4">
 
-        <!-- Applicant Card -->
+        <!-- Dynamic Applicant Card with Reusable Badge -->
         <div class="card border-0 shadow-sm rounded-4 p-4 applicant-card">
           <div class="d-flex align-items-center gap-3">
             <div class="applicant-avatar bg-emerald text-white fw-bold">
-              SP
+              {{ userInitials }}
             </div>
             <div>
-              <h3 class="h6 fw-bold text-dark mb-0.5">Siva Prasad</h3>
-              <span class="extra-small text-muted d-block mb-1">Senior Full Stack Engineer</span>
-              <span class="badge bg-emerald-subtle text-emerald rounded-pill px-2.5 py-1 font-monospace extra-small fw-semibold">
-                EMP ID: WS-1024
+              <h3 class="h6 fw-bold text-dark mb-0.5">{{ currentUser?.fullName || 'Active Employee' }}</h3>
+              <span class="extra-small text-muted d-block mb-1">
+                {{ currentUser?.designationTitle || 'Software Engineer' }} ({{ currentUser?.levelCode || 'L8' }})
               </span>
+              <app-badge
+                [label]="'EMP ID: ' + (currentUser?.employeeCode || 'SUBK-IT-005')"
+                variant="soft-emerald"
+                size="sm">
+              </app-badge>
             </div>
           </div>
 
@@ -239,11 +242,11 @@
           <div class="d-flex flex-column gap-2.5 extra-small">
             <div class="d-flex justify-content-between align-items-center">
               <span class="text-muted fw-medium">Department:</span>
-              <span class="fw-semibold text-dark text-end">Engineering Pod Alpha</span>
+              <span class="fw-semibold text-dark text-end">{{ currentUser?.departmentName || 'IT & Technology' }}</span>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <span class="text-muted fw-medium">Reporting Manager:</span>
-              <span class="fw-semibold text-dark text-end">Arun Kumar (VP Engg)</span>
+              <span class="fw-semibold text-dark text-end">{{ currentUser?.reportingManagerName || 'Technical Team Lead' }}</span>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <span class="text-muted fw-medium">Branch / Location:</span>
@@ -252,7 +255,7 @@
           </div>
         </div>
 
-        <!-- SLA Guidelines Card -->
+        <!-- SLA Guidelines Card with Reusable Badges -->
         <div class="card border-0 shadow-sm rounded-4 p-4 sla-card">
           <div class="d-flex align-items-center gap-2.5 mb-3">
             <div class="header-icon-box bg-emerald-subtle text-emerald flex-shrink-0">
@@ -268,7 +271,7 @@
             <div class="sla-item p-3 rounded-3 border">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="fw-semibold text-dark">Hardware / Asset</span>
-                <span class="sla-badge">2 - 3 Days</span>
+                <app-badge label="2 - 3 Days" variant="soft-primary" size="sm"></app-badge>
               </div>
               <p class="text-muted mb-0 extra-small">Includes laptops, monitors, and accessories dispatch.</p>
             </div>
@@ -276,7 +279,7 @@
             <div class="sla-item p-3 rounded-3 border">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="fw-semibold text-dark">IT & Cloud Access</span>
-                <span class="sla-badge">24 - 48 Hours</span>
+                <app-badge label="24 - 48 Hours" variant="soft-info" size="sm"></app-badge>
               </div>
               <p class="text-muted mb-0 extra-small">AWS IAM, GitHub org, VPN and DB credentials.</p>
             </div>
@@ -284,17 +287,17 @@
             <div class="sla-item p-3 rounded-3 border">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="fw-semibold text-dark">Promotion & Appraisals</span>
-                <span class="sla-badge">Review Cycle</span>
+                <app-badge label="Review Cycle" variant="soft-warning" size="sm"></app-badge>
               </div>
               <p class="text-muted mb-0 extra-small">Evaluated with VP Engineering & HR Committee.</p>
             </div>
 
             <div class="sla-item p-3 rounded-3 border">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-semibold text-dark">Department Transfer</span>
-                <span class="sla-badge">5 - 7 Days</span>
+                <span class="fw-semibold text-dark">Resignation & Transfers</span>
+                <app-badge label="Multi-Stage" variant="soft-secondary" size="sm"></app-badge>
               </div>
-              <p class="text-muted mb-0 extra-small">Requires current and destination manager approval.</p>
+              <p class="text-muted mb-0 extra-small">Includes Reporting Manager review and HR sign-off.</p>
             </div>
           </div>
         </div>

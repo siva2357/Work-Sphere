@@ -54,6 +54,7 @@ export const API_ENDPOINTS = {
   // 5. Unified Request Management Linked to Multi-Stage Approval Chains (/api/requests)
   REQUESTS: {
     BASE: `${API_BASE_URL}/api/requests`,
+    CATEGORIES: `${API_BASE_URL}/api/requests/categories`,
     WORKFLOWS: `${API_BASE_URL}/api/requests/workflows`,
     APPROVE: (requestCode: string) => `${API_BASE_URL}/api/requests/${requestCode}/approve`,
     REJECT: (requestCode: string) => `${API_BASE_URL}/api/requests/${requestCode}/reject`,

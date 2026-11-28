@@ -438,6 +438,8 @@
         0 10px 25px rgba(15, 23, 42, 0.10);
 
     font-size: 13px;
+
+    z-index: 1090 !important;
 }
 
 

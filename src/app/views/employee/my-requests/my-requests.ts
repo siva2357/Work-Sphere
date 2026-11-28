@@ -139,54 +139,63 @@ export class MyRequests implements OnInit {
         field: 'sNo',
         headerName: 'S.No.',
         width: 70,
+        minWidth: 70,
       },
       {
         field: 'requestId',
         headerName: 'Request ID',
         cellTemplate: this.requestIdTpl,
-        width: 120,
+        width: 140,
+        minWidth: 140,
       },
       {
         field: 'category',
         headerName: 'Category',
         cellTemplate: this.categoryTpl,
-        width: 175,
+        width: 185,
+        minWidth: 175,
       },
       {
         field: 'subject',
         headerName: 'Subject & Justification',
         cellTemplate: this.subjectTpl,
-        width: 280,
+        width: 320,
+        minWidth: 300,
       },
       {
         field: 'priority',
         headerName: 'Priority',
         cellTemplate: this.priorityTpl,
         width: 115,
+        minWidth: 110,
       },
       {
         field: 'submittedDate',
         headerName: 'Submitted',
         cellTemplate: this.submittedTpl,
-        width: 130,
+        width: 135,
+        minWidth: 130,
       },
       {
         field: 'assignedTo',
-        headerName: 'Assigned To',
+        headerName: 'Current Approver',
         cellTemplate: this.assignedToTpl,
-        width: 175,
+        width: 220,
+        minWidth: 200,
       },
       {
         field: 'status',
         headerName: 'Status',
         cellTemplate: this.statusTpl,
-        width: 130,
+        width: 135,
+        minWidth: 130,
       },
       {
         field: 'actions',
         headerName: 'Actions',
         cellTemplate: this.actionsTpl,
         width: 90,
+        minWidth: 90,
       },
     ];
   }
@@ -200,20 +209,43 @@ export class MyRequests implements OnInit {
         next: (rows) => {
           this.requestsList = (rows || []).map((r, idx) => ({
             sNo: idx + 1,
-            requestId: r.requestId || `REQ-${idx + 101}`,
-            category: (r.category || 'IT & System Access') as EmployeeRequest['category'],
-            subject: r.subject || 'Service Request',
-            description: r.description || '',
+            requestId: r.id || r.requestCode || r.requestId || `REQ-${idx + 101}`,
+            category: (r.category || r.Category || 'IT & System Access') as EmployeeRequest['category'],
+            subject: r.subject || r.Subject || 'Service Request',
+            description: r.description || r.Description || '',
             submittedDate:
               r.submittedDate ||
+              (r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : null) ||
               new Date().toLocaleDateString('en-GB', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
               }),
-            priority: (r.priority || 'Medium') as EmployeeRequest['priority'],
-            assignedTo: r.approvalChain?.[0]?.approverRole || 'Department Manager / HR',
-            status: (r.status || 'Pending') as EmployeeRequest['status'],
+            priority: (r.priority || r.Priority || 'Medium') as EmployeeRequest['priority'],
+            assignedTo:
+              r.approvalChain?.find((s: any) => s.isCurrent)?.approverName ||
+              r.approvalChain?.[0]?.approverName ||
+              r.approvalChain?.[0]?.role ||
+              'Department Manager / HR',
+            status: (r.overallStatus || r.OverallStatus || r.status || 'Pending') as EmployeeRequest['status'],
+            currentLevelNumber: Number(r.currentLevelNumber || r.CurrentLevelNumber || 1),
+            totalLevels: Number(r.totalLevels || r.TotalLevels || r.approvalChain?.length || 1),
+            approvalChain: Array.isArray(r.approvalChain)
+              ? r.approvalChain.map((step: any, sIdx: number) => ({
+                  levelNumber: Number(step.levelNumber || sIdx + 1),
+                  levelTitle: step.levelTitle || `Level ${sIdx + 1}`,
+                  role: step.role || 'Approver',
+                  approverName: step.approverName || step.role || 'Approver',
+                  approverId: step.approverId,
+                  avatarColor: ['#10b981', '#0ea5e9', '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#14b8a6'][sIdx % 7],
+                  status: step.status || 'Pending',
+                  actionDate: step.actionDate,
+                  remarks: step.remarks,
+                  isCurrent: !!step.isCurrent,
+                  isFinalHR: !!step.isFinalHR,
+                }))
+              : [],
+            details: r.details,
           }));
           this.updateRequestsView();
         },
@@ -382,6 +414,69 @@ export class MyRequests implements OnInit {
     this.pageSize = size;
     this.currentPage = 1;
     this.updateRequestsView();
+  }
+
+  // Selected Request for Approval Workflow Dossier Modal
+  selectedRequest: EmployeeRequest | null = null;
+
+  openWorkflowModal(req: EmployeeRequest): void {
+    this.selectedRequest = req;
+  }
+
+  closeWorkflowModal(): void {
+    this.selectedRequest = null;
+  }
+
+  getInitials(name?: string): string {
+    if (!name) return 'WS';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  getCategoryBadgeVariant(cat?: string): BadgeVariant {
+    switch (cat) {
+      case 'Resignation Request':
+        return 'danger';
+      case 'Promotion Request':
+        return 'primary';
+      case 'Appraisal & Salary Review':
+        return 'soft-emerald';
+      case 'Leave Request':
+        return 'warning';
+      case 'Hardware / Asset':
+        return 'info';
+      case 'IT & System Access':
+        return 'secondary';
+      default:
+        return 'light';
+    }
+  }
+
+  getStepBadgeVariant(status: string): BadgeVariant {
+    switch (status) {
+      case 'Approved':
+        return 'soft-emerald';
+      case 'Rejected':
+        return 'danger';
+      case 'Under Review':
+        return 'soft-warning';
+      default:
+        return 'light';
+    }
+  }
+
+  getCurrentApproverDisplay(req: EmployeeRequest): string {
+    if (!req.approvalChain || req.approvalChain.length === 0) {
+      return req.assignedTo || 'Department Manager / HR';
+    }
+    const current = req.approvalChain.find((s) => s.isCurrent);
+    if (current) {
+      return `${current.approverName} (${current.levelTitle})`;
+    }
+    if (req.status === 'Approved') return 'Completed (Final HR)';
+    if (req.status === 'Rejected') return 'Declined';
+    return req.approvalChain[0]?.approverName || 'Under Review';
   }
 
   copyRequestId(req: EmployeeRequest): void {

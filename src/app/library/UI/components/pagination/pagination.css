@@ -148,23 +148,28 @@
   color: #059669;
 }
 
-/* Layout Container */
+/* Layout Container - ALWAYS on a Single Row without Breaking */
 .pagination-container {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
   width: 100%;
   gap: 16px;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pagination-page-size {
-  justify-self: start;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13.5px;
   color: #475569;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .pagination-page-size .form-select {
@@ -182,30 +187,19 @@
 }
 
 .pagination-summary {
-  justify-self: center;
   font-size: 13.5px;
   color: #64748b;
   white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
 }
 
 .pagination-navigation {
-  justify-self: end;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .pagination-navigation .pagination {
   margin-bottom: 0;
-}
-
-@media (max-width: 767.98px) {
-  .pagination-container {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 12px;
-  }
-
-  .pagination-page-size,
-  .pagination-summary,
-  .pagination-navigation {
-    justify-self: center;
-  }
+  flex-wrap: nowrap;
 }

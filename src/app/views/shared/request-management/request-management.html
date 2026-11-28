@@ -64,13 +64,13 @@
   </ng-template>
 
   <ng-template #empNameTpl let-row="row">
-    <span class="fw-bold text-dark font-outfit request-title-btn cursor-pointer" (click)="openWorkflowModal(row)" title="Click to view approval workflow dossier">
+    <span class="fw-bold text-dark font-outfit request-title-btn cursor-pointer text-nowrap d-inline-block" (click)="openWorkflowModal(row)" title="Click to view approval workflow dossier">
       {{ row.employeeName }}
     </span>
   </ng-template>
 
   <ng-template #deptTpl let-row="row">
-    <span class="text-dark">{{ row.department }}</span>
+    <span class="text-dark text-nowrap">{{ row.department }}</span>
   </ng-template>
 
   <ng-template #categoryTpl let-row="row">
@@ -78,9 +78,11 @@
   </ng-template>
 
   <ng-template #subjectTpl let-row="row">
-    <span class="fw-semibold text-dark font-outfit request-title-btn cursor-pointer" (click)="openWorkflowModal(row)" title="View request details and approval chain">
-      {{ row.subject }}
-    </span>
+    <div class="request-subject-cell" (click)="openWorkflowModal(row)" title="View request details and approval chain">
+      <span class="fw-semibold text-dark font-outfit request-title-btn cursor-pointer">
+        {{ row.subject }}
+      </span>
+    </div>
   </ng-template>
 
   <ng-template #submittedDateTpl let-row="row">
@@ -88,9 +90,9 @@
   </ng-template>
 
   <ng-template #approvalStageTpl let-row="row">
-    <div class="lh-sm">
+    <div class="lh-sm text-nowrap">
       <span class="d-block extra-small fw-semibold text-dark">Stage {{ row.currentLevelNumber }} of {{ row.totalLevels }}</span>
-      <span class="extra-small text-emerald text-truncate d-block" [title]="getCurrentApproverDisplay(row)">
+      <span class="extra-small text-emerald d-block" [title]="getCurrentApproverDisplay(row)">
         {{ getCurrentApproverDisplay(row) }}
       </span>
     </div>
@@ -105,18 +107,25 @@
   </ng-template>
 
   <ng-template #actionsTpl let-row="row">
-    <div class="dropdown">
+    <div class="dropdown request-actions-dropdown">
       <button
         class="btn btn-sm btn-link text-secondary p-1 rounded-2 border-0 shadow-none"
         type="button"
         data-bs-toggle="dropdown"
-        data-bs-boundary="viewport"
+        data-bs-popper-config='{"strategy":"fixed"}'
         aria-expanded="false"
         (click)="$event.stopPropagation()"
         title="Request Actions">
         <i class="bi bi-three-dots-vertical fs-6"></i>
       </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1 extra-small">
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 py-1 extra-small">
+        <li>
+          <button class="dropdown-item py-1.5 px-3 d-flex align-items-center gap-2 text-primary"
+            type="button" (click)="openWorkflowModal(row)">
+            <i class="bi bi-eye-fill"></i>
+            <span>View Workflow Dossier</span>
+          </button>
+        </li>
         @if (row.overallStatus === 'Under Review' || row.overallStatus === 'Pending') {
         <li>
           <button class="dropdown-item py-1.5 px-3 d-flex align-items-center gap-2 text-success"
@@ -133,20 +142,6 @@
           </button>
         </li>
         }
-        <li>
-          <button class="dropdown-item py-1.5 px-3 d-flex align-items-center gap-2 text-primary"
-            type="button" (click)="openWorkflowModal(row)">
-            <i class="bi bi-diagram-3-fill"></i>
-            <span>View Approval Workflow</span>
-          </button>
-        </li>
-        <li>
-          <button class="dropdown-item py-1.5 px-3 d-flex align-items-center gap-2 text-dark"
-            type="button" (click)="openWorkflowModal(row)">
-            <i class="bi bi-file-text"></i>
-            <span>View Full Dossier</span>
-          </button>
-        </li>
       </ul>
     </div>
   </ng-template>

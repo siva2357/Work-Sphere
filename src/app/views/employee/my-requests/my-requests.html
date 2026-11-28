@@ -40,19 +40,21 @@
        ROOT-LEVEL CELL TEMPLATES FOR REUSABLE <app-table>
   ===================================================================== -->
     <ng-template #requestIdTpl let-row="row">
-        <app-badge [label]="row.requestId" variant="light" size="xs"></app-badge>
+        <span class="cursor-pointer" (click)="openWorkflowModal(row)" title="Click to view approval workflow">
+            <app-badge [label]="row.requestId" variant="light" size="xs"></app-badge>
+        </span>
     </ng-template>
 
     <ng-template #categoryTpl let-row="row">
-        <span class="fw-semibold text-dark">{{ row.category }}</span>
+        <span class="fw-semibold text-dark text-nowrap">{{ row.category }}</span>
     </ng-template>
 
     <ng-template #subjectTpl let-row="row">
-        <div class="request-desc-wrapper text-start">
-            <span class="fw-semibold text-dark d-block mb-0.5">
+        <div class="request-desc-wrapper text-start cursor-pointer" (click)="openWorkflowModal(row)" title="Click to view approval workflow">
+            <span class="fw-semibold text-dark d-block mb-0.5 request-title-btn">
                 {{ row.subject }}
             </span>
-            <span class="text-muted extra-small d-block">
+            <span class="text-muted extra-small d-block text-truncate" style="max-width: 320px;">
                 {{ row.description }}
             </span>
         </div>
@@ -64,13 +66,13 @@
     </ng-template>
 
     <ng-template #submittedTpl let-row="row">
-        <span class="text-muted text-nowrap">
+        <span class="text-muted text-nowrap font-monospace extra-small">
             <i class="bi bi-calendar3 text-emerald me-1"></i>{{ row.submittedDate }}
         </span>
     </ng-template>
 
     <ng-template #assignedToTpl let-row="row">
-        <span class="text-dark">{{ row.assignedTo }}</span>
+        <span class="text-dark text-nowrap">{{ row.assignedTo }}</span>
     </ng-template>
 
     <ng-template #statusTpl let-row="row">
@@ -79,18 +81,25 @@
     </ng-template>
 
     <ng-template #actionsTpl let-row="row">
-        <div class="dropdown">
+        <div class="dropdown my-requests-actions-dropdown">
             <button
                 class="btn btn-sm btn-link text-secondary p-1 rounded-2 border-0 shadow-none"
                 type="button"
                 data-bs-toggle="dropdown"
-                data-bs-boundary="viewport"
+                data-bs-popper-config='{"strategy":"fixed"}'
                 aria-expanded="false"
                 (click)="$event.stopPropagation()"
                 title="Request Actions">
                 <i class="bi bi-three-dots-vertical fs-6"></i>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1 extra-small">
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 py-1 extra-small">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-primary" type="button"
+                        (click)="openWorkflowModal(row)">
+                        <i class="bi bi-diagram-3-fill"></i>
+                        <span>View Approval Workflow</span>
+                    </button>
+                </li>
                 <li>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark"
                         routerLink="/apply-request">
@@ -217,10 +226,17 @@
                         <!-- Three-Dot Actions Dropdown -->
                         <div class="dropdown">
                             <button class="btn btn-sm btn-link text-secondary p-1 rounded-2 border-0 shadow-none"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                type="button" data-bs-toggle="dropdown" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false">
                                 <i class="bi bi-three-dots-vertical fs-6"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1 extra-small">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded-3 py-1 extra-small">
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-primary" type="button"
+                                        (click)="openWorkflowModal(req)">
+                                        <i class="bi bi-diagram-3-fill"></i>
+                                        <span>View Approval Workflow</span>
+                                    </button>
+                                </li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center gap-2 py-1.5 text-dark"
                                         routerLink="/apply-request">
@@ -240,7 +256,9 @@
                         </div>
                     </div>
 
-                    <h3 class="h6 fw-bold text-dark mb-1">{{ req.subject }}</h3>
+                    <h3 class="h6 fw-bold text-dark mb-1 cursor-pointer" (click)="openWorkflowModal(req)" title="Click to view approval workflow">
+                        {{ req.subject }}
+                    </h3>
                     <span class="extra-small text-emerald fw-semibold d-block mb-2">{{ req.category }}</span>
                     <p class="request-reason-text mb-3">{{ req.description }}</p>
 
@@ -255,6 +273,18 @@
                                 <i class="bi bi-calendar3 text-emerald me-1"></i>{{ req.submittedDate }}
                             </span>
                         </div>
+                    </div>
+
+                    <!-- Direct Action Button: View Approval Workflow & Current Stage -->
+                    <div class="mt-2.5 pt-2 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-emerald d-inline-flex align-items-center gap-1.5 extra-small fw-semibold rounded-2 py-1 px-2.5"
+                            (click)="openWorkflowModal(req)" title="View Approval Workflow & Current Stage">
+                            <i class="bi bi-diagram-3-fill"></i>
+                            <span>View Approval Status</span>
+                        </button>
+                        <span class="badge bg-light text-secondary border extra-small">
+                            Stage {{ req.currentLevelNumber || 1 }} of {{ req.totalLevels || 1 }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -289,6 +319,142 @@
             (pageSizeChange)="onPageSizeChange($event)">
         </app-pagination>
     </section>
+    }
+
+    <!-- ====================================================================
+       7. APPROVAL WORKFLOW STATUS & DOSSIER MODAL FOR EMPLOYEE
+  ===================================================================== -->
+    @if (selectedRequest) {
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Modal Header -->
+                <div class="modal-header bg-light border-bottom py-3 px-4">
+                    <div class="d-flex align-items-center gap-2.5 flex-wrap">
+                        <div class="header-icon-box bg-emerald-subtle text-emerald flex-shrink-0">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h5 class="modal-title h6 fw-bold text-dark mb-0">Approval Status & Workflow</h5>
+                                <app-badge [label]="selectedRequest.requestId" variant="light" size="xs"></app-badge>
+                                <app-badge [label]="selectedRequest.category" [variant]="getCategoryBadgeVariant(selectedRequest.category)" size="xs"></app-badge>
+                            </div>
+                            <span class="extra-small text-muted">Submitted on {{ selectedRequest.submittedDate }} &bull; Stage {{ selectedRequest.currentLevelNumber || 1 }} of {{ selectedRequest.totalLevels || 1 }}</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" (click)="closeWorkflowModal()" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-4 bg-white">
+                    <!-- Current Status Banner -->
+                    <div class="p-3 rounded-3 bg-light border mb-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <span class="text-muted extra-small d-block text-uppercase fw-bold letter-spacing-1">Current Progress</span>
+                            <span class="fw-bold text-dark fs-6">
+                                {{ getCurrentApproverDisplay(selectedRequest) }}
+                            </span>
+                        </div>
+                        <app-badge [label]="selectedRequest.status" [variant]="getStatusBadgeVariant(selectedRequest.status)" size="sm" [dot]="true"></app-badge>
+                    </div>
+
+                    <!-- Approval Chain Steps -->
+                    <div class="mb-4">
+                        <label class="form-label extra-small fw-bold text-dark text-uppercase letter-spacing-1 mb-2">
+                            Approval Hierarchy Journey
+                        </label>
+
+                        @if (selectedRequest.approvalChain && selectedRequest.approvalChain.length > 0) {
+                        <div class="d-flex flex-column gap-2.5">
+                            @for (step of selectedRequest.approvalChain; track step.levelNumber) {
+                            <div class="p-3 rounded-3 border bg-white shadow-2xs"
+                                [class.border-warning]="step.isCurrent"
+                                [class.bg-warning-subtle]="step.isCurrent">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <div class="workflow-avatar-circle flex-shrink-0" [style.background-color]="step.avatarColor || '#10b981'">
+                                            {{ getInitials(step.approverName) }}
+                                        </div>
+                                        <div class="lh-sm">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <strong class="text-dark extra-small">{{ step.approverName }}</strong>
+                                                <span class="badge bg-light text-secondary border extra-small">{{ step.role }}</span>
+                                                @if (step.isFinalHR) {
+                                                <span class="badge bg-secondary-subtle text-dark extra-small">Final HR</span>
+                                                }
+                                            </div>
+                                            <span class="text-muted extra-small d-block mt-0.5">Stage {{ step.levelNumber }}: {{ step.levelTitle }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <app-badge [label]="step.status" [variant]="getStepBadgeVariant(step.status)" size="xs" [dot]="true"></app-badge>
+                                        @if (step.actionDate) {
+                                        <span class="extra-small text-muted d-block font-monospace mt-0.5">{{ step.actionDate }}</span>
+                                        } @else if (step.isCurrent) {
+                                        <span class="extra-small text-warning fw-semibold d-block mt-0.5">
+                                            <i class="bi bi-clock me-1"></i>Awaiting Review
+                                        </span>
+                                        }
+                                    </div>
+                                </div>
+                                @if (step.remarks) {
+                                <div class="mt-2 pt-2 border-top extra-small text-muted fst-italic">
+                                    <i class="bi bi-chat-left-quote me-1 text-emerald"></i>Remarks: {{ step.remarks }}
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+                        } @else {
+                        <div class="p-3 rounded-3 bg-light border text-center text-muted extra-small">
+                            <i class="bi bi-info-circle me-1 text-emerald"></i>Assigned to {{ selectedRequest.assignedTo }} for hierarchical review.
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Request Summary -->
+                    <div class="row g-3 pt-3 border-top">
+                        <div class="col-12">
+                            <label class="form-label extra-small fw-bold text-dark text-uppercase letter-spacing-1 mb-1">
+                                Subject
+                            </label>
+                            <div class="p-2.5 rounded-3 bg-light border text-dark fw-semibold extra-small">
+                                {{ selectedRequest.subject }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label extra-small fw-bold text-dark text-uppercase letter-spacing-1 mb-1">
+                                Description & Justification
+                            </label>
+                            <div class="p-3 rounded-3 bg-light border text-dark extra-small lh-base">
+                                {{ selectedRequest.description }}
+                            </div>
+                        </div>
+                        @if (selectedRequest.details?.proposedLastWorkingDay) {
+                        <div class="col-12 col-md-6">
+                            <label class="form-label extra-small fw-bold text-dark text-uppercase letter-spacing-1 mb-1">
+                                Proposed Last Working Day
+                            </label>
+                            <div class="p-2.5 rounded-3 bg-light border text-dark fw-semibold extra-small font-monospace">
+                                {{ selectedRequest.details.proposedLastWorkingDay }}
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer bg-light border-top py-2.5 px-4 d-flex justify-content-end">
+                    <app-button label="Close" variant="outline-secondary" size="sm" (clicked)="closeWorkflowModal()">
+                    </app-button>
+                </div>
+
+            </div>
+        </div>
+    </div>
     }
 
 </div>

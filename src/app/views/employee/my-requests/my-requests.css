@@ -151,3 +151,99 @@
   text-overflow: ellipsis;
   word-break: break-word;
 }
+
+/* Workflow Avatar & Modal Styles */
+.workflow-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-2xs {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.modal-backdrop.show {
+  opacity: 0.45;
+}
+
+.my-requests-actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.my-requests-actions-dropdown .dropdown-menu {
+  z-index: 1090 !important;
+  min-width: 195px;
+  background-color: #ffffff !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid var(--card-border) !important;
+}
+
+/* Deep overrides for ngx-datatable inside My Requests */
+:host ::ng-deep .ngx-datatable.bootstrap {
+  border-collapse: separate;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-header-cell {
+  white-space: nowrap !important;
+}
+
+/* Ensure table body has enough vertical room so dropdowns never trigger scrollbars */
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body {
+  min-height: 200px !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-row {
+  min-height: 58px !important;
+  transition: background-color 0.15s ease;
+}
+
+/* Elevate row stacking context when its dropdown is open so it renders above following rows */
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-row:has(.dropdown-menu.show),
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-row:focus-within {
+  z-index: 100 !important;
+  position: relative !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-cell {
+  min-height: 58px !important;
+  padding: 10px 14px !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-cell-label {
+  line-height: 1.4 !important;
+  width: 100% !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-header-cell:last-child {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-cell:last-child {
+  justify-content: center !important;
+  text-align: center !important;
+  overflow: visible !important;
+}
+
+:host ::ng-deep .ngx-datatable.bootstrap .datatable-body-cell:last-child .datatable-body-cell-label {
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+.request-title-btn {
+  transition: color 0.15s ease;
+}
+
+.request-title-btn:hover {
+  color: var(--emerald-dark) !important;
+  text-decoration: underline;
+}

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, map } from 'rxjs';
 import { API_ENDPOINTS } from '../constants/api.constants';
 import { AuthService } from './auth.service';
 import { ApprovalLevel, ManagedRequest } from '../models/request.interface';
@@ -80,6 +80,33 @@ export class RequestService {
   }
 
   /**
+   * Fetches all seeded Request Categories directly from the backend (GET /api/requests/categories).
+   */
+  fetchRequestCategories$(): Observable<{ label: string; value: string; description?: string }[]> {
+    return this.http.get<any[]>(API_ENDPOINTS.REQUESTS.CATEGORIES).pipe(
+      map((items: any[]) =>
+        (items || []).map((i: any) => ({
+          label: (i.label || i.value || '') as string,
+          value: (i.value || i.label || '') as string,
+          description: i.description as string | undefined,
+        }))
+      ),
+      catchError(() =>
+        this.fetchRequestWorkflows$().pipe(
+          map((wfs: any[]) =>
+            (wfs || []).map((w: any) => ({
+              label: (w.requestCategory || w.name || '') as string,
+              value: (w.requestCategory || w.name || '') as string,
+              description: w.description as string | undefined,
+            }))
+          ),
+          catchError(() => of([]))
+        )
+      )
+    );
+  }
+
+  /**
    * Fetches all configured Multi-Stage Request Approval Workflows (Leave, Resignation, Hike, Promotion)
    * from GET /api/requests/workflows.
    */
@@ -92,6 +119,7 @@ export class RequestService {
    */
   createRequest$(payload: {
     employeeId?: string;
+    employeeCode?: string;
     category: string;
     subject: string;
     description: string;
@@ -107,10 +135,15 @@ export class RequestService {
     proposedLastWorkingDay?: string;
     noticePeriodDays?: number;
   }): Observable<any> {
+    const currentUser = this.authService.getCurrentUser();
+    const resolvedEmpId = payload.employeeId || currentUser?.id || this.authService.getCurrentEmployeeCode();
+    const resolvedEmpCode = payload.employeeCode || currentUser?.employeeCode || this.authService.getCurrentEmployeeCode();
+
     return this.http
       .post<any>(API_ENDPOINTS.REQUESTS.BASE, {
         ...payload,
-        employeeId: payload.employeeId || this.authService.getCurrentEmployeeCode(),
+        employeeId: resolvedEmpId,
+        employeeCode: resolvedEmpCode,
       })
       .pipe(tap(() => this.refreshRequestsFromBackend()));
   }

@@ -64,4 +64,8 @@ export interface EmployeeRequest {
   priority: 'Urgent' | 'High' | 'Medium' | 'Low';
   assignedTo: string;
   status: 'Approved' | 'Pending' | 'Rejected' | 'In Progress';
+  currentLevelNumber?: number;
+  totalLevels?: number;
+  approvalChain?: ApprovalLevel[];
+  details?: any;
 }
